@@ -1,5 +1,8 @@
 package main
 
+import "github.com/0x41gawor/dietonez/internal/handlers"
+
 func main() {
-	print("Hi")
+	server := handlers.NewServer(":8080")
+	server.Run()
 }
