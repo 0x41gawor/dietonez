@@ -1,0 +1,1 @@
+Dietonez is my vibe-coded tool for diet planning and "execution".
