@@ -1,0 +1,297 @@
+openapi: 3.0.3
+info:
+  title: Dietonez
+  version: 1.0.0
+  description: API for managing ingredients, meals, and diets
+servers:
+  - url: http://:192.46.236.119/api/v1
+    description: Main API server
+paths:
+  /ingredients:
+    get:
+      summary: Get paginated list of ingredients
+      tags: [Ingredients]
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: List of ingredients with total count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  ingredients:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Ingredient'
+    put:
+      summary: Update multiple ingredients
+      tags: [Ingredients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Ingredient'
+      responses:
+        '200':
+          description: Number of updated ingredients
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updated:
+                    type: integer
+    post:
+      summary: Add a new ingredient
+      tags: [Ingredients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ingredient'
+      responses:
+        '200':
+          description: Created ingredient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ingredient'
+  /ingredients/bulk:
+    post:
+      summary: Add multiple ingredients
+      tags: [Ingredients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Ingredient'
+      responses:
+        '200':
+          description: Number of created ingredients
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: integer
+  /ingredients/{id}:
+    delete:
+      summary: Delete ingredient by ID
+      tags: [Ingredients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No content
+        '400':
+          description: Ingredient used in dish
+  /dishes:
+    get:
+      summary: Get all dishes of a given meal category
+      description: Returns a list of dishes for the specified meal type, sorted alphabetically by name.
+      operationId: getDishes
+      tags:
+        - Dishes
+      parameters:
+        - name: meal
+          in: query
+          required: true
+          description: Meal type to filter dishes (e.g., Breakfast, MainMeal, PreWorkout, Supper)
+          schema:
+            type: string
+            enum: [Breakfast, MainMeal, PreWorkout, Supper]
+      responses:
+        '200':
+          description: List of dishes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DishShort'
+  /dishes/{id}:
+    get:
+      summary: Get dish by ID
+      description: Returns full details of a single dish, including ingredients and computed macros.
+      operationId: getDishById
+      tags:
+        - Dishes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the dish
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dish object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dish'
+        '404':
+          description: Dish not found
+
+components:
+  schemas:
+    Ingredient:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        kcal:
+          type: number
+          format: float
+        protein:
+          type: number
+          format: float
+        fat:
+          type: number
+          format: float
+        carbs:
+          type: number
+          format: float
+        unit:
+          type: string
+        shopStyle:
+          type: string
+        default_amount:
+          type: number
+          format: float
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+    DishShort:
+      type: object
+      required: [id, name, kcal, protein, fat, carbs]
+      properties:
+        id:
+          type: integer
+          example: 42
+        name:
+          type: string
+          example: "Tofu Curry"
+        kcal:
+          type: number
+          format: float
+          example: 620.5
+        protein:
+          type: number
+          format: float
+          example: 40.1
+        fat:
+          type: number
+          format: float
+          example: 25.3
+        carbs:
+          type: number
+          format: float
+          example: 50.0
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+    Label:
+      type: object
+      required: [text, color]
+      properties:
+        text:
+          type: string
+          example: "Wege"
+        color:
+          type: string
+          format: hex
+          example: "#4caf50"
+          
+    Dish:
+      type: object
+      required:
+        - id
+        - name
+        - meal
+        - kcal
+        - protein
+        - fat
+        - carbs
+        - ingredients
+        - recipe
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        meal:
+          type: string
+          enum: [Breakfast, MainMeal, PreWorkout, Supper]
+        kcal:
+          type: number
+          format: float
+        protein:
+          type: number
+          format: float
+        fat:
+          type: number
+          format: float
+        carbs:
+          type: number
+          format: float
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngredientInDish'
+        recipe:
+          $ref: '#/components/schemas/Recipe'
+          
+    IngredientInDish:
+      type: object
+      required: [ingredient, amount]
+      properties:
+        ingredient:
+          $ref: '#/components/schemas/Ingredient'
+        amount:
+          type: number
+          format: float
+          
+    Recipe:
+      type: object
+      required: [total_time, before, when_to_start, preparation]
+      properties:
+        total_time:
+          type: string
+        before:
+          type: string
+        when_to_start:
+          type: string
+        preparation:
+          type: string
