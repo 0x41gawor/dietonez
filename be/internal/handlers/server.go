@@ -23,10 +23,8 @@ func (s *Server) Run() {
 	router := mux.NewRouter()
 
 	apiIngredients := NewHandlerIngredients()
-	apiIngredientUnits := NewHandlerIngredientUnits()
 
-	router.HandleFunc("/api/v1/ingredients", makeHTTPHandleFunc(apiIngredients.handleBase))
-	router.HandleFunc("/api/v1/ingredient-units", makeHTTPHandleFunc(apiIngredientUnits.handleBase))
+	router.HandleFunc("/api/v1/ingredients", makeHTTPHandleFunc(apiIngredients.handleBaseGET)).Methods("GET")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
@@ -35,7 +33,7 @@ func (s *Server) Run() {
 	})
 	routerWithCors := c.Handler(router)
 
-	log.Println("JSON API server running on port: ", s.listenPort)
+	log.Println("JSON API server running on port:", s.listenPort)
 	http.ListenAndServe(s.listenPort, routerWithCors)
 }
 

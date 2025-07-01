@@ -18,24 +18,31 @@ func NewHandlerIngredients() *HandlerIngredients {
 	}
 }
 
-// handles "/ingredients" path
-func (h *HandlerIngredients) handleBase(w http.ResponseWriter, r *http.Request) error {
-	slog.Debug("")
-	switch r.Method {
-	case "GET":
-		return h.handleBaseGET(w, r)
-	default:
-		return WriteJSON(w, http.StatusMethodNotAllowed, "error: method not allowed")
-	}
-}
-
 // handles GET in /ingredients
 func (h *HandlerIngredients) handleBaseGET(w http.ResponseWriter, r *http.Request) error {
-	// service action
-	models, err := h.s.List()
+	slog.Debug("handleBaseGET",
+		slog.String("method", r.Method),
+		slog.String("url", r.URL.String()),
+		slog.String("remote_addr", r.RemoteAddr),
+		slog.String("user_agent", r.UserAgent()),
+	)
+
+	// parse query params
+	q := r.URL.Query()
+	page := parseInt(q.Get("page"), 1)
+	pageSize := parseInt(q.Get("pageSize"), 30)
+	short := parseBool(q.Get("short"), false)
+
+	// get from service
+	items, total, err := h.s.ListPaginated(r.Context(), page, pageSize, short)
 	if err != nil {
 		return err
 	}
-	// return model
-	return WriteJSON(w, http.StatusOK, models)
+
+	// wrap in response object
+	resp := map[string]any{
+		"total":       total,
+		"ingredients": items,
+	}
+	return WriteJSON(w, http.StatusOK, resp)
 }

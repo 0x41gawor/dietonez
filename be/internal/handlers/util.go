@@ -39,3 +39,23 @@ func getID(r *http.Request) (int64, error) {
 type DeleteBody struct {
 	Name string
 }
+
+// parseInt próbuje sparsować string do int, w razie błędu zwraca wartość domyślną.
+func parseInt(s string, fallback int) int {
+	if val, err := strconv.Atoi(s); err == nil {
+		return val
+	}
+	return fallback
+}
+
+// parseBool próbuje sparsować string do bool (true/false), w razie błędu zwraca fallback.
+func parseBool(s string, fallback bool) bool {
+	if s == "" {
+		return fallback
+	}
+	val, err := strconv.ParseBool(s)
+	if err != nil {
+		return fallback
+	}
+	return val
+}
