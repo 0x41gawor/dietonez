@@ -65,6 +65,7 @@ type DishGetShort struct {
 type DishGet struct {
 	ID          int                   `json:"id"`
 	Name        string                `json:"name"`
+	Descr       string                `json:"descr"`
 	Meal        string                `json:"meal"`
 	Kcal        float64               `json:"kcal"`
 	Protein     float64               `json:"protein"`

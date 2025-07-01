@@ -545,6 +545,7 @@ components:
       required:
         - id
         - name
+        - descr
         - meal
         - kcal
         - protein

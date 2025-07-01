@@ -61,3 +61,61 @@ INSERT INTO ingredients
 ('Curry mielone',                   'łyżka', 1, 'Zapasy', 20,  1,    1, 4 ),
 ('Papryka słodka',                  'łyżka', 1, 'Zapasy', 16,  1,    0, 3 ),
 ('Oregano suszone',                 'łyżka', 1, 'Zapasy', 12, 0.3, 0.2, 2 );
+
+--dishes
+INSERT INTO dishes (id, name, meal, descr) VALUES
+(1, 'Tofu Stir Fry', 'MainMeal', 'Połącz składniki i podgrzej na patelni.'),
+(2, 'Chicken Sweet&Sour', 'Supper', 'Połącz składniki i podgrzej na patelni.'),
+(3, 'Bananowy Omlet', 'MainMeal', 'Połącz składniki i podgrzej na patelni.'),
+(4, 'Jajka z Tuńczykiem', 'Supper', 'Połącz składniki i podgrzej na patelni.'),
+(5, 'Wege Wrap z humusem', 'Breakfast', 'Połącz składniki i podgrzej na patelni.'),
+(6, 'Makaron z tuńczykiem', 'MainMeal', 'Połącz składniki i podgrzej na patelni.'),
+(7, 'Indyk curry', 'Pre-Workout', 'Połącz składniki i podgrzej na patelni.'),
+(8, 'Jaglanka z malinami', 'Breakfast', 'Połącz składniki i podgrzej na patelni.'),
+(9, 'Omlet proteinowy', 'Pre-Workout', 'Połącz składniki i podgrzej na patelni.'),
+(10, 'Tofu curry', 'Supper', 'Połącz składniki i podgrzej na patelni.');
+
+INSERT INTO ingredient_amounts (dish_id, ingredient_id, amount) VALUES
+(1, 7, 83.5),
+(1, 2, 155.2),
+(1, 15, 53.3),
+(2, 17, 146.8),
+(2, 6, 142.5),
+(2, 4, 42.2),
+(3, 20, 111.1),
+(3, 2, 122.4),
+(3, 6, 173.1),
+(4, 4, 115.2),
+(4, 12, 45.7),
+(4, 14, 83.9),
+(5, 16, 65.3),
+(5, 14, 43.8),
+(5, 20, 106.1),
+(6, 4, 118.7),
+(6, 15, 161.2),
+(6, 9, 97.5),
+(7, 6, 180.3),
+(7, 19, 85.0),
+(7, 5, 90.4),
+(8, 2, 167.5),
+(8, 10, 33.0),
+(8, 15, 142.1),
+(9, 8, 100.5),
+(9, 11, 57.7),
+(9, 13, 146.3),
+(10, 3, 168.1),
+(10, 9, 33.7),
+(10, 12, 59.4);
+
+
+INSERT INTO recipes (dish_id, total_time, before, when_to_start, preparation) VALUES
+(1, '20 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
+(2, '25 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
+(3, '27 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
+(4, '17 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
+(5, '11 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
+(6, '18 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
+(7, '22 minuty', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
+(8, '15 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
+(9, '19 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
+(10, '23 minuty', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.');

@@ -1,7 +1,29 @@
--- ENUM types
+-- Drop all tables (najpierw te zależne)
+DROP TABLE IF EXISTS diet_contexts;
+DROP TABLE IF EXISTS day_kcals;
+DROP TABLE IF EXISTS diet_slots;
+DROP TABLE IF EXISTS diet_label_bridges;
+DROP TABLE IF EXISTS diet_labels;
+DROP TABLE IF EXISTS diets;
+DROP TABLE IF EXISTS recipes;
+DROP TABLE IF EXISTS dish_label_bridges;
+DROP TABLE IF EXISTS dish_labels;
+DROP TABLE IF EXISTS ingredient_amounts;
+DROP TABLE IF EXISTS dishes;
+DROP TABLE IF EXISTS ingredient_label_bridges;
+DROP TABLE IF EXISTS ingredient_labels;
+DROP TABLE IF EXISTS ingredients;
+
+-- Drop types
+DROP TYPE IF EXISTS unit;
+DROP TYPE IF EXISTS shop_style;
+DROP TYPE IF EXISTS meal;
+
+-- ENUM types (nowe definicje)
 CREATE TYPE unit AS ENUM ('g', 'porcja', 'sztuka', 'kromka', 'łyżeczka', 'łyżka', 'opakowanie', 'szczypta');
 CREATE TYPE shop_style AS ENUM ('Lidl', 'G.S', 'Świeże', 'Zapasy');
-CREATE TYPE meal AS ENUM ('Breakfast', 'Main Meal', 'Pre-Workout', 'Post-Workout');
+CREATE TYPE meal AS ENUM ('Breakfast', 'MainMeal', 'Pre-Workout', 'Supper');
+
 
 -- ingredients
 CREATE TABLE ingredients (
@@ -21,7 +43,7 @@ CREATE TABLE ingredient_labels (
     id SERIAL PRIMARY KEY,
     label TEXT NOT NULL,
     color TEXT NOT NULL
-);
+)
 
 -- ingredient_label_bridges
 CREATE TABLE ingredient_label_bridges (
@@ -41,7 +63,7 @@ CREATE TABLE dishes (
 -- ingredient_amounts
 CREATE TABLE ingredient_amounts (
     dish_id INT NOT NULL,
-    ingredient_id INT NOT NULL,
+   ingredient_id INT NOT NULL,
     amount FLOAT NOT NULL,
     PRIMARY KEY (dish_id, ingredient_id),
     FOREIGN KEY (dish_id) REFERENCES dishes(id) ON DELETE CASCADE,

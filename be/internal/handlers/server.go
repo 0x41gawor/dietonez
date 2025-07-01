@@ -23,8 +23,15 @@ func (s *Server) Run() {
 	router := mux.NewRouter()
 
 	apiIngredients := NewHandlerIngredients()
-
 	router.HandleFunc("/api/v1/ingredients", makeHTTPHandleFunc(apiIngredients.handleBaseGET)).Methods("GET")
+	router.HandleFunc("/api/v1/ingredients", makeHTTPHandleFunc(apiIngredients.handleBasePOST)).Methods("POST")
+	router.HandleFunc("/api/v1/ingredients/bulk", makeHTTPHandleFunc(apiIngredients.handleBulkPOST)).Methods("POST")
+	router.HandleFunc("/api/v1/ingredients/bulk", makeHTTPHandleFunc(apiIngredients.handleBasePUT)).Methods("PUT")
+	router.HandleFunc("/api/v1/ingredients/{id}", makeHTTPHandleFunc(apiIngredients.handleGetByID)).Methods("GET")
+	router.HandleFunc("/api/v1/ingredients/{id}", makeHTTPHandleFunc(apiIngredients.handleDeleteByID)).Methods("DELETE")
+	apiDishes := NewHandlerDishes()
+	router.HandleFunc("/api/v1/dishes", makeHTTPHandleFunc(apiDishes.handleBaseGET)).Methods("GET")
+	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handleGetByID)).Methods("GET")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
