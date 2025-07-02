@@ -79,6 +79,7 @@ type DishGet struct {
 type DishPost struct {
 	Name        string                `json:"name"`
 	Meal        string                `json:"meal"`
+	Descr       string                `json:"descr"`
 	Ingredients []IngredientInDishPut `json:"ingredients"`
 	Recipe      Recipe                `json:"recipe"`
 	Labels      []Label               `json:"labels"`
@@ -87,6 +88,7 @@ type DishPost struct {
 type DishPut struct {
 	ID          int                   `json:"id"`
 	Name        string                `json:"name"`
+	Descr       string                `json:"descr"`
 	Meal        string                `json:"meal"`
 	Ingredients []IngredientInDishPut `json:"ingredients"`
 	Recipe      Recipe                `json:"recipe"`

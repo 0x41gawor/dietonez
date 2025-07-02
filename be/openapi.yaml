@@ -1,0 +1,884 @@
+openapi: 3.0.3
+info:
+  title: Dietonez
+  version: 1.0.0
+  description: My vibe-coded tool for diet planning.
+servers:
+  - url: http://:192.46.236.119/api/v1
+    description: Main API server
+paths:
+  /ingredients:
+    get:
+      summary: Get paginated list of ingredients
+      tags: [Ingredients]
+      operationId: getIngredients
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 30
+        - name: short
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: List of ingredients with total count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  ingredients:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IngredientGetPut'
+    put:
+      summary: Update multiple ingredients
+      operationId: updateIngredients
+      tags: [Ingredients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IngredientGetPut'
+      responses:
+        '200':
+          description: Number of updated ingredients
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updated:
+                    type: integer
+    post:
+      summary: Add a new ingredient
+      tags: [Ingredients]
+      operationId: createIngredient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngredientPost'
+      responses:
+        '200':
+          description: Created ingredient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngredientGetPut'
+  /ingredients/bulk:
+    post:
+      summary: Add multiple ingredients
+      tags: [Ingredients]
+      operationId: createIngredients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IngredientPost'
+      responses:
+        '200':
+          description: Number of created ingredients
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: integer
+  /ingredients/{id}:
+    get:
+      summary: Get ingredient by ID
+      description: Returns the full ingredient object with all details.
+      operationId: getIngredientById
+      tags:
+        - Ingredients
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the ingredient
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Full ingredient object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngredientGetPut'
+        '404':
+          description: Ingredient not found
+    delete:
+      summary: Delete ingredient by ID
+      tags: [Ingredients]
+      operationId: deleteIngredient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No content
+        '400':
+          description: Ingredient used in dish
+  /dishes:
+    get:
+      summary: Get all dishes of a given meal category
+      description: Returns a list of dishes for the specified meal type, sorted alphabetically by name.
+      operationId: getDishes
+      tags:
+        - Dishes
+      parameters:
+        - name: meal
+          in: query
+          required: true
+          description: Meal type to filter dishes (e.g., Breakfast, MainMeal, PreWorkout, Supper)
+          schema:
+            type: string
+            enum: [Breakfast, MainMeal, PreWorkout, Supper]
+      responses:
+        '200':
+          description: List of dishes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DishGetShort'
+    post:
+      summary: Create a new dish
+      description: Creates a new dish based on input and returns the full object with computed macros and assigned ID.
+      operationId: createDish
+      tags:
+        - Dishes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/DishPost'
+              required:
+                - name
+                - meal
+                - ingredients
+                - recipe
+              properties:
+                id:
+                  readOnly: true
+      responses:
+        '200':
+          description: Created dish with computed macros
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DishGet'
+        '400':
+          description: Invalid input or missing fields
+  /dishes/{id}:
+    get:
+      summary: Get dish by ID
+      description: Returns full details of a single dish, including ingredients and computed macros.
+      operationId: getDishById
+      tags:
+        - Dishes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the dish
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dish object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DishGet'
+        '404':
+          description: Dish not found
+    put:
+      summary: Update an existing dish
+      description: Updates an existing dish by ID and returns the updated object with recomputed macros.
+      operationId: updateDish
+      tags:
+        - Dishes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the dish to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DishPut'
+      responses:
+        '200':
+          description: Updated dish with recomputed macros
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DishGet'
+        '400':
+          description: Invalid input or bad format
+        '404':
+          description: Dish not found
+    delete:
+      summary: Delete dish by ID
+      description: Deletes a dish. Returns 204 if successful, or 400 if the dish is used in a diet.
+      operationId: deleteDish
+      tags:
+        - Dishes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the dish to delete
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Dish deleted successfully
+        '400':
+          description: Dish is used in a diet and cannot be deleted
+  /diets:
+    get:
+      summary: Get all diets
+      description: Returns a list of all diets available to the user.
+      operationId: getAllDiets
+      tags:
+        - Diets
+      responses:
+        '200':
+          description: List of diet objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DietShort'
+    post:
+      summary: Create a new diet
+      description: Creates a new diet. ID is assigned by the server.
+      operationId: createDiet
+      tags:
+        - Diets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/DietPost'
+              required:
+                - name
+                - slots
+              properties:
+                id:
+                  readOnly: true
+      responses:
+        '201':
+          description: Created diet object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DietGet'
+        '400':
+          description: Invalid input
+  /diets/{id}:
+    get:
+      summary: Get diet by ID
+      description: Returns a full diet object for editing.
+      operationId: getDietById
+      tags:
+        - Diets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the diet
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Full diet object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DietGet'
+        '404':
+          description: Diet not found
+    put:
+      summary: Update existing diet
+      description: Updates an existing diet by ID.
+      operationId: updateDietById
+      tags:
+        - Diets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the diet to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DietPut'
+      responses:
+        '200':
+          description: Updated diet object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DietGet'
+        '404':
+          description: Diet not found
+    delete:
+      summary: Delete a diet
+      description: Deletes a diet by ID. Returns 204 if successful or 400 if the diet is currently active.
+      operationId: deleteDiet
+      tags:
+        - Diets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Diet successfully deleted (No Content)
+        '400':
+          description: Cannot delete active diet
+  /diet-context:
+    get:
+      summary: Get user diet context
+      description: Returns the current diet context for the user, including active diet ID, current day, and body weight.
+      operationId: getDietContext
+      tags:
+        - DietContext
+      responses:
+        '200':
+          description: Current user diet context
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DietContext'
+    put:
+      summary: Update user diet context
+      description: Updates the currently active diet, day, and user weight.
+      operationId: updateDietContext
+      tags:
+        - DietContext
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DietContext'
+      responses:
+        '200':
+          description: Updated diet context
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DietContext'
+
+
+
+
+components:
+  schemas:
+    IngredientGetPut:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 0
+        name:
+          type: string
+          example: "Rolada ustrzycka (Regionalne szlaki)"           
+        kcal:
+          type: number
+          example: 543
+        protein:
+          type: number
+          example: 28
+        fat:
+          type: number
+          example: 28
+        carbs:
+          type: number
+          example: 0
+        unit:
+          type: string
+          example: "g"
+        shopStyle:
+          type: string
+          example: "Lidl"
+        default_amount:
+          type: number
+          example: 100
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+            
+    IngredientMin:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Rolada Ustrzycka (Regionalne Szlaki)"
+            
+    IngredientPost:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Rolada ustrzycka (Regionalne szlaki)"           
+        kcal:
+          type: number
+          example: 543
+        protein:
+          type: number
+          example: 28
+        fat:
+          type: number
+          example: 28
+        carbs:
+          type: number
+          example: 0
+        unit:
+          type: string
+          example: "g"
+        shopStyle:
+          type: string
+          example: "Lidl"
+        default_amount:
+          type: number
+          example: 100
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+            
+    DishGetShort:
+      type: object
+      required: [id, name, kcal, protein, fat, carbs]
+      properties:
+        id:
+          type: integer
+          example: 42
+        name:
+          type: string
+          example: "Tofu Curry"
+        kcal:
+          type: number
+          format: float
+          example: 620.5
+        protein:
+          type: number
+          format: float
+          example: 40.1
+        fat:
+          type: number
+          format: float
+          example: 25.3
+        carbs:
+          type: number
+          format: float
+          example: 50.0
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+    Label:
+      type: object
+      required: [text, color]
+      properties:
+        text:
+          type: string
+          example: "Wege"
+        color:
+          type: string
+          format: hex
+          example: "#4caf50"
+          
+    DishGet:
+      type: object
+      required:
+        - id
+        - name
+        - descr
+        - meal
+        - kcal
+        - protein
+        - fat
+        - carbs
+        - ingredients
+        - recipe
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "M1 Kurczak Słodko Kwaśny"
+        meal:
+          type: string
+          enum: [Breakfast, MainMeal, PreWorkout, Supper]
+          example: "Supper"
+        kcal:
+          type: number
+          example: 573
+        protein:
+          type: number
+          example: 34
+        fat:
+          type: number
+          example: 24
+        carbs:
+          type: number
+          example: 78
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngredientInDishGet'
+        recipe:
+          $ref: '#/components/schemas/Recipe'
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+
+    DishPost:
+      type: object
+      required: [name, meal, ingredients, recipe, labels]
+      properties:
+        name:
+          type: string
+          example: "M2 Wołowina - burger"
+        meal:
+          type: string
+          enum: [Breakfast, MainMeal, PreWorkout, Supper]
+          example: "MainMeal"
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngredientInDishPut'
+        recipe:
+          $ref: '#/components/schemas/Recipe'
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+            
+    DishPut:
+      type: object
+      required: [id, name, meal, ingredients, recipe, labels]
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "M3 Dorsz - filet z frytkami"
+        meal:
+          type: string
+          enum: [Breakfast, MainMeal, PreWorkout, Supper]
+          example: "PreWorkout"
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngredientInDishPut'
+        recipe:
+          $ref: '#/components/schemas/Recipe'
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+    DishMinPut:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: integer
+          example: 1
+          
+    IngredientInDishGet:
+      type: object
+      required: [ingredient, amount]
+      properties:
+        ingredient:
+          $ref: '#/components/schemas/IngredientGetPut'
+        amount:
+          type: number
+          format: float
+          example: 12
+          
+    IngredientInDishPut:
+      type: object
+      required: [ingredient, amount]
+      properties:
+        ingredient:
+          $ref: '#/components/schemas/IngredientMin'
+        amount:
+          type: number
+          format: float
+          example: 1.5
+          
+    Recipe:
+      type: object
+      required: [total_time, before, when_to_start, preparation]
+      properties:
+        total_time:
+          type: string
+          example: "ok. 20 minut"
+        before:
+          type: string
+          example: "nie wymaga wcześniejszego przygotowania."
+        when_to_start:
+          type: string
+          example: "ok. 20 minut przed posiłkiem"
+        preparation:
+          type: string
+          example: "Kurczaka pokrój w paski i zamarynuj w oliwie z przyprawami. Smaż 8–10 minut"
+    DietMin:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "8 weeks, 2400kcal"
+    DietShort:
+      type: object
+      required: [id, name, descr, labels]
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "8 weeks, 2400kcal"
+        descr:
+          type: string
+          example: "to dieta typu fajna i dobra"
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+    SlotGet:
+      type: object
+      required: [meal, dish]
+      properties:
+        meal:
+          type: string
+          enum: [Breakfast, MainMeal, PreWorkout, Supper]
+        dish:
+          $ref: '#/components/schemas/DishGetShort'
+    SlotPut:
+      type: object
+      required: [meal, dish]
+      properties:
+        meal:
+          type: string
+          enum: [Breakfast, MainMeal, PreWorkout, Supper]
+          example: "Breakfast"
+        dish:
+          $ref: '#/components/schemas/DishMinPut'
+    Summary:
+      type: object
+      required: [goal, kcal, proteins, fats, carbs]
+      properties:
+        goal:
+          type: number
+          example: 2400
+        kcal:
+          type: number
+          example: 2345
+        proteins:
+          type: number
+          example: 160
+        fats:
+          type: number
+          example: 80
+        carbs:
+          type: number
+          example: 320
+    Left:
+      type: object
+      required: [kcal, proteins, fats]
+      properties:
+        kcal:
+          type: number
+          example: 12
+        proteins:
+          type: number
+          format: float
+          example: 1.3
+        fats:
+          type: number
+          example: 22
+    DayGet:
+      type: object
+      required: [name, slots, summary, left]
+      properties:
+        name:
+          type: string
+          example: "Monday"
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/SlotGet'
+        summary:
+            $ref: '#/components/schemas/Summary'
+        left:
+            $ref: '#/components/schemas/Left'
+    DayPut:
+      type: object
+      required: [name, slots, summary, left]
+      properties:
+        name:
+          type: string
+          example: "Monday"
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/SlotPut'
+    WeekGet:
+      type: object
+      required: [num, days]
+      properties:
+        num:
+          type: integer
+          example: 1
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/DayGet'
+    WeekPut:
+      type: object
+      required: [num, days]
+      properties:
+        num:
+          type: integer
+          example: 1
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/DayPut'
+    DietGet:
+      type: object
+      required: [id, name, descr, weeks, labels]
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "8 weeks, 2400kcal"
+        descr:
+          type: string
+          example: "Mocna dieta typu"
+        weeks:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeekGet'
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+    DietPost:
+      type: object
+      required: [name, descr, weeks, labels]
+      properties:
+        name:
+          type: string
+          example: "8 weeks, 2400kcal"
+        descr:
+          type: string
+          example: "Mocna dieta typu"
+        weeks:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeekPut'
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+    DietPut:
+      type: object
+      required: [id, name, descr, weeks, labels]
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "8 weeks, 2400kcal"
+        descr:
+          type: string
+          example: "Mocna dieta typu"
+        weeks:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeekPut'
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Label'
+    DietContext:
+      type: object
+      required: [activeDiet, currentWeek, currentDay, weight]
+      properties:
+        activeDiet:
+          $ref: '#/components/schemas/DietMin'
+        currentWeek:
+          type: integer
+          example: 3
+        currentDay:
+          type: integer
+          example: 1
+        weight:
+          type: number
+          format: float
+          example: 83.5

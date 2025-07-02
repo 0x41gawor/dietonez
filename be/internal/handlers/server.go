@@ -32,6 +32,9 @@ func (s *Server) Run() {
 	apiDishes := NewHandlerDishes()
 	router.HandleFunc("/api/v1/dishes", makeHTTPHandleFunc(apiDishes.handleBaseGET)).Methods("GET")
 	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handleGetByID)).Methods("GET")
+	router.HandleFunc("/api/v1/dishes", makeHTTPHandleFunc(apiDishes.handleBasePOST)).Methods("POST")
+	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handlePutByID)).Methods("PUT")
+	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handleDeleteByID)).Methods("DELETE")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},

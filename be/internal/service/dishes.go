@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/0x41gawor/dietonez/internal/repo"
 	"github.com/0x41gawor/dietonez/internal/service/model"
@@ -166,4 +167,205 @@ func (s *ServiceDishes) GetByID(ctx context.Context, id int) (*model.DishGet, er
 
 	return &dish, nil
 
+}
+
+func (s *ServiceDishes) Create(ctx context.Context, in *model.DishPost) (*model.DishGet, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("begin tx: %w", err)
+	}
+	defer tx.Rollback()
+
+	// 1. Insert into dishes
+	const qDish = `
+		INSERT INTO dishes (name, meal, descr)
+		VALUES ($1, $2, $3)
+		RETURNING id;
+	`
+	var dishID int
+	err = tx.QueryRowContext(ctx, qDish, in.Name, in.Meal, in.Descr).Scan(&dishID)
+	if err != nil {
+		return nil, fmt.Errorf("insert dish: %w", err)
+	}
+
+	// 2. Insert ingredients (ingredient_amounts)
+	const qIng = `
+		INSERT INTO ingredient_amounts (dish_id, ingredient_id, amount)
+		VALUES ($1, $2, $3);
+	`
+	stmtIng, err := tx.PrepareContext(ctx, qIng)
+	if err != nil {
+		return nil, fmt.Errorf("prepare ingredients: %w", err)
+	}
+	defer stmtIng.Close()
+
+	for _, ing := range in.Ingredients {
+		_, err := stmtIng.ExecContext(ctx, dishID, ing.Ingredient.ID, ing.Amount)
+		if err != nil {
+			return nil, fmt.Errorf("insert ingredient: %w", err)
+		}
+	}
+
+	// 3. Insert labels (dish_label_bridges)
+	if len(in.Labels) > 0 {
+		const qLabel = `
+			INSERT INTO dish_label_bridges (dish_id, label_id)
+			SELECT $1, id FROM dish_labels WHERE label = $2 AND color = $3;
+		`
+		stmtLab, err := tx.PrepareContext(ctx, qLabel)
+		if err != nil {
+			return nil, fmt.Errorf("prepare labels: %w", err)
+		}
+		defer stmtLab.Close()
+
+		for _, lbl := range in.Labels {
+			_, err := stmtLab.ExecContext(ctx, dishID, lbl.Text, lbl.Color)
+			if err != nil {
+				return nil, fmt.Errorf("insert label: %w", err)
+			}
+		}
+	}
+
+	// 4. Insert recipe
+	const qRecipe = `
+		INSERT INTO recipes (dish_id, time_total, what_before, when_start, preparation)
+		VALUES ($1, $2, $3, $4, $5);
+	`
+	_, err = tx.ExecContext(ctx, qRecipe,
+		dishID,
+		in.Recipe.TotalTime,
+		in.Recipe.Before,
+		in.Recipe.WhenToStart,
+		in.Recipe.Preparation,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("insert recipe: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, fmt.Errorf("commit: %w", err)
+	}
+
+	// Use existing logic to return the created object
+	return s.GetByID(ctx, dishID)
+}
+
+func (s *ServiceDishes) Update(ctx context.Context, id int, in *model.DishPut) (*model.DishGet, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("begin tx: %w", err)
+	}
+	defer tx.Rollback()
+
+	// 1. Update main dish fields
+	const qDish = `
+		UPDATE dishes
+		SET name = $1, meal = $2, descr = $3
+		WHERE id = $4;
+	`
+	res, err := tx.ExecContext(ctx, qDish, in.Name, in.Meal, in.Descr, id)
+	if err != nil {
+		return nil, fmt.Errorf("update dish: %w", err)
+	}
+	rows, _ := res.RowsAffected()
+	if rows == 0 {
+		return nil, sql.ErrNoRows
+	}
+
+	// 2. Delete old ingredient_amounts
+	_, err = tx.ExecContext(ctx, `DELETE FROM ingredient_amounts WHERE dish_id = $1`, id)
+	if err != nil {
+		return nil, fmt.Errorf("clear ingredients: %w", err)
+	}
+
+	// 3. Insert new ingredients
+	const qIng = `
+		INSERT INTO ingredient_amounts (dish_id, ingredient_id, amount)
+		VALUES ($1, $2, $3);
+	`
+	stmtIng, err := tx.PrepareContext(ctx, qIng)
+	if err != nil {
+		return nil, fmt.Errorf("prepare ingredients: %w", err)
+	}
+	defer stmtIng.Close()
+
+	for _, ing := range in.Ingredients {
+		_, err := stmtIng.ExecContext(ctx, id, ing.Ingredient.ID, ing.Amount)
+		if err != nil {
+			return nil, fmt.Errorf("insert ingredient: %w", err)
+		}
+	}
+
+	// 4. Delete & reinsert labels
+	_, err = tx.ExecContext(ctx, `DELETE FROM dish_label_bridges WHERE dish_id = $1`, id)
+	if err != nil {
+		return nil, fmt.Errorf("clear labels: %w", err)
+	}
+
+	const qLabel = `
+		INSERT INTO dish_label_bridges (dish_id, label_id)
+		SELECT $1, id FROM dish_labels WHERE label = $2 AND color = $3;
+	`
+	stmtLabel, err := tx.PrepareContext(ctx, qLabel)
+	if err != nil {
+		return nil, fmt.Errorf("prepare labels: %w", err)
+	}
+	defer stmtLabel.Close()
+
+	for _, lbl := range in.Labels {
+		_, err := stmtLabel.ExecContext(ctx, id, lbl.Text, lbl.Color)
+		if err != nil {
+			return nil, fmt.Errorf("insert label: %w", err)
+		}
+	}
+
+	// 5. Upsert recipe
+	const qRecipe = `
+		INSERT INTO recipes (dish_id, time_total, what_before, when_start, preparation)
+		VALUES ($1, $2, $3, $4, $5)
+		ON CONFLICT (dish_id) DO UPDATE SET
+			time_total = EXCLUDED.time_total,
+			what_before = EXCLUDED.what_before,
+			when_start = EXCLUDED.when_start,
+			preparation = EXCLUDED.preparation;
+	`
+	_, err = tx.ExecContext(ctx, qRecipe,
+		id,
+		in.Recipe.TotalTime,
+		in.Recipe.Before,
+		in.Recipe.WhenToStart,
+		in.Recipe.Preparation,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("upsert recipe: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, fmt.Errorf("commit: %w", err)
+	}
+
+	return s.GetByID(ctx, id)
+}
+
+func (s *ServiceDishes) DeleteByID(ctx context.Context, id int) error {
+	const q = `
+		DELETE FROM dishes
+		WHERE id = $1;
+	`
+
+	res, err := s.db.ExecContext(ctx, q, id)
+	if err != nil {
+		// Jeśli danie jest przypisane do diety (diet_slots), baza wyrzuci błąd klucza obcego
+		if strings.Contains(err.Error(), "violates foreign key constraint") {
+			return fmt.Errorf("used_in_diet")
+		}
+		return fmt.Errorf("delete dish: %w", err)
+	}
+
+	rows, _ := res.RowsAffected()
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
 }
