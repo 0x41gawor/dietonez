@@ -63,17 +63,17 @@ INSERT INTO ingredients
 ('Oregano suszone',                 'łyżka', 1, 'Zapasy', 12, 0.3, 0.2, 2 );
 
 --dishes
-INSERT INTO dishes (id, name, meal, descr) VALUES
-(1, 'Tofu Stir Fry', 'MainMeal', 'Połącz składniki i podgrzej na patelni.'),
-(2, 'Chicken Sweet&Sour', 'Supper', 'Połącz składniki i podgrzej na patelni.'),
-(3, 'Bananowy Omlet', 'MainMeal', 'Połącz składniki i podgrzej na patelni.'),
-(4, 'Jajka z Tuńczykiem', 'Supper', 'Połącz składniki i podgrzej na patelni.'),
-(5, 'Wege Wrap z humusem', 'Breakfast', 'Połącz składniki i podgrzej na patelni.'),
-(6, 'Makaron z tuńczykiem', 'MainMeal', 'Połącz składniki i podgrzej na patelni.'),
-(7, 'Indyk curry', 'Pre-Workout', 'Połącz składniki i podgrzej na patelni.'),
-(8, 'Jaglanka z malinami', 'Breakfast', 'Połącz składniki i podgrzej na patelni.'),
-(9, 'Omlet proteinowy', 'Pre-Workout', 'Połącz składniki i podgrzej na patelni.'),
-(10, 'Tofu curry', 'Supper', 'Połącz składniki i podgrzej na patelni.');
+INSERT INTO dishes (name, meal, descr) VALUES
+('Tofu Stir Fry', 'MainMeal', 'Połącz składniki i podgrzej na patelni.'),
+('Chicken Sweet&Sour', 'Supper', 'Połącz składniki i podgrzej na patelni.'),
+('Bananowy Omlet', 'MainMeal', 'Połącz składniki i podgrzej na patelni.'),
+('Jajka z Tuńczykiem', 'Supper', 'Połącz składniki i podgrzej na patelni.'),
+('Wege Wrap z humusem', 'Breakfast', 'Połącz składniki i podgrzej na patelni.'),
+('Makaron z tuńczykiem', 'MainMeal', 'Połącz składniki i podgrzej na patelni.'),
+('Indyk curry', 'Pre-Workout', 'Połącz składniki i podgrzej na patelni.'),
+('Jaglanka z malinami', 'Breakfast', 'Połącz składniki i podgrzej na patelni.'),
+('Omlet proteinowy', 'Pre-Workout', 'Połącz składniki i podgrzej na patelni.'),
+('Tofu curry', 'Supper', 'Połącz składniki i podgrzej na patelni.');
 
 INSERT INTO ingredient_amounts (dish_id, ingredient_id, amount) VALUES
 (1, 7, 83.5),
@@ -108,7 +108,7 @@ INSERT INTO ingredient_amounts (dish_id, ingredient_id, amount) VALUES
 (10, 12, 59.4);
 
 
-INSERT INTO recipes (dish_id, total_time, before, when_to_start, preparation) VALUES
+INSERT INTO recipes (dish_id, time_total, what_before, when_start, preparation) VALUES
 (1, '20 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
 (2, '25 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
 (3, '27 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
@@ -119,3 +119,23 @@ INSERT INTO recipes (dish_id, total_time, before, when_to_start, preparation) VA
 (8, '15 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
 (9, '19 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
 (10, '23 minuty', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.');
+
+INSERT INTO diets (id, name, descr) VALUES
+('8 weeks, 2400kcal', 'Mocna dieta dla masy'),
+('Redukcja 12 tyg', 'Redukcja z niskim indeksem glikemicznym'),
+('Lean Bulk Plan', 'Niewielka nadwyżka kaloryczna z dużą ilością białka');
+
+INSERT INTO diet_labels (id, label, color) VALUES
+(1, 'Masa', '#2196f3'),
+(2, 'Redukcja', '#f44336'),
+(3, 'Vege-Friendly', '#4caf50');
+
+INSERT INTO diet_label_bridge (diet_id, label_id) VALUES
+(1, 1),  -- 2400kcal = Masa
+(2, 2),  -- Redukcja
+(3, 1),  -- Lean bulk = Masa
+(3, 3);  -- Lean bulk = Vege-Friendly
+
+
+INSERT INTO diet_contexts (active_diet, current_week, current_weekday, current_weight)
+VALUES (1, 2, 4, 81.7);

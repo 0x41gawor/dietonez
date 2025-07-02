@@ -4,8 +4,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/0x41gawor/dietonez/internal/service"
 	"github.com/0x41gawor/dietonez/internal/service/model"
@@ -117,4 +120,30 @@ func (h *HandlerDishes) handleDeleteByID(w http.ResponseWriter, r *http.Request)
 
 	w.WriteHeader(http.StatusNoContent)
 	return nil
+}
+
+func (h *HandlerDiets) handleGetByID(w http.ResponseWriter, r *http.Request) error {
+	// zakładamy pattern typu /api/v1/diets/{id}
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 5 {
+		http.Error(w, "invalid path", http.StatusBadRequest)
+		return nil
+	}
+
+	id, err := strconv.Atoi(parts[4])
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return nil
+	}
+
+	diet, err := h.s.GetByID(r.Context(), id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "diet not found", http.StatusNotFound)
+			return nil
+		}
+		return fmt.Errorf("get diet: %w", err)
+	}
+
+	return WriteJSON(w, http.StatusOK, diet)
 }

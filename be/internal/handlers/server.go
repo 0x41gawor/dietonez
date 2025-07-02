@@ -35,6 +35,15 @@ func (s *Server) Run() {
 	router.HandleFunc("/api/v1/dishes", makeHTTPHandleFunc(apiDishes.handleBasePOST)).Methods("POST")
 	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handlePutByID)).Methods("PUT")
 	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handleDeleteByID)).Methods("DELETE")
+	apiDiets := NewHandlerDiets()
+	router.HandleFunc("/api/v1/diets", makeHTTPHandleFunc(apiDiets.handleBaseGET)).Methods("GET")
+	router.HandleFunc("/api/v1/diets", makeHTTPHandleFunc(apiDiets.handleBasePOST)).Methods("POST")
+	router.HandleFunc("/api/v1/diets/{id}", makeHTTPHandleFunc(apiDiets.handleGetByID)).Methods("GET")
+	router.HandleFunc("/api/v1/diets/{id}", makeHTTPHandleFunc(apiDiets.handlePutByID)).Methods("PUT")
+	router.HandleFunc("/api/v1/diets/{id}", makeHTTPHandleFunc(apiDiets.handleDeleteByID)).Methods("DELETE")
+	apiDietContext := NewHandlerDietContext()
+	router.HandleFunc("/api/v1/diet-context", makeHTTPHandleFunc(apiDietContext.handleGet)).Methods("GET")
+	router.HandleFunc("/api/v1/diet-context", makeHTTPHandleFunc(apiDietContext.handlePut)).Methods("PUT")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},

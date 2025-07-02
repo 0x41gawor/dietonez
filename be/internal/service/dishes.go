@@ -209,7 +209,7 @@ func (s *ServiceDishes) Create(ctx context.Context, in *model.DishPost) (*model.
 	// 3. Insert labels (dish_label_bridges)
 	if len(in.Labels) > 0 {
 		const qLabel = `
-			INSERT INTO dish_label_bridges (dish_id, label_id)
+			INSERT INTO dish_label_bridge (dish_id, label_id)
 			SELECT $1, id FROM dish_labels WHERE label = $2 AND color = $3;
 		`
 		stmtLab, err := tx.PrepareContext(ctx, qLabel)
@@ -297,13 +297,13 @@ func (s *ServiceDishes) Update(ctx context.Context, id int, in *model.DishPut) (
 	}
 
 	// 4. Delete & reinsert labels
-	_, err = tx.ExecContext(ctx, `DELETE FROM dish_label_bridges WHERE dish_id = $1`, id)
+	_, err = tx.ExecContext(ctx, `DELETE FROM dish_label_bridge WHERE dish_id = $1`, id)
 	if err != nil {
 		return nil, fmt.Errorf("clear labels: %w", err)
 	}
 
 	const qLabel = `
-		INSERT INTO dish_label_bridges (dish_id, label_id)
+		INSERT INTO dish_label_bridge (dish_id, label_id)
 		SELECT $1, id FROM dish_labels WHERE label = $2 AND color = $3;
 	`
 	stmtLabel, err := tx.PrepareContext(ctx, qLabel)

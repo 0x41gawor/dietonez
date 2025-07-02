@@ -2,15 +2,15 @@
 DROP TABLE IF EXISTS diet_contexts;
 DROP TABLE IF EXISTS day_kcals;
 DROP TABLE IF EXISTS diet_slots;
-DROP TABLE IF EXISTS diet_label_bridges;
+DROP TABLE IF EXISTS diet_label_bridge;
 DROP TABLE IF EXISTS diet_labels;
 DROP TABLE IF EXISTS diets;
 DROP TABLE IF EXISTS recipes;
-DROP TABLE IF EXISTS dish_label_bridges;
+DROP TABLE IF EXISTS dish_label_bridge;
 DROP TABLE IF EXISTS dish_labels;
 DROP TABLE IF EXISTS ingredient_amounts;
 DROP TABLE IF EXISTS dishes;
-DROP TABLE IF EXISTS ingredient_label_bridges;
+DROP TABLE IF EXISTS ingredient_label_bridge;
 DROP TABLE IF EXISTS ingredient_labels;
 DROP TABLE IF EXISTS ingredients;
 
@@ -23,7 +23,6 @@ DROP TYPE IF EXISTS meal;
 CREATE TYPE unit AS ENUM ('g', 'porcja', 'sztuka', 'kromka', 'łyżeczka', 'łyżka', 'opakowanie', 'szczypta');
 CREATE TYPE shop_style AS ENUM ('Lidl', 'G.S', 'Świeże', 'Zapasy');
 CREATE TYPE meal AS ENUM ('Breakfast', 'MainMeal', 'Pre-Workout', 'Supper');
-
 
 -- ingredients
 CREATE TABLE ingredients (
@@ -43,10 +42,10 @@ CREATE TABLE ingredient_labels (
     id SERIAL PRIMARY KEY,
     label TEXT NOT NULL,
     color TEXT NOT NULL
-)
+);
 
--- ingredient_label_bridges
-CREATE TABLE ingredient_label_bridges (
+-- ingredient_label_bridge
+CREATE TABLE ingredient_label_bridge (
     ingredient_id INT REFERENCES ingredients(id) ON DELETE CASCADE,
     label_id INT REFERENCES ingredient_labels(id) ON DELETE CASCADE,
     PRIMARY KEY (ingredient_id, label_id)
@@ -78,7 +77,7 @@ CREATE TABLE dish_labels (
 );
 
 -- dish_label_bridges
-CREATE TABLE dish_label_bridges (
+CREATE TABLE dish_label_bridge (
     dish_id INT REFERENCES dishes(id) ON DELETE CASCADE,
     label_id INT REFERENCES dish_labels(id) ON DELETE CASCADE,
     PRIMARY KEY (dish_id, label_id)
@@ -108,7 +107,7 @@ CREATE TABLE diet_labels (
 );
 
 -- diet_label_bridges
-CREATE TABLE diet_label_bridges (
+CREATE TABLE diet_label_bridge (
     diet_id INT REFERENCES diets(id) ON DELETE CASCADE,
     label_id INT REFERENCES diet_labels(id) ON DELETE CASCADE,
     PRIMARY KEY (diet_id, label_id)

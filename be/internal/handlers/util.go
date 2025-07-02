@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -58,4 +60,15 @@ func parseBool(s string, fallback bool) bool {
 		return fallback
 	}
 	return val
+}
+
+// ParseIDFromPath extracts the last segment of the URL path and parses it as an integer.
+// Example: /api/diets/42 → returns 42
+func ParseIDFromPath(r *http.Request) (int, error) {
+	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+	if len(parts) == 0 {
+		return 0, errors.New("invalid path – cannot extract ID")
+	}
+	idStr := parts[len(parts)-1]
+	return strconv.Atoi(idStr)
 }
