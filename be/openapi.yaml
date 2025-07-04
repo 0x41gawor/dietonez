@@ -415,6 +415,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DietContext'
+  /tools/nutrition-summary:
+    post:
+      summary: Calculates nutrition summary for a list of ingredients
+      operationId: calculateSummary
+      tags:
+        - Service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IngredientInDishPut'
+      responses:
+        '200':
+          description: Nutrition summary calculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NutritionSummary'
+        '400':
+          description: Invalid input
 
 
 
@@ -882,3 +905,23 @@ components:
           type: number
           format: float
           example: 83.5
+    NutritionSummary:
+      type: object
+      properties:
+        kcal:
+          type: number
+          example: 523
+        proteins:
+          type: number
+          example: 36.2
+        fats:
+          type: number
+          example: 17.8
+        carbs:
+          type: number
+          example: 42.7
+      required:
+        - kcal
+        - proteins
+        - fats
+        - carbs

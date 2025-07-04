@@ -44,6 +44,8 @@ func (s *Server) Run() {
 	apiDietContext := NewHandlerDietContext()
 	router.HandleFunc("/api/v1/diet-context", makeHTTPHandleFunc(apiDietContext.handleGet)).Methods("GET")
 	router.HandleFunc("/api/v1/diet-context", makeHTTPHandleFunc(apiDietContext.handlePut)).Methods("PUT")
+	apiTools := NewHandlerTools()
+	router.HandleFunc("/api/v1/tools/nutrition-summary", makeHTTPHandleFunc(apiTools.handleNutritionSummaryPOST)).Methods("POST")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
