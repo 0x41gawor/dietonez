@@ -45,3 +45,28 @@ func (h *HandlerTools) handleNutritionSummaryPOST(w http.ResponseWriter, r *http
 	// respond
 	return WriteJSON(w, http.StatusOK, summary)
 }
+
+// handles POST in /tools/day-summary
+func (h *HandlerTools) handleDaySummaryPOST(w http.ResponseWriter, r *http.Request) error {
+	slog.Debug("handleDaySummaryPOST",
+		slog.String("method", r.Method),
+		slog.String("url", r.URL.String()),
+		slog.String("remote_addr", r.RemoteAddr),
+		slog.String("user_agent", r.UserAgent()),
+	)
+
+	// parse request body
+	var req model.DaySummaryRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		return errors.New("invalid JSON body")
+	}
+
+	// call service
+	resp, err := h.s.CalculateDaySummary(r.Context(), req.Dishes, req.Goal)
+	if err != nil {
+		return err
+	}
+
+	// respond
+	return WriteJSON(w, http.StatusOK, resp)
+}

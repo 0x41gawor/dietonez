@@ -52,6 +52,11 @@ type Recipe struct {
 	Preparation string `json:"preparation"`
 }
 
+type DishMin struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 type DishGetShort struct {
 	ID      int     `json:"id"`
 	Name    string  `json:"name"`

@@ -305,7 +305,7 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 			days = append(days, model.DayGet{
 				Name:    dayName,
 				Slots:   slots,
-				Summary: model.Summary{}, // zostawiam puste — policzysz osobno?
+				Summary: model.Summary{}, // TODO: Calculate summary for the day
 				Left:    model.Left{},
 			})
 		}

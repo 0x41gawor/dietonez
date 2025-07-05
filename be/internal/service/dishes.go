@@ -67,6 +67,38 @@ func (s *ServiceDishes) ListByMeal(
 	return out, nil
 }
 
+func (s *ServiceDishes) ListMinByMeal(ctx context.Context, meal string) ([]*model.DishMin, error) {
+	const q = `
+		SELECT
+			id,
+			name
+		FROM dishes              
+		WHERE meal = $1
+	`
+
+	rows, err := s.db.QueryContext(ctx, q, meal)
+	if err != nil {
+		return nil, fmt.Errorf("query dishes by meal: %w", err)
+	}
+	defer rows.Close()
+
+	var out []*model.DishMin
+	for rows.Next() {
+		d := new(model.DishMin)
+		if err := rows.Scan(
+			&d.ID,
+			&d.Name,
+		); err != nil {
+			return nil, fmt.Errorf("scan dish: %w", err)
+		}
+		out = append(out, d)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows err: %w", err)
+	}
+	return out, nil
+}
+
 func (s *ServiceDishes) GetByID(ctx context.Context, id int) (*model.DishGet, error) {
 	const dishQuery = `
 		SELECT id, name, meal, descr

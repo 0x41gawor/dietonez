@@ -14,3 +14,13 @@ type NutritionSummary struct {
 	Fats     float64 `json:"fats"`
 	Carbs    float64 `json:"carbs"`
 }
+
+type DaySummaryRequest struct {
+	Dishes []DishMinPut `json:"dishes"`
+	Goal   float64      `json:"goal"`
+}
+
+type DaySummaryResponse struct {
+	Summary Summary `json:"summary"`
+	Left    Left    `json:"left"`
+}

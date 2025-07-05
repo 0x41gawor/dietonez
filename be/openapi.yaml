@@ -160,6 +160,13 @@ paths:
           schema:
             type: string
             enum: [Breakfast, MainMeal, PreWorkout, Supper]
+        - name: min
+          in: query
+          required: false
+          description: Return minimal dish information (ID and name only)
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: List of dishes
@@ -415,12 +422,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DietContext'
-  /tools/nutrition-summary:
+  /tools/dish-summary:
     post:
       summary: Calculates nutrition summary for a list of ingredients
       operationId: calculateSummary
       tags:
-        - Service
+        - Tools
       requestBody:
         required: true
         content:
@@ -438,8 +445,27 @@ paths:
                 $ref: '#/components/schemas/NutritionSummary'
         '400':
           description: Invalid input
-
-
+  /tools/day-summary:
+    post:
+      summary: Calculates full day nutrition summary from a list of dishes
+      operationId: calculateDaySummary
+      tags:
+        - Tools
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DaySummaryRequest'
+      responses:
+        '200':
+          description: Full day nutrition summary with difference indicators
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DaySummaryResponse'
+        '400':
+          description: Invalid input
 
 
 components:
@@ -925,3 +951,22 @@ components:
         - proteins
         - fats
         - carbs
+    DaySummaryRequest:
+      type: object
+      required: [dishes, goal]
+      properties:
+        dishes:
+          type: array
+          items:
+            $ref: '#/components/schemas/DishMinPut'
+        goal:
+          type: number
+          example: 2400
+    DaySummaryResponse:
+      type: object
+      required: [summary, left]
+      properties:
+        summary:
+          $ref: '#/components/schemas/Summary'
+        left:
+          $ref: '#/components/schemas/Left'

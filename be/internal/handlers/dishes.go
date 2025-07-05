@@ -26,8 +26,18 @@ func NewHandlerDishes() *HandlerDishes {
 
 func (h *HandlerDishes) handleBaseGET(w http.ResponseWriter, r *http.Request) error {
 	meal := r.URL.Query().Get("meal")
+	min := parseBool(r.URL.Query().Get("min"), false)
+
 	if meal == "" {
 		return WriteJSON(w, http.StatusBadRequest, map[string]string{"error": "missing 'meal' query param"})
+	}
+
+	if min {
+		dishes, err := h.s.ListMinByMeal(r.Context(), meal)
+		if err != nil {
+			return err
+		}
+		return WriteJSON(w, http.StatusOK, dishes)
 	}
 
 	dishes, err := h.s.ListByMeal(r.Context(), meal)
