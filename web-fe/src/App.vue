@@ -1,15 +1,20 @@
 <template>
-  <div>
-    <IngredientTable />
+  <div id="app">
+    <NavBar />
+    <main class="main-content">
+      <RouterView />
+    </main>
   </div>
 </template>
 
-<script>
-import IngredientTable from './components/IngredientTable.vue'
-
-export default {
-  components: {
-    IngredientTable
-  }
-}
+<script setup lang="ts">
+import NavBar from './components/NavBar.vue';
 </script>
+
+<style>
+.main-content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+</style>

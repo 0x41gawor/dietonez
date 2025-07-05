@@ -1,0 +1,143 @@
+/* === base === */
+:root {
+  /* === greys === */
+  --color-grey-white: #fafafa;
+  --color-grey-50: #f5f5f5;
+  --color-grey-100: #f0f0f0;
+  --color-grey-athens: #e5e7eb;
+  --color-grey-300: #d1d1d1;
+  --color-grey-600: #cecece;
+  --color-grey-900: #757575;
+  --color-grey-950: #404040;
+  --color-grey-1200: #212121;
+  --color-grey-black: #000000;
+
+  /* === brand colors === */
+  --color-brand-ebony: #0e162a;
+  --color-brand-flamingo: #ef4545;
+  --color-brand-sea-green: #2c7744;
+  --color-brand-kashmir-blue: #4e6e94;
+  --color-brand-mandy: #e62b58;
+  --color-brand-tussock: #ca984d;
+  --color-brand-shakespeare: #379acd;
+  --color-brand-fruit-salad: #529c64;
+  --color-brand-pizzaz: #ff9800;
+  --color-brand-scorpion: #5e5e5e;
+  --color-brand-sunglo: #e57373;
+  --color-brand-dodger-blue: #2196f3;
+
+  /* === semantic UI usage === */
+  --bg: var(--color-grey-white);
+  --bg-alt: var(--color-grey-50);
+  --text: var(--color-grey-black);
+  --text-muted: var(--color-grey-900);
+  --border: var(--color-grey-300);
+
+  --macro-kcal: var(--color-brand-pizzaz);
+  --macro-protein: var(--color-brand-dodger-blue);
+  --macro-fat: var(--color-brand-sunglo);
+  --macro-carbs: var(--color-brand-scorpion);
+
+  --meal-main: var(--color-brand-mandy);
+  --meal-breakfast: var(--color-brand-tussock);
+  --meal-preworkout: var(--color-brand-shakespeare);
+  --meal-supper: var(--color-brand-fruit-salad);
+
+  --btn-update: var(--color-brand-ebony);
+  --btn-delete: var(--color-brand-flamingo);
+  --btn-add: var(--color-brand-sea-green);
+
+  --radius: 8px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+
+:root.dark {
+  --bg: var(--color-grey-1200);
+  --bg-alt: var(--color-grey-950);
+  --text: var(--color-grey-white);
+  --text-muted: var(--color-grey-600);
+  --border: var(--color-grey-900);
+}
+
+  /* borders & shadows */
+  --radius: 8px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+:root.dark {
+  --bg: #1e1e1e;
+  --bg-alt: #2c2c2c;
+  --text: #f5f5f5;
+  --text-muted: #aaaaaa;
+  --border: #3d3d3d;
+
+  /* accenty zostają te same – opcjonalnie potem je przyciemnimy */
+}
+
+/* === typography & layout === */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: 600;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+/* === utils === */
+.text-muted {
+  color: var(--text-muted);
+}
+
+.shadow {
+  box-shadow: var(--shadow);
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--bg-alt);
+  padding: 1rem;
+}
+
+.flex {
+  display: flex;
+  gap: 1rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
