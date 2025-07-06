@@ -1,6 +1,6 @@
 <template>
   <div class="add-item-container">
-    <div class="form-row">
+    <div class="form-row"> 
       <!-- Name -->
       <div class="form-field col-name">
         <input type="text" v-model="newItem.name" placeholder="Item Name" />
@@ -112,11 +112,12 @@ const handleAddItem = () => {
   flex-shrink: 1;
 }
 
-/* Column width definitions - mirroring the table's styles */
-.col-name { width: 30%; }
-.col-numeric { width: 8%; }
-.col-text { width: 10%; }
-.col-actions { width: 10%; flex-shrink: 0; }
+
+/* Column width definitions */
+.col-name { width: 50%; }
+.col-numeric { width: 4%; }
+.col-text { width: 5%; }
+.col-actions { width: 5%; text-align: center; }
 
 input[type="text"],
 input[type="number"] {

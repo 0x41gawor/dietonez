@@ -45,6 +45,7 @@
 
   --btn-update: var(--color-brand-ebony);
   --btn-delete: var(--color-brand-flamingo);
+  --btn-delete-hover: var(--color-grey-1200);
   --btn-add: var(--color-brand-sea-green);
 
   --radius: 8px;
