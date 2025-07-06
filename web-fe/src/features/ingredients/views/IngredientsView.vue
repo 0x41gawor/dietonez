@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 // 3. Update imports to point to the correct component files
-import IngredientTable from '../components/IngredientTable2.vue'; 
+import IngredientTable from '../components/IngredientTable.vue'; 
 import AddIngredientForm from '../components/AddItemRow.vue';
 import SearchBar from '@/components/SearchBar.vue'
 
