@@ -1,134 +1,180 @@
 <template>
-  <div>
-    <h2>Ingredients</h2>
+  <div class="ingredient-table">
+    <!-- Tabela -->
     <table>
       <thead>
         <tr>
-          <th>ID</th>
           <th>Name</th>
-          <th>Default Amount</th>
+          <th>D. Amount</th>
           <th>Unit</th>
-          <th>Shop Style</th>
+          <th>Shop-style</th>
+          <th>Kcal</th>
+          <th>Prot</th>
+          <th>Fats</th>
+          <th>Carb</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(ingredient, index) in ingredients" :key="index">
-          <td>{{ ingredient.id ?? 'new' }}</td>
+        <tr v-for="ingredient in filteredIngredients" :key="ingredient.id">
           <td>
-            <input v-model="ingredient.name" :disabled="ingredient.id !== null" />
+            <span>{{ ingredient.name }}</span>
+            <span
+              v-for="tag in ingredient.tags"
+              :key="tag"
+              class="tag"
+            >
+              {{ tag }}
+            </span>
           </td>
+          <td>{{ ingredient.amount }}</td>
+          <td>{{ ingredient.unit }}</td>
+          <td>{{ ingredient.shopStyle }}</td>
+          <td>{{ ingredient.kcal }}</td>
+          <td>{{ ingredient.protein }}</td>
+          <td>{{ ingredient.fat }}</td>
+          <td>{{ ingredient.carbs }}</td>
           <td>
-            <input v-model="ingredient.defaultAmount" type="number" :disabled="ingredient.id !== null" />
-          </td>
-         <td>
-            <select v-model="ingredient.unit" :disabled="ingredient.id !== null">
-                <option v-for="unit in units" :key="unit.id" :value="unit.name">
-                {{ unit.name }}
-                </option>
-            </select>
-          </td>
-          <td>
-            <input v-model="ingredient.shopStyle" :disabled="ingredient.id !== null" />
+            <button class="delete-btn">🗑</button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <button @click="addRow" class="add-btn">➕ Dodaj nowy wiersz</button>
-    <button @click="bulkCreate" class="bulk-btn">📤 Bulk Create</button>
+    <!-- Info + Add button -->
+    <div class="footer">
+      <span>Showing {{ filteredIngredients.length }} out of {{ ingredients.length }} elements</span>
+      <button class="add-btn">➕ Add</button>
+    </div>
   </div>
 </template>
 
-<script>
-import axios from 'axios'
-import { onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 
-export default {
-  name: "IngredientTable",
-  setup() {
-    const ingredients = ref([])
-    const units = ref([])
-
-    const fetchUnits = async () => {
-    try {
-        const res = await axios.get('http://192.46.236.119:8080/api/v1/ingredient-units')
-        units.value = res.data
-    } catch (err) {
-        console.error("Failed to fetch units:", err)
-    }
-    }
-
-
-    const fetchIngredients = async () => {
-      try {
-        const res = await axios.get('http://192.46.236.119:8080/api/v1/ingredients')
-        ingredients.value = res.data
-      } catch (err) {
-        console.error("Failed to fetch ingredients:", err)
-      }
-    }
-
-    const addRow = () => {
-      ingredients.value.push({
-        id: null,
-        name: '',
-        default_amount: '',
-        unit: '',
-        shop_style: ''
-      })
-    }
-
-    const bulkCreate = async () => {
-      const toSend = ingredients.value.filter(i => i.id === null)
-      try {
-        await axios.post('http://192.46.236.119:8080/api/v1/ingredients/bulk', toSend)
-        await fetchIngredients()
-      } catch (err) {
-        console.error("Bulk create failed:", err)
-      }
-    }
-
-    onMounted(() => {
-        fetchIngredients()
-        fetchUnits()
-    })
-
-
-    return {
-      ingredients,
-      addRow,
-      bulkCreate,
-      units
-    }
-  }
+interface Ingredient {
+  id: number;
+  name: string;
+  tags: string[];
+  amount: string;
+  unit: string;
+  shopStyle: string;
+  kcal: number;
+  protein: number;
+  fat: number;
+  carbs: number;
 }
+
+const search = ref('');
+const ingredients = ref<Ingredient[]>([
+  {
+    id: 1,
+    name: 'Rolada ustrzycka (Regionalne Szlaki)',
+    tags: ['probiotyk', 'witamina D', 'błonnik'],
+    amount: '100',
+    unit: 'g',
+    shopStyle: 'Zapasy',
+    kcal: 326,
+    protein: 28,
+    fat: 28,
+    carbs: 12,
+  },
+  {
+    id: 2,
+    name: 'Rolada ustrzycka (Regionalne Szlaki)',
+    tags: ['probiotyk', 'witamina D', 'błonnik'],
+    amount: '100',
+    unit: 'g',
+    shopStyle: 'Zapasy',
+    kcal: 326,
+    protein: 28,
+    fat: 28,
+    carbs: 12,
+  },
+  {
+    id: 3,
+    name: 'Rolada ustrzycka (Regionalne Szlaki)',
+    tags: ['probiotyk', 'witamina D', 'błonnik'],
+    amount: '100',
+    unit: 'g',
+    shopStyle: 'Zapasy',
+    kcal: 326,
+    protein: 28,
+    fat: 28,
+    carbs: 12,
+  },
+]);
+
+const filteredIngredients = computed(() =>
+  ingredients.value.filter(i =>
+    i.name.toLowerCase().includes(search.value.toLowerCase())
+  )
+);
 </script>
 
 <style scoped>
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-th, td {
-  padding: 8px;
-  border: 1px solid #ddd;
-}
-input {
-  width: 100%;
-  padding: 4px;
-  box-sizing: border-box;
-}
-.add-btn {
+.ingredient-table {
   margin-top: 1rem;
-  padding: 10px;
-  width: 100%;
-  font-size: 1.2rem;
 }
-.bulk-btn {
-  margin-top: 0.5rem;
-  padding: 8px;
+
+.search-bar {
+  width: 300px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+table {
   width: 100%;
-  font-size: 1rem;
+  border-collapse: collapse;
+}
+
+thead th {
+  background-color: #f5f5f5;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.tag {
+  background-color: #dff0d8;
+  color: #3c763d;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  margin-left: 0.4rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.delete-btn {
+  background-color: #ef4545;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-left: auto;
+  display: block;
+  cursor: pointer;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
 }
 </style>
-\

@@ -1,25 +1,30 @@
 <template>
   <section>
-    <Breadcrumb :items="['Home', 'Ingredients']" />
-
     <div class="header">
-      <h1>Ingredients</h1>
+      <SearchBar
+        v-model="searchText"
+        placeholder="Search ingredients..."
+      />
+
       <div class="buttons">
         <button class="btn btn-secondary">Revert</button>
         <button class="btn btn-primary">Update</button>
       </div>
+      
     </div>
 
     <IngredientTable />
-
-    <!-- Tu później dodamy: paginację, pasek Add -->
   </section>
 </template>
 
 <script setup lang="ts">
-import IngredientTable from '../components/IngredientTable.vue';
-import Breadcrumb from '@/components/Breadcrumb.vue'; // za chwilę stworzymy
+import { ref } from 'vue'
+import IngredientTable from '../components/IngredientTable2.vue';
+import SearchBar from '@/components/SearchBar.vue'
+
+const searchText = ref('')
 </script>
+
 
 <style scoped>
 .header {
@@ -28,6 +33,7 @@ import Breadcrumb from '@/components/Breadcrumb.vue'; // za chwilę stworzymy
   align-items: center;
   margin-bottom: 1rem;
 }
+
 
 .buttons {
   display: flex;
@@ -52,4 +58,3 @@ import Breadcrumb from '@/components/Breadcrumb.vue'; // za chwilę stworzymy
   color: white;
 }
 </style>
-    
