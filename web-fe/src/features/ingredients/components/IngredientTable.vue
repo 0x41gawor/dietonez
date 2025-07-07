@@ -16,11 +16,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="!editableItems || editableItems.length === 0">
+          <tr v-if="!items || items.length === 0">
             <td colspan="9" class="empty-state">No items to display.</td>
           </tr>
-          <!-- UPDATED: Looping over `editableItems` which are of type Ingredient -->
-          <tr v-for="item in editableItems" :key="item.id">
+          <tr v-for="item in items" :key="item.id">
             <!-- Name Column with integrated labels -->
             <td>
               <div class="name-cell-editable">
@@ -44,35 +43,28 @@
               </div>
             </td>
 
-            <!-- UPDATED: Using 'default_amount' -->
             <td>
               <input v-model.number="item.default_amount" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
             </td>
-            <!-- UPDATED: Using 'unit' -->
             <td>
               <select v-model="item.unit" class="edit-select" @change="handleFieldUpdate(item)">
                 <option v-for="option in unitOptions" :key="option" :value="option">{{ option }}</option>
               </select>
             </td>
-            <!-- UPDATED: Using 'shopStyle' -->
             <td>
               <select v-model="item.shopStyle" class="edit-select" @change="handleFieldUpdate(item)">
                 <option v-for="option in shopStyleOptions" :key="option" :value="option">{{ option }}</option>
               </select>
             </td>
-            <!-- UPDATED: Using 'kcal' -->
             <td>
               <input v-model.number="item.kcal" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
             </td>
-            <!-- UPDATED: Using 'protein' -->
             <td>
               <input v-model.number="item.protein" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
             </td>
-            <!-- UPDATED: Using 'fat' -->
             <td>
               <input v-model.number="item.fat" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
             </td>
-            <!-- UPDATED: Using 'carbs' -->
             <td>
               <input v-model.number="item.carbs" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
             </td>
@@ -89,7 +81,7 @@
       </table>
     </div>
     <div class="table-footer">
-      <span class="footer-info">Showing {{ editableItems.length }} out of 452 elements</span>
+      <span class="footer-info">Showing {{ items.length }} out of {{ total }} elements</span>
       <div class="pagination-controls">
         <button class="pagination-arrow" aria-label="Previous page"><</button>
         <span class="pagination-status">{{ currentPage }} / {{ totalPages }}</span>
@@ -106,21 +98,22 @@ import { ref, watch, PropType } from 'vue';
 const unitOptions = Object.values(Unit)
 const shopStyleOptions = Object.values(ShopStyle)
 
-
 const props = defineProps({
   // UPDATED: The prop is now an array of 'Ingredient'
-  foodItems: { type: Array as PropType<IngredientGetPut[]>, required: true },
+  ingredients: { type: Array as PropType<IngredientGetPut[]>, required: true },
   currentPage: { type: Number, default: 1 },
   totalPages: { type: Number, default: 1 },
+  page: { type: Number, default: 1 },
+  total: { type: Number, default: 0 }
 });
 
-const emit = defineEmits(['deleteItem', 'itemUpdated']);
+const emit = defineEmits(['deleteItem', 'itemUpdated', 'pageChanged']);
 
 // This now holds a local copy of the ingredients
-const editableItems = ref<IngredientGetPut[]>([]);
+const items = ref<IngredientGetPut[]>([]);
 
-watch(() => props.foodItems, (newFoodItems) => {
-  editableItems.value = JSON.parse(JSON.stringify(newFoodItems));
+watch(() => props.ingredients, (newFoodItems) => {
+  items.value = JSON.parse(JSON.stringify(newFoodItems));
 }, { immediate: true, deep: true });
 
 // UPDATED: The handler now receives an 'Ingredient' object
@@ -129,12 +122,11 @@ const handleFieldUpdate = (updatedItem: IngredientGetPut) => {
 };
 
 // Expose method to get all current data if needed by parent
-const getUpdatedItems = () => editableItems.value;
+const getUpdatedItems = () => items.value;
 defineExpose({ getUpdatedItems });
 </script>
 
 <style scoped>
-/* All styles remain exactly the same as the previous version. */
 .name-cell-editable {
   display: flex;
   align-items: center;
@@ -176,9 +168,6 @@ defineExpose({ getUpdatedItems });
 .edit-input-numeric::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-.edit-input-numeric {
-  -moz-appearance: textfield;
 }
 .edit-input:focus, .edit-select:focus, .edit-input-numeric:focus {
   background-color: #ffffff;

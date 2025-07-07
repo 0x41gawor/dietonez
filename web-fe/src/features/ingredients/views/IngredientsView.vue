@@ -12,9 +12,11 @@
     </div>
 
     <IngredientTable 
-      :food-items="ingredients"
+      :ingredients="ingredients"
       :current-page="1"
-      :total-pages="1"
+      :total-pages="totalPages"
+      :page="page"
+      :total="total"
       @delete-item="handleDeleteItem"
       @item-updated="handleItemUpdate"
     />
@@ -38,12 +40,14 @@ import { getIngredients } from '@/api/ingredients'
 const ingredients = ref<IngredientGetPut[]>([])
 const total = ref(0)
 const page = ref(1)
-const pageSize = ref(30)
+const pageSize = ref(100)
+const totalPages = ref(1)
 
 async function fetchIngredients() {
   const result = await getIngredients({ page: page.value, pageSize: pageSize.value })
   ingredients.value = result.ingredients
   total.value = result.total
+  totalPages.value = Math.ceil(total.value / pageSize.value)
 }
 
 // fetch on load

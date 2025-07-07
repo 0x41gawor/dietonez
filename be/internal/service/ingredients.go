@@ -21,7 +21,6 @@ func NewServiceIngredients() *ServiceIngredients {
 	return &ServiceIngredients{db: db}
 }
 
-// List zwraca wszystkie składniki z tabeli "ingredients".
 func (s *ServiceIngredients) ListPaginated(ctx context.Context, page, pageSize int, short bool) (any, int, error) {
 	offset := (page - 1) * pageSize
 
@@ -32,8 +31,6 @@ func (s *ServiceIngredients) ListPaginated(ctx context.Context, page, pageSize i
 		return nil, 0, fmt.Errorf("count ingredients: %w", err)
 	}
 
-	// Główne zapytanie
-	var rows *sql.Rows
 	if short {
 		const qShort = `
 			SELECT id, name
@@ -41,7 +38,7 @@ func (s *ServiceIngredients) ListPaginated(ctx context.Context, page, pageSize i
 			ORDER BY id
 			LIMIT $1 OFFSET $2;
 		`
-		rows, err = s.db.QueryContext(ctx, qShort, pageSize, offset)
+		rows, err := s.db.QueryContext(ctx, qShort, pageSize, offset)
 		if err != nil {
 			return nil, 0, fmt.Errorf("query ingredients (short): %w", err)
 		}
@@ -68,13 +65,16 @@ func (s *ServiceIngredients) ListPaginated(ctx context.Context, page, pageSize i
 			ORDER BY id
 			LIMIT $1 OFFSET $2;
 		`
-		rows, err = s.db.QueryContext(ctx, qFull, pageSize, offset)
+		rows, err := s.db.QueryContext(ctx, qFull, pageSize, offset)
 		if err != nil {
 			return nil, 0, fmt.Errorf("query ingredients (full): %w", err)
 		}
 		defer rows.Close()
 
 		var out []*model.IngredientGetPut
+		idToIngredient := make(map[int]*model.IngredientGetPut)
+		var ids []int
+
 		for rows.Next() {
 			ing := new(model.IngredientGetPut)
 			if err := rows.Scan(
@@ -91,10 +91,50 @@ func (s *ServiceIngredients) ListPaginated(ctx context.Context, page, pageSize i
 				return nil, 0, fmt.Errorf("scan full: %w", err)
 			}
 			out = append(out, ing)
+			idToIngredient[ing.ID] = ing
+			ids = append(ids, ing.ID)
 		}
 		if err := rows.Err(); err != nil {
 			return nil, 0, fmt.Errorf("rows full err: %w", err)
 		}
+
+		// Etap: pobranie etykiet
+		if len(ids) > 0 {
+			placeholders := make([]string, len(ids))
+			args := make([]any, len(ids))
+			for i, id := range ids {
+				placeholders[i] = fmt.Sprintf("$%d", i+1)
+				args[i] = id
+			}
+
+			qLabels := fmt.Sprintf(`
+				SELECT b.ingredient_id, l.label, l.color
+				FROM ingredient_label_bridge b
+				JOIN ingredient_labels l ON l.id = b.label_id
+				WHERE b.ingredient_id IN (%s)
+			`, strings.Join(placeholders, ", "))
+
+			rows, err := s.db.QueryContext(ctx, qLabels, args...)
+			if err != nil {
+				return nil, 0, fmt.Errorf("query labels: %w", err)
+			}
+			defer rows.Close()
+
+			for rows.Next() {
+				var ingID int
+				var label model.Label
+				if err := rows.Scan(&ingID, &label.Text, &label.Color); err != nil {
+					return nil, 0, fmt.Errorf("scan label: %w", err)
+				}
+				if ing, ok := idToIngredient[ingID]; ok {
+					ing.Labels = append(ing.Labels, label)
+				}
+			}
+			if err := rows.Err(); err != nil {
+				return nil, 0, fmt.Errorf("rows label err: %w", err)
+			}
+		}
+
 		return out, total, nil
 	}
 }
