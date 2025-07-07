@@ -23,6 +23,23 @@ export interface Label {
  * Ingredient Models
  * ────────────────────────────*/
 
+export enum Unit {
+  Gram = 'g',
+  Portion = 'porcja',
+  Piece = 'sztuka',
+  Slice = 'kromka',
+  Teaspoon = 'łyżeczka',
+  Tablespoon = 'łyżka',
+  Package = 'opakowanie',
+  Pinch = 'szczypta',
+}
+
+export enum ShopStyle {
+  Lidl = 'Lidl',
+  Fresh = 'Świeże',
+  Pantry = 'Zapasy stałe',
+}
+
 export interface IngredientGetPut {
   id: number;
   name: string;
@@ -30,8 +47,8 @@ export interface IngredientGetPut {
   protein: number;
   fat: number;
   carbs: number;
-  unit: string;
-  shopStyle?: string;
+  unit: Unit;
+  shopStyle: ShopStyle;
   default_amount?: number;
   labels?: Label[];
 }

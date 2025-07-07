@@ -100,12 +100,12 @@
 </template>
 
 <script setup lang="ts">
-import { IngredientGetPut } from '@/types/types';
+import { IngredientGetPut, Unit, ShopStyle } from '@/types/types';
 import { ref, watch, PropType } from 'vue';
 
+const unitOptions = Object.values(Unit)
+const shopStyleOptions = Object.values(ShopStyle)
 
-const unitOptions = ['g', 'ml', 'pcs', 'tbsp', 'tsp'];
-const shopStyleOptions = ['Loose', 'Packaged', 'Canned', 'Frozen', 'Fresh'];
 
 const props = defineProps({
   // UPDATED: The prop is now an array of 'Ingredient'

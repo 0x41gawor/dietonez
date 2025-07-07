@@ -13,7 +13,7 @@
   --color-grey-black: #000000;
 
   /* === brand colors === */
-  --color-brand-ebony: #0e162a;
+  --color-brand-ebony: #2d4c7d;
   --color-brand-flamingo: #ef4545;
   --color-brand-sea-green: #2c7744;
   --color-brand-kashmir-blue: #4e6e94;
@@ -47,6 +47,7 @@
   --btn-delete: var(--color-brand-flamingo);
   --btn-delete-hover: var(--color-grey-1200);
   --btn-add: var(--color-brand-sea-green);
+  --btn-revert: var(--color-brand-kashmir-blue);
 
   --radius: 8px;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.08);

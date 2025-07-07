@@ -115,13 +115,13 @@ const handleDeleteItem = (idToDelete: number) => {
 
 .btn-secondary {
   /* background-color: var(--btn-update); */
-  background-color: #6c757d;
+  background-color: var(--btn-revert);
   color: white;
 }
 
 .btn-primary {
   /* background-color: var(--btn-add); */
-  background-color: #007bff;
+  background-color: var(--btn-update);
   color: white;
 }
 </style>
