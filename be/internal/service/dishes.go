@@ -251,7 +251,7 @@ func (s *ServiceDishes) Create(ctx context.Context, in *model.DishPost) (*model.
 		defer stmtLab.Close()
 
 		for _, lbl := range in.Labels {
-			_, err := stmtLab.ExecContext(ctx, dishID, lbl.Text, lbl.Color)
+			_, err := stmtLab.ExecContext(ctx, dishID, lbl.Label, lbl.Color)
 			if err != nil {
 				return nil, fmt.Errorf("insert label: %w", err)
 			}
@@ -345,7 +345,7 @@ func (s *ServiceDishes) Update(ctx context.Context, id int, in *model.DishPut) (
 	defer stmtLabel.Close()
 
 	for _, lbl := range in.Labels {
-		_, err := stmtLabel.ExecContext(ctx, id, lbl.Text, lbl.Color)
+		_, err := stmtLabel.ExecContext(ctx, id, lbl.Label, lbl.Color)
 		if err != nil {
 			return nil, fmt.Errorf("insert label: %w", err)
 		}

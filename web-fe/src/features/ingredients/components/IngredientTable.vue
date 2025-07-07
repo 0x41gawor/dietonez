@@ -33,11 +33,12 @@
                 <div v-if="item.labels && item.labels.length" class="tags-container">
                   <span
                     v-for="label in item.labels"
-                    :key="label.text"
+                    :key="label.label"
                     class="tag"
-                    :class="label.text"
+                    :style="{ backgroundColor: label.color }"
+                    :class="label.label"
                   >
-                    {{ label.text }}
+                    {{ label.label }}
                   </span>
                 </div>
               </div>
@@ -137,6 +138,7 @@ defineExpose({ getUpdatedItems });
   min-width: 100px;
 }
 .tags-container {
+  color: white;
   display: flex;
   gap: 4px;
   flex-shrink: 0;

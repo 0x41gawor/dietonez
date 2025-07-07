@@ -1,7 +1,7 @@
 package model
 
 type Label struct {
-	Text  string `json:"text"`
+	Label string `json:"label"`
 	Color string `json:"color"`
 }
 

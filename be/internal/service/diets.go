@@ -65,7 +65,7 @@ func (s *ServiceDiets) ListAll(ctx context.Context) ([]*model.DietShort, error) 
 	for labelRows.Next() {
 		var dietID int
 		var lbl model.Label
-		if err := labelRows.Scan(&dietID, &lbl.Text, &lbl.Color); err != nil {
+		if err := labelRows.Scan(&dietID, &lbl.Label, &lbl.Color); err != nil {
 			return nil, fmt.Errorf("scan label: %w", err)
 		}
 		if diet, ok := dietMap[dietID]; ok {
@@ -112,7 +112,7 @@ func (s *ServiceDiets) Create(ctx context.Context, in *model.DietPost) (*model.D
 		defer stmt.Close()
 
 		for _, lbl := range in.Labels {
-			_, err := stmt.ExecContext(ctx, dietID, lbl.Text, lbl.Color)
+			_, err := stmt.ExecContext(ctx, dietID, lbl.Label, lbl.Color)
 			if err != nil {
 				return nil, fmt.Errorf("insert label: %w", err)
 			}
@@ -235,7 +235,7 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 	d.Labels = []model.Label{}
 	for rows.Next() {
 		var lbl model.Label
-		if err := rows.Scan(&lbl.Text, &lbl.Color); err != nil {
+		if err := rows.Scan(&lbl.Label, &lbl.Color); err != nil {
 			return nil, fmt.Errorf("scan label: %w", err)
 		}
 		d.Labels = append(d.Labels, lbl)
@@ -359,7 +359,7 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 		}
 		defer stmt.Close()
 		for _, lbl := range in.Labels {
-			_, err := stmt.ExecContext(ctx, in.ID, lbl.Text, lbl.Color)
+			_, err := stmt.ExecContext(ctx, in.ID, lbl.Label, lbl.Color)
 			if err != nil {
 				return nil, fmt.Errorf("insert label: %w", err)
 			}

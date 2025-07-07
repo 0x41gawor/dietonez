@@ -14,7 +14,7 @@ export type Meal = 'Breakfast' | 'MainMeal' | 'PreWorkout' | 'Supper';
  * ────────────────────────────*/
 
 export interface Label {
-  text: string;
+  label: string;
   /** Hex color, e.g. "#4caf50". */
   color: string;
 }

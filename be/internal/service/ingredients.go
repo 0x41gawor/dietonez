@@ -123,7 +123,7 @@ func (s *ServiceIngredients) ListPaginated(ctx context.Context, page, pageSize i
 			for rows.Next() {
 				var ingID int
 				var label model.Label
-				if err := rows.Scan(&ingID, &label.Text, &label.Color); err != nil {
+				if err := rows.Scan(&ingID, &label.Label, &label.Color); err != nil {
 					return nil, 0, fmt.Errorf("scan label: %w", err)
 				}
 				if ing, ok := idToIngredient[ingID]; ok {
