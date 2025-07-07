@@ -37,7 +37,7 @@ export enum Unit {
 export enum ShopStyle {
   Lidl = 'Lidl',
   Fresh = 'Świeże',
-  Pantry = 'Zapasy stałe',
+  Pantry = 'Zapasy',
 }
 
 export interface IngredientGetPut {
