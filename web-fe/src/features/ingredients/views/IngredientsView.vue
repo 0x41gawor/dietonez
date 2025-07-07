@@ -1,6 +1,5 @@
 <template>
   <section>
-    <!-- The header remains the same -->
     <div class="header">
       <SearchBar
         v-model="searchText"
@@ -12,107 +11,82 @@
       </div>
     </div>
 
-    <!-- 1. The IngredientTable component now receives the filtered data as a prop -->
-    <!-- It also listens for the 'deleteItem' event to call our handler function -->
     <IngredientTable 
-      :food-items="filteredIngredients"
+      :food-items="ingredients"
       :current-page="1"
       :total-pages="1"
       @delete-item="handleDeleteItem"
+      @item-updated="handleItemUpdate"
     />
 
-    <!-- 2. The form component for adding new ingredients -->
-    <!-- It listens for the 'addItem' event -->
-    <AddIngredientForm 
+    <!-- <AddIngredientForm 
       @add-item="handleAddItem"
-    />
+    /> -->
 
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 // 3. Update imports to point to the correct component files
 import IngredientTable from '../components/IngredientTable.vue'; 
 import AddIngredientForm from '../components/AddItemRow.vue';
 import SearchBar from '@/components/SearchBar.vue'
+import { IngredientGetPut } from '@/types/types';
+import { getIngredients } from '@/api/ingredients'
 
-// --- TYPE DEFINITIONS (These can be moved to a separate types.ts file) ---
-interface Tag {
-  text: string;
-  className: string;
+const ingredients = ref<IngredientGetPut[]>([])
+const total = ref(0)
+const page = ref(1)
+const pageSize = ref(30)
+
+async function fetchIngredients() {
+  const result = await getIngredients({ page: page.value, pageSize: pageSize.value })
+  ingredients.value = result.ingredients
+  total.value = result.total
 }
 
-interface FoodItem {
-  id: number;
-  name: string;
-  brand?: string;
-  tags?: Tag[];
-  defaultAmount: number;
-  unit: string;
-  shopStyle: string;
-  kcal: number;
-  protein: number;
-  fats: number;
-  carbs: number;
-}
+// fetch on load
+onMounted(fetchIngredients)
+
+// (optional) react to page change
+watch([page, pageSize], fetchIngredients)
 
 // 4. State Management: The parent component now holds the data
 const searchText = ref('');
 
-// This ref holds the master list of all ingredients
-const allIngredients = ref<FoodItem[]>([
-  { id: 1, name: "Rolada ustrzycka", brand: "Regionalne Szlaki", tags: [{ text: "probiotyk", className: "tag-probiotic" }, { text: "witamina C", className: "tag-vitamin" }, { text: "błonnik", className: "tag-fiber" }], defaultAmount: 100, unit: "g", shopStyle: "Zapasy", kcal: 326, protein: 28, fats: 28, carbs: 12 },
-  { id: 2, name: "Filet z piersi kurczaka", brand: "Kraina Mięs", defaultAmount: 100, unit: "Opakowanie", shopStyle: "Lidl", kcal: 432, protein: 13, fats: 12, carbs: 8.9 },
-  { id: 2, name: "Filet z piersi kurczaka", brand: "Kraina Mięs", defaultAmount: 100, unit: "Opakowanie", shopStyle: "Lidl", kcal: 432, protein: 13, fats: 12, carbs: 8.9 },
-  { id: 2, name: "Filet z piersi kurczaka", brand: "Kraina Mięs", defaultAmount: 100, unit: "Opakowanie", shopStyle: "Lidl", kcal: 432, protein: 13, fats: 12, carbs: 8.9 },
-  { id: 2, name: "Filet z piersi kurczaka", brand: "Kraina Mięs", defaultAmount: 100, unit: "Opakowanie", shopStyle: "Lidl", kcal: 432, protein: 13, fats: 12, carbs: 8.9 },
-  { id: 2, name: "Filet z piersi kurczaka", brand: "Kraina Mięs", defaultAmount: 100, unit: "Opakowanie", shopStyle: "Lidl", kcal: 432, protein: 13, fats: 12, carbs: 8.9 },
-  { id: 2, name: "Filet z piersi kurczaka", brand: "Kraina Mięs", defaultAmount: 100, unit: "Opakowanie", shopStyle: "Lidl", kcal: 432, protein: 13, fats: 12, carbs: 8.9 },
-  { id: 2, name: "Filet z piersi kurczaka", brand: "Kraina Mięs", defaultAmount: 100, unit: "Opakowanie", shopStyle: "Lidl", kcal: 432, protein: 13, fats: 12, carbs: 8.9 },
-  { id: 2, name: "Filet z piersi kurczaka", brand: "Kraina Mięs", defaultAmount: 100, unit: "Opakowanie", shopStyle: "Lidl", kcal: 432, protein: 13, fats: 12, carbs: 8.9 },
-  { id: 2, name: "Filet z piersi kurczaka", brand: "Kraina Mięs", defaultAmount: 100, unit: "Opakowanie", shopStyle: "Lidl", kcal: 432, protein: 13, fats: 12, carbs: 8.9 },
-  { id: 3, name: "Kefir", brand: "Robico", defaultAmount: 100, unit: "Łyżka", shopStyle: "G.S.", kcal: 123, protein: 8.9, fats: 1, carbs: 45 },
-  { id: 4, name: "Serek wiejski wysokobiałkowy", brand: "OSM Siedlce", defaultAmount: 100, unit: "g", shopStyle: "Lidl", kcal: 34, protein: 12, fats: 3.2, carbs: 12 },
-  { id: 5, name: "Burger Wołowy", brand: "Rzeźnik", defaultAmount: 100, unit: "g", shopStyle: "Świeże", kcal: 124, protein: 21, fats: 45, carbs: 56 },
-  { id: 5, name: "Burger Wołowy", brand: "Rzeźnik", defaultAmount: 100, unit: "g", shopStyle: "Świeże", kcal: 124, protein: 21, fats: 45, carbs: 56 },
-  { id: 5, name: "Burger Wołowy", brand: "Rzeźnik", defaultAmount: 100, unit: "g", shopStyle: "Świeże", kcal: 124, protein: 21, fats: 45, carbs: 56 },
-  { id: 5, name: "Burger Wołowy", brand: "Rzeźnik", defaultAmount: 100, unit: "g", shopStyle: "Świeże", kcal: 124, protein: 21, fats: 45, carbs: 56 },
-  { id: 5, name: "Burger Wołowy", brand: "Rzeźnik", defaultAmount: 100, unit: "g", shopStyle: "Świeże", kcal: 124, protein: 21, fats: 45, carbs: 56 },
-  { id: 5, name: "Burger Wołowy", brand: "Rzeźnik", defaultAmount: 100, unit: "g", shopStyle: "Świeże", kcal: 124, protein: 21, fats: 45, carbs: 56 },
-  { id: 5, name: "Burger Wołowy", brand: "Rzeźnik", defaultAmount: 100, unit: "g", shopStyle: "Świeże", kcal: 124, protein: 21, fats: 45, carbs: 56 },
-  { id: 5, name: "Burger Wołowy", brand: "Rzeźnik", defaultAmount: 100, unit: "g", shopStyle: "Świeże", kcal: 124, protein: 21, fats: 45, carbs: 56 },
-  { id: 5, name: "Burger Wołowy", brand: "Rzeźnik", defaultAmount: 100, unit: "g", shopStyle: "Świeże", kcal: 124, protein: 21, fats: 45, carbs: 56 },
-  { id: 5, name: "Burger Wołowy", brand: "Rzeźnik", defaultAmount: 100, unit: "g", shopStyle: "Świeże", kcal: 124, protein: 21, fats: 45, carbs: 56 },
-]);
+// const handleAddItem = (newItem: Omit<IngredientGetPut, 'id'>) => {
+//   const newEntry: FoodItem = {
+//     id: Date.now(), // Use a simple timestamp for a unique ID in this mock
+//     ...newItem,
+//     // Provide default values for any potentially null numbers from the form
+//     defaultAmount: newItem.defaultAmount ?? 0,
+//     kcal: newItem.kcal ?? 0,
+//     protein: newItem.protein ?? 0,
+//     fats: newItem.fats ?? 0,
+//     carbs: newItem.carbs ?? 0,
+//   };
+//   allIngredients.value.push(newEntry);
+// };
 
-// 5. Computed property to filter the list based on the search text
-const filteredIngredients = computed(() => {
-  if (!searchText.value) {
-    return allIngredients.value;
+// NEW: Handler for the real-time update event from the child table
+const handleItemUpdate = (updatedItem: IngredientGetPut) => {
+  console.log('An item was updated in real-time:', updatedItem);
+
+  // Find the index of the item in the master list
+  const index = ingredients.value.findIndex(item => item.id === updatedItem.id);
+  
+  // If found, update the item in the master list
+  if (index !== -1) {
+    // IMPORTANT: Replace the entire object to ensure reactivity.
+    ingredients.value[index] = updatedItem;
+    
+    // At this point, you could also trigger an auto-save to your backend API.
   }
-  return allIngredients.value.filter(item => 
-    item.name.toLowerCase().includes(searchText.value.toLowerCase())
-  );
-});
-
-// 6. Event Handlers to modify the state
-const handleAddItem = (newItem: Omit<FoodItem, 'id'>) => {
-  const newEntry: FoodItem = {
-    id: Date.now(), // Use a simple timestamp for a unique ID in this mock
-    ...newItem,
-    // Provide default values for any potentially null numbers from the form
-    defaultAmount: newItem.defaultAmount ?? 0,
-    kcal: newItem.kcal ?? 0,
-    protein: newItem.protein ?? 0,
-    fats: newItem.fats ?? 0,
-    carbs: newItem.carbs ?? 0,
-  };
-  allIngredients.value.push(newEntry);
 };
 
 const handleDeleteItem = (idToDelete: number) => {
-  allIngredients.value = allIngredients.value.filter(item => item.id !== idToDelete);
+  ingredients.value = ingredients.value.filter(item => item.id !== idToDelete);
 };
 </script>
 

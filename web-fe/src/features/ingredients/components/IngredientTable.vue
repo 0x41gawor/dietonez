@@ -16,30 +16,66 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="!foodItems || foodItems.length === 0">
+          <tr v-if="!editableItems || editableItems.length === 0">
             <td colspan="9" class="empty-state">No items to display.</td>
           </tr>
-          <tr v-for="item in foodItems" :key="item.id">
+          <!-- UPDATED: Looping over `editableItems` which are of type Ingredient -->
+          <tr v-for="item in editableItems" :key="item.id">
+            <!-- Name Column with integrated labels -->
             <td>
-              <div class="name-cell">
-                <span>{{ item.name }} {{ item.brand ? `(${item.brand})` : '' }}</span>
-                <span
-                  v-for="tag in item.tags"
-                  :key="tag.text"
-                  class="tag"
-                  :class="tag.className"
-                >
-                  {{ tag.text }}
-                </span>
+              <div class="name-cell-editable">
+                <input
+                  v-model="item.name"
+                  type="text"
+                  class="edit-input"
+                  @change="handleFieldUpdate(item)"
+                />
+                <!-- UPDATED: Using 'item.labels' -->
+                <div v-if="item.labels && item.labels.length" class="tags-container">
+                  <span
+                    v-for="label in item.labels"
+                    :key="label.text"
+                    class="tag"
+                    :class="label.text"
+                  >
+                    {{ label.text }}
+                  </span>
+                </div>
               </div>
             </td>
-            <td>{{ item.defaultAmount }}</td>
-            <td>{{ item.unit }}</td>
-            <td>{{ item.shopStyle }}</td>
-            <td>{{ item.kcal }}</td>
-            <td>{{ item.protein }}</td>
-            <td>{{ item.fats }}</td>
-            <td>{{ item.carbs }}</td>
+
+            <!-- UPDATED: Using 'default_amount' -->
+            <td>
+              <input v-model.number="item.default_amount" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
+            </td>
+            <!-- UPDATED: Using 'unit' -->
+            <td>
+              <select v-model="item.unit" class="edit-select" @change="handleFieldUpdate(item)">
+                <option v-for="option in unitOptions" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </td>
+            <!-- UPDATED: Using 'shopStyle' -->
+            <td>
+              <select v-model="item.shopStyle" class="edit-select" @change="handleFieldUpdate(item)">
+                <option v-for="option in shopStyleOptions" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </td>
+            <!-- UPDATED: Using 'kcal' -->
+            <td>
+              <input v-model.number="item.kcal" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
+            </td>
+            <!-- UPDATED: Using 'protein' -->
+            <td>
+              <input v-model.number="item.protein" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
+            </td>
+            <!-- UPDATED: Using 'fat' -->
+            <td>
+              <input v-model.number="item.fat" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
+            </td>
+            <!-- UPDATED: Using 'carbs' -->
+            <td>
+              <input v-model.number="item.carbs" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
+            </td>
             <td>
               <button class="action-button" @click="emit('deleteItem', item.id)" aria-label="Delete item">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -53,7 +89,7 @@
       </table>
     </div>
     <div class="table-footer">
-      <span class="footer-info">Showing {{ foodItems.length }} out of 452 elements</span>
+      <span class="footer-info">Showing {{ editableItems.length }} out of 452 elements</span>
       <div class="pagination-controls">
         <button class="pagination-arrow" aria-label="Previous page"><</button>
         <span class="pagination-status">{{ currentPage }} / {{ totalPages }}</span>
@@ -64,74 +100,103 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
+import { IngredientGetPut } from '@/types/types';
+import { ref, watch, PropType } from 'vue';
 
-// --- TYPE DEFINITIONS ---
-interface Tag {
-  text: string;
-  className: string;
-}
 
-interface FoodItem {
-  id: number;
-  name: string;
-  brand?: string;
-  tags?: Tag[];
-  defaultAmount: number;
-  unit: string;
-  shopStyle: string;
-  kcal: number;
-  protein: number;
-  fats: number;
-  carbs: number;
-}
+const unitOptions = ['g', 'ml', 'pcs', 'tbsp', 'tsp'];
+const shopStyleOptions = ['Loose', 'Packaged', 'Canned', 'Frozen', 'Fresh'];
 
-// --- PROPS & EMITS ---
-defineProps({
-  foodItems: {
-    type: Array as PropType<FoodItem[]>,
-    required: true,
-  },
-  currentPage: {
-    type: Number,
-    default: 1,
-  },
-  totalPages: {
-    type: Number,
-    default: 1,
-  },
+const props = defineProps({
+  // UPDATED: The prop is now an array of 'Ingredient'
+  foodItems: { type: Array as PropType<IngredientGetPut[]>, required: true },
+  currentPage: { type: Number, default: 1 },
+  totalPages: { type: Number, default: 1 },
 });
 
-const emit = defineEmits(['deleteItem']);
+const emit = defineEmits(['deleteItem', 'itemUpdated']);
+
+// This now holds a local copy of the ingredients
+const editableItems = ref<IngredientGetPut[]>([]);
+
+watch(() => props.foodItems, (newFoodItems) => {
+  editableItems.value = JSON.parse(JSON.stringify(newFoodItems));
+}, { immediate: true, deep: true });
+
+// UPDATED: The handler now receives an 'Ingredient' object
+const handleFieldUpdate = (updatedItem: IngredientGetPut) => {
+  emit('itemUpdated', updatedItem);
+};
+
+// Expose method to get all current data if needed by parent
+const getUpdatedItems = () => editableItems.value;
+defineExpose({ getUpdatedItems });
 </script>
 
 <style scoped>
-/* General container styling - MODIFIED */
+/* All styles remain exactly the same as the previous version. */
+.name-cell-editable {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.name-cell-editable .edit-input {
+  flex-grow: 1;
+  min-width: 100px;
+}
+.tags-container {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.edit-input, .edit-select, .edit-input-numeric {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: text;
+}
+.edit-input-numeric {
+  text-align: left;
+}
+.edit-select {
+  cursor: pointer;
+}
+.edit-input-numeric::-webkit-outer-spin-button,
+.edit-input-numeric::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.edit-input-numeric {
+  -moz-appearance: textfield;
+}
+.edit-input:focus, .edit-select:focus, .edit-input-numeric:focus {
+  background-color: #ffffff;
+  outline: 2px solid #818cf8;
+  outline-offset: -1px;
+  border-radius: 2px;
+}
 .table-container {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   background-color: #ffffff;
-  /* Make container a flex column with a fixed height */
   display: flex;
   flex-direction: column;
-  height: 680px; /* Fixed height to match the design */
+  height: 680px;
 }
-
-/* Table wrapper - MODIFIED */
-.table-wrapper {
-  /* Allow this area to grow and scroll */
-  flex: 1;
-  overflow: auto; /* Handles both vertical and horizontal scrolling */
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 950px;
-}
-
-/* Table Header - MODIFIED */
+.table-wrapper { flex: 1; overflow: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 950px; }
 th {
   padding: 8px 10px;
   text-align: left;
@@ -141,43 +206,29 @@ th {
   border-bottom: 1px solid #e0e0e0;
   white-space: nowrap;
   background-color: #f9f9f9;
-  /* Make header sticky to the top of the scrollable container */
   position: sticky;
   top: 0;
   z-index: 1;
 }
-
-/* Column width definitions */
 .col-name { width: 50%; }
 .col-numeric { width: 4%; }
 .col-text { width: 5%; }
 .col-actions { width: 5%; text-align: center; }
-
-/* Table Body */
 tbody tr:hover { background-color: #f5f5f5; }
 td {
-  padding: 4px 10px;  
+  padding: 4px 10px;
   border-bottom: 1px solid #e0e0e0;
   color: #333;
   font-size: 0.75rem;
   vertical-align: middle;
 }
-tbody tr:last-child td { border-bottom: 1px solid #e0e0e0;; }
-.empty-state { text-align: center; color: #888; padding: 2rem; }
-.name-cell { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
-
-/* Tags */
 .tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.6rem; font-weight: 500; }
 .tag-probiotic { background-color: #e8e8e8; color: #555; }
 .tag-vitamin { background-color: #fff4b1; color: #6d5f00; }
 .tag-fiber { background-color: #d4edda; color: #155724; }
-
-/* Action Button */
 .action-button { background-color: var(--grey-100); border: none; color: var(--btn-delete); padding: 6px 9px; border-radius: 5px; cursor: pointer; display: inline-flex; transition: background-color 0.2s ease; }
 .action-button:hover { color: var(--btn-delete-hover); background-color: var(--grey-200); }
 td:last-child { text-align: center; }
-
-/* Footer - MODIFIED */
 .table-footer {
   display: flex;
   justify-content: space-between;
@@ -186,7 +237,6 @@ td:last-child { text-align: center; }
   border-top: 1px solid #e0e0e0;
   font-size: 0.8rem;
   color: #666;
-  /* Prevent the footer from shrinking */
   flex-shrink: 0;
   height: 20px;
 }

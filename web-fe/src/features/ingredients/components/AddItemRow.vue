@@ -1,46 +1,36 @@
 <template>
   <div class="add-item-container">
     <div class="form-row"> 
-      <!-- Name -->
-      <div class="form-field col-name">
-        <input type="text" v-model="newItem.name" placeholder="Item Name" />
-      </div>
-      <!-- D. Amount -->
-      <div class="form-field col-numeric">
-        <input type="number" v-model.number="newItem.defaultAmount" />
-      </div>
-      <!-- Unit -->
-      <div class="form-field col-text">
-        <input type="text" v-model="newItem.unit" />
-      </div>
-      <!-- Shop-style -->
-      <div class="form-field col-text">
-        <input type="text" v-model="newItem.shopStyle" />
-      </div>
-      <!-- Kcal -->
-      <div class="form-field col-numeric">
-        <input type="number" v-model.number="newItem.kcal" />
-      </div>
-      <!-- Prot. -->
-      <div class="form-field col-numeric">
-        <input type="number" v-model.number="newItem.protein" />
-      </div>
-      <!-- Fats -->
-      <div class="form-field col-numeric">
-        <input type="number" v-model.number="newItem.fats" />
-      </div>
-      <!-- Carb. -->
-      <div class="form-field col-numeric">
-        <input type="number" v-model.number="newItem.carbs" />
-      </div>
-      <!-- Actions -->
+      <table>
+        <thead>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="name-cell">
+                name
+              </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+              <button class="add-button" @click="handleAddItem">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+              </svg>
+                <span>Add</span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>      <!-- Actions -->
       <div class="form-field col-actions">
-        <button class="add-button" @click="handleAddItem">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-          </svg>
-          <span>Add</span>
-        </button>
+        
       </div>
     </div>
   </div>
