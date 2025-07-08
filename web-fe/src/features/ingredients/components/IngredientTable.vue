@@ -136,6 +136,7 @@ defineExpose({ getUpdatedItems });
 .name-cell-editable .edit-input {
   flex-grow: 1;
   min-width: 100px;
+  border-radius: 0;
 }
 .tags-container {
   color: white;
@@ -148,6 +149,7 @@ defineExpose({ getUpdatedItems });
   width: 100%;
   padding: 0;
   margin: 0;
+  border-radius: 0;
   box-sizing: border-box;
   background-color: transparent;
   border: none;
@@ -175,7 +177,7 @@ defineExpose({ getUpdatedItems });
   background-color: #ffffff;
   outline: 2px solid #818cf8;
   outline-offset: -1px;
-  border-radius: 1px;
+  border-radius: 0px;
 }
 .table-container {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -194,7 +196,7 @@ th {
   font-weight: 100;
   color: #666;
   font-size: 0.875rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: px solid #e0e0e0;
   white-space: nowrap;
   background-color: #f9f9f9;
   position: sticky;
@@ -207,16 +209,13 @@ th {
 .col-actions { width: 5%; text-align: center; }
 tbody tr:hover { background-color: #f5f5f5; }
 td {
-  padding: 4px 10px;
+  padding: 2px 10px;
   border-bottom: 1px solid #e0e0e0;
   color: #333;
   font-size: 0.75rem;
   vertical-align: middle;
 }
 .tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.6rem; font-weight: 500; }
-.tag-probiotic { background-color: #e8e8e8; color: #555; }
-.tag-vitamin { background-color: #fff4b1; color: #6d5f00; }
-.tag-fiber { background-color: #d4edda; color: #155724; }
 .action-button { background-color: var(--grey-100); border: none; color: var(--btn-delete); padding: 6px 9px; border-radius: 1px; cursor: pointer; display: inline-flex; transition: background-color 0.2s ease; }
 .action-button:hover { color: var(--btn-delete-hover); background-color: var(--grey-200); }
 td:last-child { text-align: center; }
