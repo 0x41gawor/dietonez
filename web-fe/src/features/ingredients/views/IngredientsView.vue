@@ -6,8 +6,8 @@
         placeholder="Search ingredients..."
       />
       <div class="buttons">
-        <button class="btn btn-secondary">Revert</button>
-        <button class="btn btn-primary">Update</button>
+        <RevertButton @click="handleRevertButtonClick" /> 
+        <UpdateButton @click="handleUpdateBUttonClick" />
       </div>
     </div>
 
@@ -30,10 +30,10 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-// 3. Update imports to point to the correct component files
 import IngredientTable from '../components/IngredientTable.vue'; 
-import AddIngredientForm from '../components/AddItemRow.vue';
-import SearchBar from '@/components/SearchBar.vue'
+import SearchBar from '@/components/SearchBar.vue';
+import RevertButton from '@/components/RevertButton.vue';
+import UpdateButton from '@/components/UpdateButton.vue';
 import { IngredientGetPut } from '@/types/types';
 import { getIngredients } from '@/api/ingredients'
 
@@ -59,20 +59,6 @@ watch([page, pageSize], fetchIngredients)
 // 4. State Management: The parent component now holds the data
 const searchText = ref('');
 
-// const handleAddItem = (newItem: Omit<IngredientGetPut, 'id'>) => {
-//   const newEntry: FoodItem = {
-//     id: Date.now(), // Use a simple timestamp for a unique ID in this mock
-//     ...newItem,
-//     // Provide default values for any potentially null numbers from the form
-//     defaultAmount: newItem.defaultAmount ?? 0,
-//     kcal: newItem.kcal ?? 0,
-//     protein: newItem.protein ?? 0,
-//     fats: newItem.fats ?? 0,
-//     carbs: newItem.carbs ?? 0,
-//   };
-//   allIngredients.value.push(newEntry);
-// };
-
 // NEW: Handler for the real-time update event from the child table
 const handleItemUpdate = (updatedItem: IngredientGetPut) => {
   console.log('An item was updated in real-time:', updatedItem);
@@ -87,6 +73,18 @@ const handleItemUpdate = (updatedItem: IngredientGetPut) => {
     
     // At this point, you could also trigger an auto-save to your backend API.
   }
+};
+
+const handleRevertButtonClick = () => {
+  // This function will be called when the RevertButton is clicked
+  console.log('Revert button clicked, fetching ingredients again...');
+  fetchIngredients();
+};
+
+const handleUpdateBUttonClick = () => {
+  // This function will be called when the Update button is clicked
+  console.log('Update button clicked, saving changes...');
+  // Here you would typically call an API to save the changes
 };
 
 const handleDeleteItem = (idToDelete: number) => {
