@@ -1,5 +1,5 @@
 <template>
-  <button class="base-button" @click="$emit('click', $event)">
+  <button class="base-button" @click="$emit('click', $event)" :disabled="disabled">
     <!-- A slot for an optional icon -->
     <span v-if="$slots.icon" class="icon-wrapper">
       <slot name="icon"></slot>
@@ -10,6 +10,13 @@
 </template>
 
 <script setup>
+// Accept a disabled prop
+defineProps({
+  disabled: {
+    type: Boolean,
+    default: false
+  }
+});
 // Define that this component can emit a 'click' event
 defineEmits(['click']);
 </script>
@@ -51,5 +58,13 @@ defineEmits(['click']);
   width: 1.5em; /* Adjust size relative to font */
   height: 1.5em;
   display: block;
+}
+
+/* Add a style for the disabled state */
+.base-button:disabled {
+  background-color: #a0aec0; /* A grey color */
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none; /* remove hover effect */
 }
 </style>

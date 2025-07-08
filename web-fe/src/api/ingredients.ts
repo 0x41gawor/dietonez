@@ -14,6 +14,7 @@ export async function getIngredients(params: GetIngredientsParams = {}): Promise
 }
 
 export async function updateIngredients(ingredients: IngredientGetPut[]): Promise<{ updated: number }> {
-  const response = await client.put('/ingredients', ingredients)
+  const response = await client.put('/ingredients/bulk', ingredients)
   return response.data
 }
+

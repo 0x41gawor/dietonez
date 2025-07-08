@@ -175,12 +175,12 @@ defineExpose({ getUpdatedItems });
   background-color: #ffffff;
   outline: 2px solid #818cf8;
   outline-offset: -1px;
-  border-radius: 2px;
+  border-radius: 1px;
 }
 .table-container {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -217,7 +217,7 @@ td {
 .tag-probiotic { background-color: #e8e8e8; color: #555; }
 .tag-vitamin { background-color: #fff4b1; color: #6d5f00; }
 .tag-fiber { background-color: #d4edda; color: #155724; }
-.action-button { background-color: var(--grey-100); border: none; color: var(--btn-delete); padding: 6px 9px; border-radius: 5px; cursor: pointer; display: inline-flex; transition: background-color 0.2s ease; }
+.action-button { background-color: var(--grey-100); border: none; color: var(--btn-delete); padding: 6px 9px; border-radius: 1px; cursor: pointer; display: inline-flex; transition: background-color 0.2s ease; }
 .action-button:hover { color: var(--btn-delete-hover); background-color: var(--grey-200); }
 td:last-child { text-align: center; }
 .table-footer {
