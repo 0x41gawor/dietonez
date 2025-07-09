@@ -102,6 +102,7 @@ const handleRevertButtonClick = () => {
   console.log('Revert button clicked, fetching ingredients again...');
   // Clear any changes that were waiting to be saved
   pendingChanges.value = {};
+  pendingDeletes.value.clear();
   
   // Inform the user
   toast.info("Reverted all pending changes.");
