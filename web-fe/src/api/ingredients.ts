@@ -18,3 +18,7 @@ export async function updateIngredients(ingredients: IngredientGetPut[]): Promis
   return response.data
 }
 
+
+export async function deleteIngredientById(id: number): Promise<void> {
+  await client.delete(`/ingredients/${id}`);
+}

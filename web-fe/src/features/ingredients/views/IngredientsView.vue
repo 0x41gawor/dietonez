@@ -43,7 +43,7 @@ import SearchBar from '@/components/SearchBar.vue';
 import RevertButton from '@/components/RevertButton.vue';
 import UpdateButton from '@/components/UpdateButton.vue';
 import { IngredientGetPut } from '@/types/types';
-import { getIngredients, updateIngredients } from '@/api/ingredients'
+import { getIngredients, updateIngredients, deleteIngredientById } from '@/api/ingredients'
 
 const ingredients = ref<IngredientGetPut[]>([])
 const total = ref(0)
@@ -52,6 +52,8 @@ const pageSize = ref(100)
 const totalPages = ref(1)
 const toast = useToast();
 const pendingChanges = ref<Record<number, IngredientGetPut>>({});
+const pendingDeletes = ref<Set<number>>(new Set());
+
 
 async function fetchIngredients() {
   const result = await getIngredients({ page: page.value, pageSize: pageSize.value })
@@ -72,7 +74,10 @@ const searchText = ref('');
 // This will be true if there are any items waiting to be saved.
 // We'll use this to enable/disable the Revert and Update buttons.
 const hasPendingChanges = computed(() => {
-  return Object.keys(pendingChanges.value).length > 0;
+  return (
+    Object.keys(pendingChanges.value).length > 0 ||
+    pendingDeletes.value.size > 0
+  );
 });
 
 // NEW: Handler for the real-time update event from the child table
@@ -105,38 +110,43 @@ const handleRevertButtonClick = () => {
 
 // When the "Update" button is clicked
 const handleUpdateBUttonClick = async () => {
-  // Get an array of the ingredient objects that have changed
   const changesToSubmit = Object.values(pendingChanges.value);
 
-  if (changesToSubmit.length === 0) {
+  if (changesToSubmit.length === 0 && pendingDeletes.value.size === 0) {
     toast.warning("No changes to update.");
     return;
   }
 
-  console.log('Update button clicked, saving changes...', changesToSubmit);
-  
   try {
-    // Call the API with the pending changes
-    const response = await updateIngredients(changesToSubmit);
+    if (changesToSubmit.length > 0) {
+      const response = await updateIngredients(changesToSubmit);
+      toast.success(`${response.updated} ingredient(s) successfully updated!`);
+    }
 
-    // IMPORTANT: Clear the pending changes state after a successful update
+    for (const id of pendingDeletes.value) {
+      try {
+        await deleteIngredientById(id);
+      } catch (err) {
+        console.error(`Failed to delete ingredient ${id}`, err);
+        toast.error(`Failed to delete item ID ${id}`);
+      }
+    }
+
+    // Wyczyść pending states
     pendingChanges.value = {};
+    pendingDeletes.value.clear();
 
-    // Show a success toast with the response from the backend
-    toast.success(`${response.updated} ingredient(s) successfully updated!`);
-    
-    // Optional: You might want to re-fetch to ensure data consistency
+    // Odśwież dane
     fetchIngredients();
 
   } catch (error) {
-    // If the API call fails, show an error toast.
-    // We DON'T clear pendingChanges, so the user can try again.
     console.error("Failed to update ingredients:", error);
     toast.error("Failed to update ingredients. Please try again.");
   }
 };
 const handleDeleteItem = (idToDelete: number) => {
   ingredients.value = ingredients.value.filter(item => item.id !== idToDelete);
+  pendingDeletes.value.add(idToDelete);
 };
 </script>
 
@@ -150,28 +160,7 @@ const handleDeleteItem = (idToDelete: number) => {
 
 .buttons {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
-.btn {
-  padding: 0.5rem 1.2rem;
-  /* Assuming you have these CSS variables defined globally */
-  /* border-radius: var(--radius); */ 
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-}
-
-.btn-secondary {
-  /* background-color: var(--btn-update); */
-  background-color: var(--btn-revert);
-  color: white;
-}
-
-.btn-primary {
-  /* background-color: var(--btn-add); */
-  background-color: var(--btn-update);
-  color: white;
-}
 </style>

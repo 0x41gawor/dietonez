@@ -30,7 +30,7 @@ function onInput(e: Event) {
 
 <style scoped>
 .search-bar {
-  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
 .search-input {
@@ -38,6 +38,6 @@ function onInput(e: Event) {
   padding: 0.5rem 1rem;
   border: 1px solid var(--color-grey-light);
   border-radius: var(--radius);
-  font-size: 1rem;
+  font-size: 0.85rem;
 }
 </style>
