@@ -45,7 +45,7 @@ const currentLabel = computed(() => {
   flex-direction: column;
   border-bottom: 1px solid #ddd;
   background-color: #f9f9f9;
-  padding: 0.5rem 1rem;
+  padding: 0.2rem 1rem;
 }
 
 .left {
@@ -80,12 +80,13 @@ const currentLabel = computed(() => {
   gap: 2rem;
   list-style: none;
   margin: 0;
-  padding: 0.25rem 0;
+  padding: 0.1rem 0;
 }
 
 .nav-link {
   color: var(--text-primary);
   font-weight: 500;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: opacity 0.2s ease;

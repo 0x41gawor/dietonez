@@ -27,6 +27,11 @@
       @item-updated="handleItemUpdate"
     />
 
+     <AddRowSection
+      :loading="isAddingIngredient"
+      @add-ingredient="handleAddNewIngredient"
+    />
+
     <!-- <AddIngredientForm 
       @add-item="handleAddItem"
     /> -->
@@ -38,12 +43,13 @@
 import { computed } from 'vue';
 import { useToast } from "vue-toastification";
 import { onMounted, ref, watch } from 'vue'
-import IngredientTable from '../components/IngredientTable.vue'; 
+import IngredientTable from '../components/IngredientTable.vue';
+import AddRowSection from '../components/AddRowSection.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import RevertButton from '@/components/RevertButton.vue';
 import UpdateButton from '@/components/UpdateButton.vue';
 import { IngredientGetPut } from '@/types/types';
-import { getIngredients, updateIngredients, deleteIngredientById } from '@/api/ingredients'
+import { getIngredients, updateIngredients, deleteIngredientById, createIngredient } from '@/api/ingredients'
 
 const ingredients = ref<IngredientGetPut[]>([])
 const total = ref(0)
@@ -53,6 +59,8 @@ const totalPages = ref(1)
 const toast = useToast();
 const pendingChanges = ref<Record<number, IngredientGetPut>>({});
 const pendingDeletes = ref<Set<number>>(new Set());
+  // This state will control the loading prop
+const isAddingIngredient = ref(false);
 
 
 async function fetchIngredients() {
@@ -131,6 +139,10 @@ const handleUpdateBUttonClick = async () => {
         console.error(`Failed to delete ingredient ${id}`, err);
         toast.error(`Failed to delete item ID ${id}`);
       }
+      finally {
+        console.log(`Deleted ingredient ${id}`);
+        toast.success(`Deleted ingredient  ${id}`);
+      }
     }
 
     // Wyczyść pending states
@@ -149,6 +161,26 @@ const handleDeleteItem = (idToDelete: number) => {
   ingredients.value = ingredients.value.filter(item => item.id !== idToDelete);
   pendingDeletes.value.add(idToDelete);
 };
+
+const handleAddNewIngredient = async (newIngredient: IngredientGetPut) => {
+  console.log('New ingredient data received from child:', newIngredient);
+
+  // Set loading state to true before the API call
+  isAddingIngredient.value = true;
+
+  try {
+     const response = await createIngredient(newIngredient);
+     toast.success(`Ingredient ${response.id} ingredient successfully added!`);
+  } catch (error) {
+    console.error("Failed to add ingredient:", error);
+    // Optionally show an error message to the user
+  } finally {
+    // Set loading state to false after the API call completes (or fails)
+    isAddingIngredient.value = false;
+    fetchIngredients();
+  }
+};
+
 </script>
 
 <style scoped>

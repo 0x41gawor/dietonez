@@ -18,7 +18,12 @@ export async function updateIngredients(ingredients: IngredientGetPut[]): Promis
   return response.data
 }
 
-
 export async function deleteIngredientById(id: number): Promise<void> {
   await client.delete(`/ingredients/${id}`);
+}
+
+export async function createIngredient(ingredient: IngredientGetPut): Promise<{ id: number}> {
+  const response  = await client.post('/ingredients', ingredient);
+  return response.data;
+
 }
