@@ -174,12 +174,11 @@ const handleAdd = () => {
 .form-input,
 .form-select {
   width: 100%;
-  padding: 8px 10px;
+  padding: 8px 1px;
   margin: 0;
   box-sizing: border-box;
   background-color: #ffffff;
-  border: 1px solid #d1d5db; /* A light grey border */
-  border-radius: 6px;
+  border-radius: 2px;
   outline: none;
   font-family: inherit;
   font-size: 0.75rem;
@@ -227,9 +226,8 @@ const handleAdd = () => {
 .add-row-section {
   display: flex;
   align-items: stretch; /* Make cells equal height */
-  gap: 10px;
-  padding: 8px 10px;
-  border-top: 1px solid #e0e0e0;
+  gap: 1px;
+  padding: 8px 1px;
   background-color: #f9f9f9; /* Match table header background */
 }
 
@@ -247,10 +245,9 @@ const handleAdd = () => {
 */
 .col-name {
   flex: 1 1 45%;
-  min-width: 150px;
 }
 .col-numeric {
-  flex: 0 0 55px;
+  flex: 0 0 52px;
 }
 .col-text {
   flex: 0 0 90px;
@@ -258,5 +255,10 @@ const handleAdd = () => {
 .col-actions {
   flex: 0 0 55px;
   justify-content: center;
+}
+
+.col-name .form-input {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
 }
 </style>
