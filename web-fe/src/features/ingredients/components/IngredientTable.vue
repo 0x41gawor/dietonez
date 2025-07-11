@@ -82,11 +82,22 @@
       </table>
     </div>
     <div class="table-footer">
-      <span class="footer-info">Showing {{ items.length }} out of {{ total }} elements</span>
+      <div class="footer-info">
+        <span>Showing </span>
+        <input
+            v-model.number="editablePageSize"
+            type="number"
+            min="1"
+            class="page-size-input"
+            aria-label="Number of elements per page"
+            @change="handlePageSizeUpdate"
+        />
+        <span> out of {{ total }} elements</span>
+    </div>
       <div class="pagination-controls">
-        <button class="pagination-arrow" aria-label="Previous page"><</button>
+        <button class="pagination-arrow" aria-label="Previous page" @click="emit('pageChanged', -1)"><</button>
         <span class="pagination-status">{{ currentPage }} / {{ totalPages }}</span>
-        <button class="pagination-arrow" aria-label="Next page">></button>
+        <button class="pagination-arrow" aria-label="Next page" @click="emit('pageChanged', 1)">></button>
       </div>
     </div>
   </div>
@@ -102,24 +113,39 @@ const shopStyleOptions = Object.values(ShopStyle)
 const props = defineProps({
   // UPDATED: The prop is now an array of 'Ingredient'
   ingredients: { type: Array as PropType<IngredientGetPut[]>, required: true },
+  pageSize: { type: Number, required: true },
   currentPage: { type: Number, default: 1 },
   totalPages: { type: Number, default: 1 },
   page: { type: Number, default: 1 },
   total: { type: Number, default: 0 }
 });
 
-const emit = defineEmits(['deleteItem', 'itemUpdated', 'pageChanged']);
+const emit = defineEmits(['deleteItem', 'itemUpdated', 'pageChanged', 'pageSizeChanged']);
 
 // This now holds a local copy of the ingredients
 const items = ref<IngredientGetPut[]>([]);
+const editablePageSize = ref(props.pageSize);
 
 watch(() => props.ingredients, (newFoodItems) => {
   items.value = JSON.parse(JSON.stringify(newFoodItems));
 }, { immediate: true, deep: true });
 
+watch(() => props.pageSize, (newPageSize) => {
+    editablePageSize.value = newPageSize;
+});
+
 // UPDATED: The handler now receives an 'Ingredient' object
 const handleFieldUpdate = (updatedItem: IngredientGetPut) => {
   emit('itemUpdated', updatedItem);
+};
+
+const handlePageSizeUpdate = () => {
+  const newSize = Number(editablePageSize.value);
+  if (newSize > 0 && newSize !== props.pageSize) {
+    emit('pageSizeChanged', newSize);
+  } else {
+    editablePageSize.value = props.pageSize;
+  }
 };
 
 // Expose method to get all current data if needed by parent
@@ -186,7 +212,7 @@ defineExpose({ getUpdatedItems });
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  height: 680px;
+  height: 765px;
 }
 .table-wrapper { flex: 1; overflow: auto; }
 table { width: 100%; border-collapse: collapse; min-width: 950px; }
@@ -233,4 +259,58 @@ td:last-child { text-align: center; }
 .pagination-controls { display: flex; align-items: center; gap: 1rem; }
 .pagination-arrow { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: #555; }
 .pagination-arrow:hover { color: #000; }
+
+/* Styl kontenera zapewniający prawidłowe wyrównanie w pionie */
+.footer-info {
+  display: flex;
+  align-items: center;
+}
+
+/* Główny styl dla pola input, aby wyglądało jak tekst */
+.page-size-input {
+  /* --- Reset wyglądu --- */
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid transparent; /* Niewidoczna dolna ramka dla płynnego przejścia w hover */
+  border-top: 1px solid transparent; /* Niewidoczna dolna ramka dla płynnego przejścia w hover */
+  outline: none;
+  
+  /* --- Dopasowanie czcionki i tekstu --- */
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  font-weight: 400; /* Delikatne pogrubienie, aby liczba się wyróżniała */
+  text-align: center;
+
+  /* --- Rozmiar i odstępy --- */
+  width: 25px; /* Szerokość dopasowana do ok. 3 cyfr */
+  padding: 0px 0px;
+  margin: 0px 1px; /* Niewielki margines po bokach */
+  border-radius: 0px;
+
+  /* --- Płynne przejścia dla efektów wizualnych --- */
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+/* Ukrycie strzałek w polach numerycznych (Chrome, Safari, Edge) */
+.page-size-input::-webkit-outer-spin-button,
+.page-size-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Ukrycie strzałek w polach numerycznych (Firefox) */
+.page-size-input[type=number] {
+  -moz-appearance: textfield;
+}
+/* --- Style interakcji --- */
+
+/* Subtelna wskazówka przy najechaniu myszką */
+.page-size-input:hover {
+  border-bottom-color: #ccc;
+}
+
+/* Wyraźne zaznaczenie pola podczas edycji (focus) */
+.page-size-input:focus {
+  background-color: #ffffff;
+}
 </style>

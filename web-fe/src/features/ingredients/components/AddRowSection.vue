@@ -174,7 +174,7 @@ const handleAdd = () => {
 .form-input,
 .form-select {
   width: 100%;
-  padding: 8px 1px;
+  padding: 8px 4px;
   margin: 0;
   box-sizing: border-box;
   background-color: #ffffff;
@@ -183,6 +183,7 @@ const handleAdd = () => {
   font-family: inherit;
   font-size: 0.75rem;
   color: #333;
+
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 

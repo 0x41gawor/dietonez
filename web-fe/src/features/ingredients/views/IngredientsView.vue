@@ -21,21 +21,19 @@
       :ingredients="ingredients"
       :current-page="1"
       :total-pages="totalPages"
+      :page-size="pageSize"
       :page="page"
       :total="total"
       @delete-item="handleDeleteItem"
       @item-updated="handleItemUpdate"
+      @pageSizeChanged="handlePageSizeUpdate"
+      @pageChanged="handlePageChange"
     />
 
      <AddRowSection
       :loading="isAddingIngredient"
       @add-ingredient="handleAddNewIngredient"
     />
-
-    <!-- <AddIngredientForm 
-      @add-item="handleAddItem"
-    /> -->
-
   </section>
 </template>
 
@@ -179,6 +177,20 @@ const handleAddNewIngredient = async (newIngredient: IngredientGetPut) => {
     isAddingIngredient.value = false;
     fetchIngredients();
   }
+};
+
+const handlePageSizeUpdate = (newSize: number) => {
+  console.log('Page size changed to:', newSize);
+  pageSize.value = newSize;
+  fetchIngredients();
+};
+
+const handlePageChange = (direction: number) => {
+  console.log('Page change requested:', direction);
+  page.value += direction;
+  if (page.value < 1) page.value = 1; // Ensure page doesn't go below 1
+  if (page.value > totalPages.value) page.value = totalPages.value; // Ensure page doesn't exceed total pages
+  fetchIngredients();
 };
 
 </script>
