@@ -43,10 +43,10 @@ export enum ShopStyle {
 export interface IngredientGetPut {
   id: number;
   name: string;
-  kcal: number;
-  protein: number;
-  fat: number;
-  carbs: number;
+  kcal:  | null;
+  protein: number | null;
+  fat: number | null;
+  carbs: number | null;
   unit: Unit;
   shopStyle: ShopStyle;
   default_amount?: number;

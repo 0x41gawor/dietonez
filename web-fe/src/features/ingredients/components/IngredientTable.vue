@@ -20,16 +20,14 @@
             <td colspan="9" class="empty-state">No items to display.</td>
           </tr>
           <tr v-for="item in items" :key="item.id">
-            <!-- Name Column with integrated labels -->
             <td>
               <div class="name-cell-editable">
                 <input
                   v-model="item.name"
                   type="text"
                   class="edit-input"
-                  @change="handleFieldUpdate(item)"
+                  @change="handleCellEdition(item)"
                 />
-                <!-- UPDATED: Using 'item.labels' -->
                 <div v-if="item.labels && item.labels.length" class="tags-container">
                   <span
                     v-for="label in item.labels"
@@ -45,29 +43,29 @@
             </td>
 
             <td>
-              <input v-model.number="item.default_amount" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
+              <input v-model.number="item.default_amount" type="number" class="edit-input-numeric" @change="handleCellEdition(item)" />
             </td>
             <td>
-              <select v-model="item.unit" class="edit-select" @change="handleFieldUpdate(item)">
+              <select v-model="item.unit" class="edit-select" @change="handleCellEdition(item)">
                 <option v-for="option in unitOptions" :key="option" :value="option">{{ option }}</option>
               </select>
             </td>
             <td>
-              <select v-model="item.shopStyle" class="edit-select" @change="handleFieldUpdate(item)">
+              <select v-model="item.shopStyle" class="edit-select" @change="handleCellEdition(item)">
                 <option v-for="option in shopStyleOptions" :key="option" :value="option">{{ option }}</option>
               </select>
             </td>
             <td>
-              <input v-model.number="item.kcal" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
+              <input v-model.number="item.kcal" type="number" class="edit-input-numeric" @change="handleCellEdition(item)" />
             </td>
             <td>
-              <input v-model.number="item.protein" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
+              <input v-model.number="item.protein" type="number" class="edit-input-numeric" @change="handleCellEdition(item)" />
             </td>
             <td>
-              <input v-model.number="item.fat" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
+              <input v-model.number="item.fat" type="number" class="edit-input-numeric" @change="handleCellEdition(item)" />
             </td>
             <td>
-              <input v-model.number="item.carbs" type="number" class="edit-input-numeric" @change="handleFieldUpdate(item)" />
+              <input v-model.number="item.carbs" type="number" class="edit-input-numeric" @change="handleCellEdition(item)" />
             </td>
             <td>
               <button class="action-button" @click="emit('deleteItem', item.id)" aria-label="Delete item">
@@ -85,12 +83,12 @@
       <div class="footer-info">
         <span>Showing </span>
         <input
-            v-model.number="editablePageSize"
+            v-model.number="pageSize"
             type="number"
             min="1"
             class="page-size-input"
             aria-label="Number of elements per page"
-            @change="handlePageSizeUpdate"
+            @change="handlePageSizeEdition"
         />
         <span> out of {{ total }} elements</span>
     </div>
@@ -107,11 +105,11 @@
 import { IngredientGetPut, Unit, ShopStyle } from '@/types/types';
 import { ref, watch, PropType } from 'vue';
 
+// Enum values used in selects
 const unitOptions = Object.values(Unit)
 const shopStyleOptions = Object.values(ShopStyle)
-
+// Props passed from parent component
 const props = defineProps({
-  // UPDATED: The prop is now an array of 'Ingredient'
   ingredients: { type: Array as PropType<IngredientGetPut[]>, required: true },
   pageSize: { type: Number, required: true },
   currentPage: { type: Number, default: 1 },
@@ -120,36 +118,41 @@ const props = defineProps({
   total: { type: Number, default: 0 }
 });
 
+// Definition of emits (events that this component can emit to its parent)
 const emit = defineEmits(['deleteItem', 'itemUpdated', 'pageChanged', 'pageSizeChanged']);
-
-// This now holds a local copy of the ingredients
+// ====== S T A T E ======
+// Local copy of ingredients (this way we can edit them without affecting the original array until changes are confirmed)
 const items = ref<IngredientGetPut[]>([]);
-const editablePageSize = ref(props.pageSize);
-
-watch(() => props.ingredients, (newFoodItems) => {
-  items.value = JSON.parse(JSON.stringify(newFoodItems));
+// Page size, initialized with the prop value
+const pageSize = ref(props.pageSize);
+// ====== W A T C H E R S ======
+// Watch for changes in the ingredients prop and update local items
+watch(() => props.ingredients, (newVal) => {
+  items.value = JSON.parse(JSON.stringify(newVal));
 }, { immediate: true, deep: true });
-
-watch(() => props.pageSize, (newPageSize) => {
-    editablePageSize.value = newPageSize;
+// Watch for changes in the pageSize prop and update local pageSize
+watch(() => props.pageSize, (newVal) => {
+    pageSize.value = newVal;
 });
 
-// UPDATED: The handler now receives an 'Ingredient' object
-const handleFieldUpdate = (updatedItem: IngredientGetPut) => {
+// ======= H A N D L E R S =======
+// Handle edits commited in the table cells, emitting the updated item to the parent
+const handleCellEdition = (updatedItem: IngredientGetPut) => {
   emit('itemUpdated', updatedItem);
 };
-
-const handlePageSizeUpdate = () => {
-  const newSize = Number(editablePageSize.value);
+// Handle page size edition, emitting the new size to the parent
+const handlePageSizeEdition = () => {
+  const newSize = Number(pageSize.value);
   if (newSize > 0 && newSize !== props.pageSize) {
     emit('pageSizeChanged', newSize);
   } else {
-    editablePageSize.value = props.pageSize;
+    pageSize.value = props.pageSize;
   }
 };
-
-// Expose method to get all current data if needed by parent
+// ======= E X P O S E D    M E T H O D S =======
+// Method to get all current data if needed by parent
 const getUpdatedItems = () => items.value;
+// E
 defineExpose({ getUpdatedItems });
 </script>
 
@@ -300,6 +303,7 @@ td:last-child { text-align: center; }
 }
 /* Ukrycie strzałek w polach numerycznych (Firefox) */
 .page-size-input[type=number] {
+  appearance: textfield; 
   -moz-appearance: textfield;
 }
 /* --- Style interakcji --- */

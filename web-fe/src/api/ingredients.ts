@@ -1,6 +1,6 @@
 import client from './client'
 import type { IngredientResponse } from '@/types/ingredients'
-import type { IngredientGetPut } from '@/types/types'
+import type { IngredientGetPut, IngredientPost } from '@/types/types'
 
 interface GetIngredientsParams {
   page?: number
@@ -22,7 +22,7 @@ export async function deleteIngredientById(id: number): Promise<void> {
   await client.delete(`/ingredients/${id}`);
 }
 
-export async function createIngredient(ingredient: IngredientGetPut): Promise<{ id: number}> {
+export async function createIngredient(ingredient: IngredientPost): Promise<{ id: number}> {
   const response  = await client.post('/ingredients', ingredient);
   return response.data;
 
