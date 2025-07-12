@@ -111,6 +111,33 @@ func (h *HandlerDishes) handlePutByID(w http.ResponseWriter, r *http.Request) er
 	return WriteJSON(w, http.StatusOK, updated)
 }
 
+func (h *HandlerDishes) handlePatchByIdName(w http.ResponseWriter, r *http.Request) error {
+	id := parseInt(mux.Vars(r)["id"], 0)
+	if id <= 0 {
+		return WriteJSON(w, http.StatusBadRequest, "invalid id")
+	}
+
+	var payload model.DishNamePatch
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		return WriteJSON(w, http.StatusBadRequest, "invalid JSON body")
+	}
+	defer r.Body.Close()
+
+	if payload.Name == "" {
+		return WriteJSON(w, http.StatusBadRequest, "name cannot be empty")
+	}
+
+	if err := h.s.UpdateName(r.Context(), id, payload.Name); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return WriteJSON(w, http.StatusNotFound, "dish not found")
+		}
+		return err
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	return nil
+}
+
 func (h *HandlerDishes) handleDeleteByID(w http.ResponseWriter, r *http.Request) error {
 	id := parseInt(mux.Vars(r)["id"], 0)
 	if id <= 0 {

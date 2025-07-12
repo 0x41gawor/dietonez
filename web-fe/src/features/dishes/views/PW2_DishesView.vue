@@ -33,12 +33,29 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import MealCard from '../components/MealCard.vue'
 
-function onClick(type: string) {
-  console.log('Clicked on:', type)
-  // tutaj możesz użyć np. router.push(`/meals/${type}`)
+const router = useRouter()
+
+
+const mealMap: Record<string, string> = {
+  'breakfast': 'Breakfast',
+  'main-meal': 'MainMeal',
+  'pre-workout': 'Pre-Workout',
+  'supper': 'Supper'
 }
+
+
+function onClick(type: string) {
+  const mappedMeal = mealMap[type]
+  if (mappedMeal) {
+    router.push({ path: `/dishes/${mappedMeal}` })
+  } else {
+    console.warn('Unknown meal type:', type)
+  }
+}
+
 </script>
 
 <style scoped>

@@ -1,6 +1,5 @@
 import client from './client'
-import type { IngredientResponse } from '@/types/ingredients'
-import type { IngredientGetPut, IngredientPost } from '@/types/types'
+import type { IngredientGetPut, IngredientPost, PaginatedIngredients} from '@/types/types'
 
 interface GetIngredientsParams {
   page?: number
@@ -8,7 +7,7 @@ interface GetIngredientsParams {
   short?: boolean
 }
 
-export async function getIngredients(params: GetIngredientsParams = {}): Promise<IngredientResponse> {
+export async function getIngredients(params: GetIngredientsParams = {}): Promise<PaginatedIngredients>{
   const response = await client.get('/ingredients', { params })
   return response.data
 }

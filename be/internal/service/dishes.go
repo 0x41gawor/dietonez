@@ -25,19 +25,19 @@ func (s *ServiceDishes) ListByMeal(
 ) ([]*model.DishGetShort, error) {
 
 	const q = `
-		SELECT
-			d.id,
-			d.name,
-			COALESCE(SUM(ia.amount / ing.default_amount * ing.kcal), 0)     AS kcal,
-			COALESCE(SUM(ia.amount / ing.default_amount * ing.proteins), 0) AS protein,
-			COALESCE(SUM(ia.amount / ing.default_amount * ing.fats), 0)     AS fat,
-			COALESCE(SUM(ia.amount / ing.default_amount * ing.carbs), 0)    AS carbs
-		FROM dishes              d
-		LEFT JOIN ingredient_amounts ia ON ia.dish_id      = d.id
-		LEFT JOIN ingredients        ing ON ing.id         = ia.ingredient_id
-		WHERE d.meal = $1
-		GROUP BY d.id, d.name, d.meal
-		ORDER BY d.name;
+	SELECT
+		d.id,
+		d.name,
+		ROUND(CAST(COALESCE(SUM(ia.amount / ing.default_amount * ing.kcal), 0) AS numeric), 0)     AS kcal,
+		ROUND(CAST(COALESCE(SUM(ia.amount / ing.default_amount * ing.proteins), 0) AS numeric), 0) AS protein,
+		ROUND(CAST(COALESCE(SUM(ia.amount / ing.default_amount * ing.fats), 0) AS numeric), 0)     AS fat,
+		ROUND(CAST(COALESCE(SUM(ia.amount / ing.default_amount * ing.carbs), 0) AS numeric), 0)    AS carbs
+	FROM dishes              d
+	LEFT JOIN ingredient_amounts ia ON ia.dish_id      = d.id
+	LEFT JOIN ingredients        ing ON ing.id         = ia.ingredient_id
+	WHERE d.meal = $1
+	GROUP BY d.id, d.name, d.meal
+	ORDER BY d.name;
 	`
 
 	rows, err := s.db.QueryContext(ctx, q, meal)
@@ -377,6 +377,26 @@ func (s *ServiceDishes) Update(ctx context.Context, id int, in *model.DishPut) (
 	}
 
 	return s.GetByID(ctx, id)
+}
+
+func (s *ServiceDishes) UpdateName(ctx context.Context, id int, name string) error {
+	const q = `
+		UPDATE dishes
+		SET name = $1
+		WHERE id = $2
+	`
+	result, err := s.db.ExecContext(ctx, q, name, id)
+	if err != nil {
+		return fmt.Errorf("update dish name: %w", err)
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("rows affected: %w", err)
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
 func (s *ServiceDishes) DeleteByID(ctx context.Context, id int) error {

@@ -3,6 +3,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import HomeView from '@/features/context/views/HomeView.vue';
 import IngredientsView from '@/features/ingredients/views/IngredientsView.vue';
 import DishesView from '@/features/dishes/views/PW2_DishesView.vue';
+import DishesListView from '@/features/dishes/views/PW2X_DishesListView.vue';
 import DietsView from '@/features/diets/views/DietsView.vue';
 
 const routes: RouteRecordRaw[] = [
@@ -10,6 +11,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/home', component: HomeView },
   { path: '/ingredients', component: IngredientsView },
   { path: '/dishes', component: DishesView },
+  { path: '/dishes/:meal', component: DishesListView, props: true },
   { path: '/diets', component: DietsView },
 ];
 

@@ -34,6 +34,7 @@ func (s *Server) Run() {
 	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handleGetByID)).Methods("GET")
 	router.HandleFunc("/api/v1/dishes", makeHTTPHandleFunc(apiDishes.handleBasePOST)).Methods("POST")
 	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handlePutByID)).Methods("PUT")
+	router.HandleFunc("/api/v1/dishes/{id}/name", makeHTTPHandleFunc(apiDishes.handlePatchByIdName)).Methods("PATCH")
 	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handleDeleteByID)).Methods("DELETE")
 	apiDiets := NewHandlerDiets()
 	router.HandleFunc("/api/v1/diets", makeHTTPHandleFunc(apiDiets.handleBaseGET)).Methods("GET")
@@ -53,7 +54,7 @@ func (s *Server) Run() {
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
-		AllowedMethods: []string{"GET", "POST", "DELETE", "PUT"},
+		AllowedMethods: []string{"GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"},
 		AllowedHeaders: []string{"*"},
 	})
 	routerWithCors := c.Handler(router)

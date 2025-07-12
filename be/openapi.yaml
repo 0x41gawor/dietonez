@@ -277,6 +277,39 @@ paths:
           description: Dish deleted successfully
         '400':
           description: Dish is used in a diet and cannot be deleted
+  /dishes/{id}/name:
+     patch:
+      summary: Update dish name
+      description: Updates only the name of a dish with the given ID.
+      operationId: patchDishName
+      tags:
+        - Dishes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the dish
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  description: New name of the dish
+      responses:
+        '204':
+          description: Dish name updated successfully (no content)
+        '400':
+          description: Invalid ID or missing/invalid name
+        '404':
+          description: Dish not found
   /diets:
     get:
       summary: Get all diets

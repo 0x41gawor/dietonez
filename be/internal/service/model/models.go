@@ -191,3 +191,7 @@ type DietContext struct {
 	CurrentDay  int     `json:"currentDay"`
 	Weight      float64 `json:"weight"`
 }
+
+type DishNamePatch struct {
+	Name string `json:"name"`
+}
