@@ -30,11 +30,11 @@ defineEmits(['click']);
 
 <style scoped>
 .add-button {
-  background-color: var(--btn-add); /* A dark blue/charcoal color */
+  background-color: var(--btn-add); 
   color: white;
 }
 
 .add-button:hover {
-  background-color: #184916; /* A slightly lighter dark color on hover */
+  background-color: #184916; 
 }
 </style>

@@ -14,11 +14,15 @@
             :page-size="pageSize"
             :page="page"
             :total="total"
+            :meal="meal"
             @item-updated="handleItemUpdate"
             @pageSizeChanged="handlePageSizeUpdate"
             @pageChanged="handlePageChange"
         />
-    </section>  
+        <div class="header">
+                <AddButton id="add-dish-button" @click="handleAddButtonClick" :disabled=false />
+        </div>
+    </section> 
 </template>
 
 <script setup lang="ts">
@@ -29,6 +33,7 @@ import RevertButton from '@/components/RevertButton.vue';
 import UpdateButton from '@/components/UpdateButton.vue';
 import DishesTable from '../components/DishesTable.vue';
 import { DishGetShort } from '@/types/types';   
+import AddButton from '@/components/AddButton.vue';
 
 const { meal } = defineProps<{ meal: 'Breakfast' | 'MainMeal' | 'Pre-Workout' | 'Supper' }>()
 
@@ -44,6 +49,7 @@ const {
     handleRevertButtonClick,
     handleUpdateButtonClick,
     handlePageSizeUpdate,
-    handlePageChange    
+    handlePageChange,
+    handleAddButtonClick,
 } = useDishesListViewLogic(meal);
 </script>

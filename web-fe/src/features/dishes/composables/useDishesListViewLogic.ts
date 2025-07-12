@@ -86,6 +86,10 @@ export function useDishesListViewLogic(meal: 'Breakfast' | 'MainMeal' | 'Pre-Wor
         if (page.value > totalPages.value) page.value = totalPages.value
         fetchDishes()
     }
+    // Called when the user clicks the Add button
+    const handleAddButtonClick = () => {
+        console.log('Add button clicked');
+    }
     // ==== R E T U R N ====
     return {
         dishes,
@@ -102,6 +106,7 @@ export function useDishesListViewLogic(meal: 'Breakfast' | 'MainMeal' | 'Pre-Wor
         handleRevertButtonClick,
         handleUpdateButtonClick,
         handlePageSizeUpdate,
-        handlePageChange
+        handlePageChange,
+        handleAddButtonClick
     }
 }
