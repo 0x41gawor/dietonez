@@ -1,7 +1,7 @@
 import client from './client'
 import type { IngredientGetPut, IngredientPost, PaginatedIngredients} from '@/types/types'
 
-interface GetIngredientsParams {
+export interface GetIngredientsParams {
   page?: number
   pageSize?: number
   short?: boolean

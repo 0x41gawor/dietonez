@@ -7,8 +7,11 @@
         <!-- <UpdateButton @click="" :disabled="!hasPendingChanges" /> -->
       </div>
     </div>
-    />
     <!-- <AddRow :loading="isAddingIngredient" @add-ingredient="handleAddNewIngredient" /> -->
+
+      <IngredientsInDishTable
+        :items="dish?.ingredients || []"
+      />
   </section>
 </template>
 
@@ -17,10 +20,13 @@ import './PW2X1_DishView.style.css'
 import { useDishViewLogic } from '../composables/useDishViewLogic';
 import UpdateButton from '@/components/UpdateButton.vue';
 import RevertButton from '@/components/RevertButton.vue';
+import IngredientsInDishTable from '../components/IngredientsInDishTable.vue';
+import { onMounted } from 'vue';
 
-const {dishId} = defineProps<{ dishId: number }>()
+const {id} = defineProps<{ id: number }>()
+
 
 const {
     dish
-} = useDishViewLogic(dishId);
+} = useDishViewLogic(id);
 </script>

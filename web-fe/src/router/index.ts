@@ -13,7 +13,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/ingredients', component: IngredientsView },
   { path: '/dishes', component: DishesView },
   { path: '/dishes/:meal', component: DishesListView, props: true },
-  { path: '/dishes/:id/edit', component: DishView, props: true },
+  { path: '/dishes/:id/edit', component: DishView, props: (route) => ({ id: Number(route.params.id) }) },
   { path: '/diets', component: DietsView },
 ];
 

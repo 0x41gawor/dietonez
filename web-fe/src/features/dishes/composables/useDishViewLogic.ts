@@ -3,9 +3,9 @@ import {useToast} from "vue-toastification";
 import type {DishGet, DishGetShort, DishPost, DishPut} from '@/types/types'
 import {getDishes, getDishById, createDish, updateDish, deleteDishById, updateDishName} from '@/api/dishes'
 
-export function useDishViewLogic(dishId: number) {
+export function useDishViewLogic(id: number) {
   // ==== S T A T E ====
-  const dish = ref<DishPut | null>(null)
+  const dish = ref<DishGet | null>(null)
   const isLoading = ref(true)
   const isAddingIngredient = ref(false)
   const pendingChanges = ref<Record<number, DishGetShort>>({})
@@ -19,14 +19,18 @@ export function useDishViewLogic(dishId: number) {
 
   // ==== M E T H O D S ====
   async function fetchDish() {
+    console.log(id)
     try {
       isLoading.value = true
-      dish.value = await getDishById(dishId)
+      const response = await getDishById(id)
+      console.log("Fetched dish response:", response)
+      dish.value = response
     } catch (error) {
       toast.error("Failed to fetch dish.")
     } finally {
       isLoading.value = false
     }
+    console.log("Fetched dish:", dish.value)
   }
 
   // ==== H A N D L E R S ====
