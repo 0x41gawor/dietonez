@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 import HomeView from '@/features/context/views/HomeView.vue';
 import IngredientsView from '@/features/ingredients/views/IngredientsView.vue';
-import DishesView from '@/features/dishes/views/DishesView.vue';
+import DishesView from '@/features/dishes/views/PW2_DishesView.vue';
 import DietsView from '@/features/diets/views/DietsView.vue';
 
 const routes: RouteRecordRaw[] = [
