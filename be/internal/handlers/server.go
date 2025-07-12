@@ -48,6 +48,9 @@ func (s *Server) Run() {
 	router.HandleFunc("/api/v1/tools/nutrition-summary", makeHTTPHandleFunc(apiTools.handleNutritionSummaryPOST)).Methods("POST")
 	router.HandleFunc("/api/v1/tools/day-summary", makeHTTPHandleFunc(apiTools.handleDaySummaryPOST)).Methods("POST")
 
+	router.PathPrefix("/swagger").Handler(http.StripPrefix("/swagger", http.FileServer(http.Dir("./swagger-ui/"))))
+	router.Handle("/openapi.yaml", http.FileServer(http.Dir(".")))
+
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "DELETE", "PUT"},
