@@ -12,6 +12,11 @@ export async function getIngredients(params: GetIngredientsParams = {}): Promise
   return response.data
 }
 
+export async function getIngredientById(id: number): Promise<IngredientGetPut> {
+  const response = await client.get(`/ingredients/${id}`);
+  return response.data;
+}
+
 export async function updateIngredients(ingredients: IngredientGetPut[]): Promise<{ updated: number }> {
   const response = await client.put('/ingredients/bulk', ingredients)
   return response.data
@@ -24,5 +29,4 @@ export async function deleteIngredientById(id: number): Promise<void> {
 export async function createIngredient(ingredient: IngredientPost): Promise<{ id: number}> {
   const response  = await client.post('/ingredients', ingredient);
   return response.data;
-
 }

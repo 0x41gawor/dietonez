@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math"
 
 	"github.com/0x41gawor/dietonez/internal/repo"
 	"github.com/0x41gawor/dietonez/internal/service/model"
@@ -16,6 +17,32 @@ type ServiceTools struct {
 func NewServiceTools() *ServiceTools {
 	db := repo.GetDatabaseInstance().DB
 	return &ServiceTools{db: db}
+}
+func (s *ServiceTools) CaclucateIngredientSummary(ctx context.Context, input model.IngredientInDishPut) (model.NutritionSummary, error) {
+	var total model.NutritionSummary
+
+	var kcal, proteins, fats, carbs, default_amount float64
+	err := s.db.QueryRowContext(ctx, `
+		SELECT kcal, proteins, fats, carbs, default_amount
+		FROM ingredients
+		WHERE id = $1
+	`, input.Ingredient.ID).Scan(&kcal, &proteins, &fats, &carbs, &default_amount)
+
+	if err != nil {
+		return model.NutritionSummary{}, fmt.Errorf("ingredient ID %d not found: %w", input.Ingredient.ID, err)
+	}
+
+	ratio := input.Amount / default_amount
+	total.Kcal = round1(kcal * ratio)
+	total.Proteins = round1(proteins * ratio)
+	total.Fats = round1(fats * ratio)
+	total.Carbs = round1(carbs * ratio)
+
+	return total, nil
+}
+
+func round1(f float64) float64 {
+	return math.Round(f*10) / 10
 }
 
 // Implementation in service/service.go
@@ -36,10 +63,10 @@ func (s *ServiceTools) CalculateSummary(ctx context.Context, list []model.Ingred
 		}
 
 		ratio := entry.Amount / default_amount
-		total.Kcal += kcal * ratio
-		total.Proteins += proteins * ratio
-		total.Fats += fats * ratio
-		total.Carbs += carbs * ratio
+		total.Kcal += round1(kcal * ratio)
+		total.Proteins += round1(proteins * ratio)
+		total.Fats += round1(fats * ratio)
+		total.Carbs += round1(carbs * ratio)
 	}
 	return total, nil
 }

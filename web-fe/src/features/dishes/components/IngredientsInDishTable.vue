@@ -19,17 +19,35 @@
           </tr>
           <tr v-for="item in items" :key="item.ingredient.id">
             <!-- NAME as SELECT -->
-            <td>
-             {{  item.ingredient.name }}
-            </td>
+           <td>
+          <select
+            v-model="item.ingredient.id"
+            class="edit-select"
+            @change="handleIngredientChange(item)"
+          >
+            <option disabled value="">Select ingredient</option>
+            <option
+              v-for="option in ingredientOptions"
+              :key="option.id"
+              :value="option.id"
+            >
+              {{ option.name }}
+            </option>
+          </select>
+        </td>
+ 
             <!-- AMOUNT editable -->
-            <td>
-              <input
-                v-model.number="item.amount"
-                type="number"
-                class="edit-input-numeric"
-              />
-            </td>
+           <td>
+              <div class="amount-wrapper">
+                <input
+                  v-model.number="item.amount"
+                  type="number"
+                  class="edit-input-numeric"
+                  @change="handleIngredientChange(item)"
+                />
+                <span class="unit-label">[{{ item.ingredient.unit || 'g' }}]</span>
+              </div>
+             </td>
 
             <!-- Read-only columns -->
             <td>{{ item.ingredient.kcal }}</td>
@@ -56,8 +74,8 @@
 <script setup lang="ts">
 import { IngredientInDishGet } from '@/types/types';
 import { ref, onMounted } from 'vue';
-import type { GetIngredientsParams } from '@/api/ingredients'; // lub skąd masz interfejs
-import { getIngredients } from '@/api/ingredients';
+import { GetIngredientsParams, getIngredientById, getIngredients } from '@/api/ingredients'; // lub skąd masz interfejs
+import { calculateIngredientSummary } from '@/api/dishes'; // lub skąd masz interfejs
 
 
 const props = defineProps<{
@@ -94,6 +112,36 @@ const fetchIngredientOptions = async () => {
     console.error('Failed to fetch ingredients:', error);
   }
 };
+
+const handleIngredientChange = async (item: IngredientInDishGet) => {
+  try {
+    // 1. Pobierz pełne dane składnika (np. name, unit, default_amount itp.)
+    const fullIngredient = await getIngredientById(item.ingredient.id);
+
+    item.ingredient.name = fullIngredient.name;
+    item.ingredient.unit = fullIngredient.unit;
+    item.ingredient.shopStyle = fullIngredient.shopStyle;
+    item.ingredient.default_amount = fullIngredient.default_amount;
+    item.ingredient.labels = fullIngredient.labels;
+
+    // 2. Przelicz makro dla wybranej ilości
+    const summary = await calculateIngredientSummary({
+      ingredient: { id: item.ingredient.id, name: item.ingredient.name },
+      amount: item.amount,
+    });
+
+    item.ingredient.kcal = summary.kcal;
+    item.ingredient.protein = summary.proteins;
+    item.ingredient.fat = summary.fats;
+    item.ingredient.carbs = summary.carbs;
+
+    emit('updateItem', item);
+  } catch (error) {
+    console.error(`Failed to update ingredient with ID ${item.ingredient.id}:`, error);
+  }
+};
+
+
 
 
 </script>
@@ -157,7 +205,7 @@ const fetchIngredientOptions = async () => {
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  height: 765px;
+  height: 400px;
 }
 .table-wrapper { flex: 1; overflow: auto; }
 table { width: 100%; border-collapse: collapse; min-width: 950px; }
@@ -201,9 +249,6 @@ td:last-child { text-align: center; }
   flex-shrink: 0;
   height: 20px;
 }
-.pagination-controls { display: flex; align-items: center; gap: 1rem; }
-.pagination-arrow { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: #555; }
-.pagination-arrow:hover { color: #000; }
 
 /* Styl kontenera zapewniający prawidłowe wyrównanie w pionie */
 .footer-info {
@@ -211,52 +256,20 @@ td:last-child { text-align: center; }
   align-items: center;
 }
 
-/* Główny styl dla pola input, aby wyglądało jak tekst */
-.page-size-input {
-  /* --- Reset wyglądu --- */
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid transparent; /* Niewidoczna dolna ramka dla płynnego przejścia w hover */
-  border-top: 1px solid transparent; /* Niewidoczna dolna ramka dla płynnego przejścia w hover */
-  outline: none;
-  
-  /* --- Dopasowanie czcionki i tekstu --- */
-  font-family: inherit;
-  font-size: inherit;
-  color: inherit;
-  font-weight: 400; /* Delikatne pogrubienie, aby liczba się wyróżniała */
-  text-align: center;
-
-  /* --- Rozmiar i odstępy --- */
-  width: 25px; /* Szerokość dopasowana do ok. 3 cyfr */
-  padding: 0px 0px;
-  margin: 0px 1px; /* Niewielki margines po bokach */
-  border-radius: 0px;
-
-  /* --- Płynne przejścia dla efektów wizualnych --- */
-  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+.amount-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  max-width: 100px; /* lub więcej jeśli potrzeba */
+  white-space: nowrap;
 }
 
-/* Ukrycie strzałek w polach numerycznych (Chrome, Safari, Edge) */
-.page-size-input::-webkit-outer-spin-button,
-.page-size-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-/* Ukrycie strzałek w polach numerycznych (Firefox) */
-.page-size-input[type=number] {
-  appearance: textfield; 
-  -moz-appearance: textfield;
-}
-/* --- Style interakcji --- */
-
-/* Subtelna wskazówka przy najechaniu myszką */
-.page-size-input:hover {
-  border-bottom-color: #ccc;
+.unit-label {
+  font-size: 0.7rem;
+  color: #777;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
-/* Wyraźne zaznaczenie pola podczas edycji (focus) */
-.page-size-input:focus {
-  background-color: #ffffff;
-}
 </style>

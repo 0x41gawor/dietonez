@@ -3,7 +3,9 @@ import type {
   DishGet,
   DishGetShort,
   DishPost,
-  DishPut
+  DishPut,
+  IngredientInDishPut,
+  NutritionSummary
 } from '@/types/types'
 
 interface GetDishesParams {
@@ -37,4 +39,11 @@ export async function deleteDishById(id: number): Promise<void> {
 
 export async function updateDishName(id: number, name: string): Promise<void> {
   await client.patch(`/dishes/${id}/name`, { name });
+}
+
+export async function calculateIngredientSummary(
+  input: IngredientInDishPut
+): Promise<NutritionSummary> {
+  const response = await client.post('/tools/ingredients-summary', input)
+  return response.data
 }

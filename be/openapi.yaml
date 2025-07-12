@@ -455,6 +455,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DietContext'
+  /tools/ingredients-summary:
+    post:
+      summary: Calculates nutrition summary for an ingredient and its amount
+      operationId: calculateIngredientsSummary
+      tags:
+        - Tools
+      requestBody:
+        required: true
+        content:
+           application/json:
+             schema:
+               $ref: '#/components/schemas/IngredientInDishPut'
+      responses:
+        '200':
+          description: Nutrition summary calculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NutritionSummary'
+        '400':
+          description: Invalid input
   /tools/dish-summary:
     post:
       summary: Calculates nutrition summary for a list of ingredients
@@ -668,7 +689,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Label'
-
     DishPost:
       type: object
       required: [name, meal, ingredients, recipe, labels]

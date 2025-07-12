@@ -21,6 +21,22 @@ func NewHandlerTools() *HandlerTools {
 	}
 }
 
+func (h *HandlerTools) handleIngredientSummaryPOST(w http.ResponseWriter, r *http.Request) error {
+	var input model.IngredientInDishPut
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		return errors.New("invalid JSON body")
+	}
+
+	summary, err := h.s.CaclucateIngredientSummary(r.Context(), input)
+	if err != nil {
+		return errors.New("failed to calculate ingredient summary: " + err.Error())
+	}
+
+	// respond
+	return WriteJSON(w, http.StatusOK, summary)
+}
+
 // handles POST in /tools/nutrition-summary
 func (h *HandlerTools) handleNutritionSummaryPOST(w http.ResponseWriter, r *http.Request) error {
 	slog.Debug("handleNutritionSummaryPOST",
