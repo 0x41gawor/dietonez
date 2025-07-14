@@ -1,12 +1,19 @@
 <template>
   <section>
     <div class="header">
-      {{ dish?.name }}
+      <input
+        v-if="dish"
+        v-model="dish.name"
+        @input="hasPendingChanges = true"
+        :class="['dish-title-input', 'meal--' + dish?.meal]"
+        placeholder="Dish name"
+      />
       <div class="buttons">
-        <RevertButton @click="handleRevertButtonClick" :disabled="!hasPendingChanges" /> 
+        <RevertButton @click="handleRevertButtonClick" :disabled="!hasPendingChanges" />
         <UpdateButton @click="handleUpdateButtonClick" :disabled="!hasPendingChanges" />
       </div>
     </div>
+
     <!-- <AddRow :loading="isAddingIngredient" @add-ingredient="handleAddNewIngredient" /> -->
 
       <IngredientsInDishTable

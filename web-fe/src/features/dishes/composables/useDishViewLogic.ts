@@ -5,7 +5,18 @@ import {getDishes, getDishById, createDish, updateDish, deleteDishById, updateDi
 
 export function useDishViewLogic(id: number) {
   // ==== S T A T E ====
-  const dish = ref<DishGet | null>(null)
+  const dish = ref<DishGet>({
+  id: 0,
+  name: '',
+  meal: 'Breakfast',
+  kcal : 0,
+  protein: 0,
+  fat: 0,
+  carbs: 0,
+  ingredients: [],
+  recipe: {total_time: '', before: '', when_to_start: '', preparation: ''},
+  labels: [],
+});
   const isLoading = ref(true)
   const isAddingIngredient = ref(false)
   const hasPendingChanges = ref<boolean>(false)
@@ -45,6 +56,11 @@ const handleUpdateButtonClick = async () => {
     return;
   }
 
+  if (!Array.isArray(dish.value.ingredients) || dish.value.ingredients.length === 0) {
+    toast.error("Dish must contain at least one ingredient.");
+    return;
+  }
+
   try {
     const updatedDish: DishPut = {
       id: dish.value.id,
@@ -65,8 +81,10 @@ const handleUpdateButtonClick = async () => {
     toast.success("Dish updated successfully.");
   } catch (error) {
     toast.error("Failed to update dish.");
+    console.error("Update error:", error);
   }
 };
+
 
 
 
