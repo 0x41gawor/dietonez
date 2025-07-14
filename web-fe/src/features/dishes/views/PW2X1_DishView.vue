@@ -4,7 +4,7 @@
       {{ dish?.name }}
       <div class="buttons">
         <RevertButton @click="handleRevertButtonClick" :disabled="!hasPendingChanges" /> 
-        <!-- <UpdateButton @click="handleUpdateButtonClick" :disabled="!hasPendingChanges" /> -->
+        <UpdateButton @click="handleUpdateButtonClick" :disabled="!hasPendingChanges" />
       </div>
     </div>
     <!-- <AddRow :loading="isAddingIngredient" @add-ingredient="handleAddNewIngredient" /> -->
@@ -12,6 +12,7 @@
       <IngredientsInDishTable
         :items="dish?.ingredients || []"
         @delete-item="handleDeleteItem"
+        @update-item="handleUpdateItem"
       />
   </section>
 </template>
@@ -22,7 +23,6 @@ import { useDishViewLogic } from '../composables/useDishViewLogic';
 import UpdateButton from '@/components/UpdateButton.vue';
 import RevertButton from '@/components/RevertButton.vue';
 import IngredientsInDishTable from '../components/IngredientsInDishTable.vue';
-import { onMounted } from 'vue';
 
 const {id} = defineProps<{ id: number }>()
 
@@ -31,6 +31,8 @@ const {
     dish,
     hasPendingChanges,
     handleDeleteItem,
-    handleRevertButtonClick
+    handleUpdateItem,
+    handleRevertButtonClick,
+    handleUpdateButtonClick
 } = useDishViewLogic(id);
 </script>

@@ -35,8 +35,40 @@ export function useDishViewLogic(id: number) {
   // ==== H A N D L E R S ====
   const handleRevertButtonClick = () => {
     toast.info("Reverted all pending changes.")
+    hasPendingChanges.value = false
     fetchDish()
   }
+
+const handleUpdateButtonClick = async () => {
+  if (!dish.value) {
+    toast.error("No dish to update.");
+    return;
+  }
+
+  try {
+    const updatedDish: DishPut = {
+      id: dish.value.id,
+      name: dish.value.name,
+      meal: dish.value.meal,
+      recipe: dish.value.recipe,
+      ingredients: dish.value.ingredients.map(item => ({
+        ingredient: {
+          id: item.ingredient.id,
+          name: item.ingredient.name,
+        },
+        amount: item.amount,
+      })),
+    };
+
+    await updateDish(dish.value.id, updatedDish);
+    hasPendingChanges.value = false;
+    toast.success("Dish updated successfully.");
+  } catch (error) {
+    toast.error("Failed to update dish.");
+  }
+};
+
+
 
   const handleDeleteItem = async (ingredientId: number) => {
     // i want to delete the ingredient from the dish
@@ -44,34 +76,25 @@ export function useDishViewLogic(id: number) {
       toast.error("No dish to delete the ingredient from.")
       return
     } 
-
-    console.log("Deleting ingredient with ID:", ingredientId)
     dish.value.ingredients = dish.value.ingredients.filter(item => item.ingredient.id !== ingredientId)
     hasPendingChanges.value = true
   }
 
-  const handleUpdateButtonClick = async () => {
-    // const changesToSubmit = Object.values(pendingChanges.value)
-
-    // if (changesToSubmit.length === 0) {
-    //   toast.warning("No changes to update.")
-    //   return
-    // }
-
-    // try {
-    //   await Promise.all(changesToSubmit.map(item => updateDish(dishId, item)))
-    //   pendingChanges.value = {}
-    //   toast.success("Changes updated successfully.")
-    //   fetchDish()
-    // } catch (error) {
-    //   toast.error("Failed to update changes.")
-    // }
+  const handleUpdateItem = () => {
+    // i want to update the ingredient in the dish
+    if (!dish.value) {
+      toast.error("No dish to update the ingredient in.")
+      return
+    }
+    hasPendingChanges.value = true
   }
-
+ 
   return {
     dish,
     hasPendingChanges,
     handleDeleteItem,
-    handleRevertButtonClick
+    handleUpdateItem,
+    handleRevertButtonClick,
+    handleUpdateButtonClick
   }
 }
