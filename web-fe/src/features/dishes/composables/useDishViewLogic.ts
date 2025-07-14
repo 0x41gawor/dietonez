@@ -1,6 +1,6 @@
 import {ref, computed, onMounted} from 'vue'
 import {useToast} from "vue-toastification";
-import type {DishGet, DishGetShort, DishPost, DishPut} from '@/types/types'
+import type {DishGet, DishGetShort, DishPost, DishPut, IngredientInDishPut} from '@/types/types'
 import {getDishes, getDishById, createDish, updateDish, deleteDishById, updateDishName} from '@/api/dishes'
 
 export function useDishViewLogic(id: number) {
@@ -85,7 +85,9 @@ const handleUpdateButtonClick = async () => {
   }
 };
 
-
+const handleAddNewIngredient = (newIngredient: IngredientInDishPut) => {
+  console.log("Adding new ingredient:", newIngredient);
+}
 
 
   const handleDeleteItem = async (ingredientId: number) => {
@@ -113,6 +115,8 @@ const handleUpdateButtonClick = async () => {
     handleDeleteItem,
     handleUpdateItem,
     handleRevertButtonClick,
-    handleUpdateButtonClick
+    handleUpdateButtonClick,
+    isAddingIngredient,
+    handleAddNewIngredient,
   }
 }
