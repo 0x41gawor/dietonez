@@ -19,25 +19,25 @@
           </tr>
           <tr v-for="item in items" :key="item.ingredient.id">
             <!-- NAME as SELECT -->
-           <td>
-          <select
-            v-model="item.ingredient.id"
-            class="edit-select"
-            @change="handleIngredientChange(item)"
-          >
-            <option disabled value="">Select ingredient</option>
-            <option
-              v-for="option in ingredientOptions"
-              :key="option.id"
-              :value="option.id"
-            >
-              {{ option.name }}
-            </option>
-          </select>
-        </td>
- 
+            <td>
+              <select
+                v-model="item.ingredient.id"
+                class="edit-select"
+                @change="handleIngredientChange(item)"
+              >
+                <option disabled value="">Select ingredient</option>
+                <option
+                  v-for="option in getAvailableOptions(item)"
+                  :key="option.id"
+                  :value="option.id"
+                >
+                  {{ option.name }}
+                </option>
+              </select>
+            </td>
+
             <!-- AMOUNT editable -->
-           <td>
+            <td>
               <div class="amount-wrapper">
                 <input
                   v-model.number="item.amount"
@@ -47,7 +47,7 @@
                 />
                 <span class="unit-label">[{{ item.ingredient.unit || 'g' }}]</span>
               </div>
-             </td>
+            </td>
 
             <!-- Read-only columns -->
             <td>{{ item.ingredient.kcal }}</td>
@@ -68,19 +68,47 @@
         </tbody>
       </table>
     </div>
+    <div class="table-footer">
+      <div class="footer-info">
+        <span class="macro-badge kcal">{{ total.kcal }}</span>
+        <span class="macro-badge protein">{{ total.protein }}</span>
+        <span class="macro-badge fat">{{ total.fat }}</span>
+        <span class="macro-badge carbs">{{ total.carbs }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { IngredientInDishGet } from '@/types/types';
-import { ref, onMounted } from 'vue';
-import { GetIngredientsParams, getIngredientById, getIngredients } from '@/api/ingredients'; // lub skąd masz interfejs
-import { calculateIngredientSummary } from '@/api/dishes'; // lub skąd masz interfejs
-
+import { ref, onMounted, computed } from 'vue';
+import { GetIngredientsParams, getIngredientById, getIngredients } from '@/api/ingredients';
+import { calculateIngredientSummary } from '@/api/dishes';
 
 const props = defineProps<{
-  items: IngredientInDishGet[]; // lub konkretny typ np. IngredientInDishGet[]
+  items: IngredientInDishGet[];
 }>();
+
+const total = computed(() => {
+  const sum = props.items.reduce(
+    (acc, item) => {
+      acc.kcal += item.ingredient.kcal || 0;
+      acc.protein += item.ingredient.protein || 0;
+      acc.fat += item.ingredient.fat || 0;
+      acc.carbs += item.ingredient.carbs || 0;
+      return acc;
+    },
+    { kcal: 0, protein: 0, fat: 0, carbs: 0 }
+  );
+
+  const round1 = (v: number) => Math.round(v * 10) / 10;
+  return {
+    kcal: round1(sum.kcal),
+    protein: round1(sum.protein),
+    fat: round1(sum.fat),
+    carbs: round1(sum.carbs),
+  };
+});
 
 const emit = defineEmits<{
   (e: 'updateItem', item: any): void;
@@ -88,34 +116,41 @@ const emit = defineEmits<{
 }>();
 
 onMounted(() => {
-  // Fetch ingredient options when the component is mounted
   fetchIngredientOptions();
 });
 
-// Select options from backend
 const ingredientOptions = ref<{ id: number; name: string }[]>([]);
 
 const fetchIngredientOptions = async () => {
   const params: GetIngredientsParams = {
     page: 1,
     pageSize: 100,
-    short: true
+    short: true,
   };
 
   try {
     const response = await getIngredients(params);
     ingredientOptions.value = response.ingredients.map(ingredient => ({
       id: ingredient.id,
-      name: ingredient.name
+      name: ingredient.name,
     }));
   } catch (error) {
     console.error('Failed to fetch ingredients:', error);
   }
 };
 
+const getAvailableOptions = (currentItem: IngredientInDishGet) => {
+  const usedIds = props.items
+    .filter(item => item !== currentItem)
+    .map(item => item.ingredient.id);
+
+  return ingredientOptions.value
+    .filter(option => !usedIds.includes(option.id))
+    .sort((a, b) => a.name.localeCompare(b.name));
+};
+
 const handleIngredientChange = async (item: IngredientInDishGet) => {
   try {
-    // 1. Pobierz pełne dane składnika (np. name, unit, default_amount itp.)
     const fullIngredient = await getIngredientById(item.ingredient.id);
 
     item.ingredient.name = fullIngredient.name;
@@ -124,7 +159,6 @@ const handleIngredientChange = async (item: IngredientInDishGet) => {
     item.ingredient.default_amount = fullIngredient.default_amount;
     item.ingredient.labels = fullIngredient.labels;
 
-    // 2. Przelicz makro dla wybranej ilości
     const summary = await calculateIngredientSummary({
       ingredient: { id: item.ingredient.id, name: item.ingredient.name },
       amount: item.amount,
@@ -140,11 +174,12 @@ const handleIngredientChange = async (item: IngredientInDishGet) => {
     console.error(`Failed to update ingredient with ID ${item.ingredient.id}:`, error);
   }
 };
-
-
-
-
 </script>
+
+<style scoped>
+/* ... bez zmian — cały dotychczasowy CSS z Twojego kodu ... */
+</style>
+
 
 <style scoped>
 .name-cell-editable {
@@ -253,7 +288,9 @@ td:last-child { text-align: center; }
 /* Styl kontenera zapewniający prawidłowe wyrównanie w pionie */
 .footer-info {
   display: flex;
-  align-items: center;
+  justify-content: flex-start;
+  padding-left: calc(50% + 5.1*4% + 4px); /* 50% na .col-name, 4% na .col-numeric dla Amount */
+  gap: 4%;
 }
 
 .amount-wrapper {
@@ -271,5 +308,28 @@ td:last-child { text-align: center; }
   flex-shrink: 0;
   white-space: nowrap;
 }
+.macro-badge {
+  display: inline-block;
+  min-width: 24px;
+  padding: 4px 13px;
+  text-align: center;
+  border-radius: 12%;
+  border: 2px solid;
+  font-size: 0.8rem;
+  color: #000;
+}
 
+.macro-badge.kcal {
+  border-color: #f9a825; /* żółty */
+  font-weight: bold;
+}
+.macro-badge.protein {
+  border-color: #2196f3; /* niebieski */
+}
+.macro-badge.fat {
+  border-color: #ef5350; /* czerwony */
+}
+.macro-badge.carbs {
+  border-color: #757575; /* szary */
+}
 </style>

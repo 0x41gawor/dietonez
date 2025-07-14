@@ -1,16 +1,17 @@
 <template>
   <section>
     <div class="header">
+      {{ dish?.name }}
       <div class="buttons">
-        {{  dish?.name }}
-        <!-- <RevertButton @click="" :disabled="!hasPendingChanges" />  -->
-        <!-- <UpdateButton @click="" :disabled="!hasPendingChanges" /> -->
+        <RevertButton @click="handleRevertButtonClick" :disabled="!hasPendingChanges" /> 
+        <!-- <UpdateButton @click="handleUpdateButtonClick" :disabled="!hasPendingChanges" /> -->
       </div>
     </div>
     <!-- <AddRow :loading="isAddingIngredient" @add-ingredient="handleAddNewIngredient" /> -->
 
       <IngredientsInDishTable
         :items="dish?.ingredients || []"
+        @delete-item="handleDeleteItem"
       />
   </section>
 </template>
@@ -27,6 +28,9 @@ const {id} = defineProps<{ id: number }>()
 
 
 const {
-    dish
+    dish,
+    hasPendingChanges,
+    handleDeleteItem,
+    handleRevertButtonClick
 } = useDishViewLogic(id);
 </script>

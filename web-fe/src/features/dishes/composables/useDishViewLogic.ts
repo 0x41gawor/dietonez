@@ -8,8 +8,7 @@ export function useDishViewLogic(id: number) {
   const dish = ref<DishGet | null>(null)
   const isLoading = ref(true)
   const isAddingIngredient = ref(false)
-  const pendingChanges = ref<Record<number, DishGetShort>>({})
-  const hasPendingChanges = computed(() => Object.keys(pendingChanges.value).length > 0)
+  const hasPendingChanges = ref<boolean>(false)
 
   // helpers
   const toast = useToast()
@@ -35,9 +34,20 @@ export function useDishViewLogic(id: number) {
 
   // ==== H A N D L E R S ====
   const handleRevertButtonClick = () => {
-    pendingChanges.value = {}
     toast.info("Reverted all pending changes.")
     fetchDish()
+  }
+
+  const handleDeleteItem = async (ingredientId: number) => {
+    // i want to delete the ingredient from the dish
+    if (!dish.value) {
+      toast.error("No dish to delete the ingredient from.")
+      return
+    } 
+
+    console.log("Deleting ingredient with ID:", ingredientId)
+    dish.value.ingredients = dish.value.ingredients.filter(item => item.ingredient.id !== ingredientId)
+    hasPendingChanges.value = true
   }
 
   const handleUpdateButtonClick = async () => {
@@ -59,6 +69,9 @@ export function useDishViewLogic(id: number) {
   }
 
   return {
-    dish
+    dish,
+    hasPendingChanges,
+    handleDeleteItem,
+    handleRevertButtonClick
   }
 }

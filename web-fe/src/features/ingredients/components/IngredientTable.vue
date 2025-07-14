@@ -91,7 +91,7 @@
             @change="handlePageSizeEdition"
         />
         <span> out of {{ total }} elements</span>
-    </div>
+      </div>
       <div class="pagination-controls">
         <button class="pagination-arrow" aria-label="Previous page" @click="emit('pageChanged', -1)"><</button>
         <span class="pagination-status">{{ currentPage }} / {{ totalPages }}</span>
