@@ -70,45 +70,25 @@
     </div>
     <div class="table-footer">
       <div class="footer-info">
-        <span class="macro-badge kcal">{{ total.kcal }}</span>
-        <span class="macro-badge protein">{{ total.protein }}</span>
-        <span class="macro-badge fat">{{ total.fat }}</span>
-        <span class="macro-badge carbs">{{ total.carbs }}</span>
+        <span class="macro-badge kcal">{{ summary.kcal }}</span>
+        <span class="macro-badge protein">{{ summary.proteins }}</span>
+        <span class="macro-badge fat">{{ summary.fats }}</span>
+        <span class="macro-badge carbs">{{ summary.carbs }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { IngredientInDishGet } from '@/types/types';
+import { IngredientInDishGet, NutritionSummary } from '@/types/types';
 import { ref, onMounted, computed } from 'vue';
 import { GetIngredientsParams, getIngredientById, getIngredients } from '@/api/ingredients';
 import { calculateIngredientSummary } from '@/api/dishes';
 
 const props = defineProps<{
   items: IngredientInDishGet[];
+  summary: NutritionSummary;
 }>();
-
-const total = computed(() => {
-  const sum = props.items.reduce(
-    (acc, item) => {
-      acc.kcal += item.ingredient.kcal || 0;
-      acc.protein += item.ingredient.protein || 0;
-      acc.fat += item.ingredient.fat || 0;
-      acc.carbs += item.ingredient.carbs || 0;
-      return acc;
-    },
-    { kcal: 0, protein: 0, fat: 0, carbs: 0 }
-  );
-
-  const round1 = (v: number) => Math.round(v * 10) / 10;
-  return {
-    kcal: round1(sum.kcal),
-    protein: round1(sum.protein),
-    fat: round1(sum.fat),
-    carbs: round1(sum.carbs),
-  };
-});
 
 const emit = defineEmits<{
   (e: 'updateItem', item: any): void;

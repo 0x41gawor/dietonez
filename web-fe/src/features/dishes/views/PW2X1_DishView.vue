@@ -17,6 +17,7 @@
     
     <IngredientsInDishTable
     :items="dish?.ingredients || []"
+    :summary="summary"
     @delete-item="handleDeleteItem"
     @update-item="handleUpdateItem"
     />
@@ -37,6 +38,7 @@ const {id} = defineProps<{ id: number }>()
 
 const {
     dish,
+    summary,
     hasPendingChanges,
     handleDeleteItem,
     handleUpdateItem,

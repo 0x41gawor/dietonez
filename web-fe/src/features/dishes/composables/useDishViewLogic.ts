@@ -1,6 +1,6 @@
 import {ref, computed, onMounted} from 'vue'
 import {useToast} from "vue-toastification";
-import type {DishGet, DishGetShort, DishPost, DishPut, IngredientInDishPut, IngredientGetPut, IngredientInDishGet} from '@/types/types'
+import type {DishGet, NutritionSummary, DishPut, IngredientInDishPut, IngredientGetPut, IngredientInDishGet} from '@/types/types'
 import {getDishes, getDishById, createDish, updateDish, deleteDishById, updateDishName} from '@/api/dishes'
 import { getIngredientById } from '@/api/ingredients';
 
@@ -21,6 +21,16 @@ export function useDishViewLogic(id: number) {
   const isLoading = ref(true)
   const isAddingIngredient = ref(false)
   const hasPendingChanges = ref<boolean>(false)
+
+const round1 = (v: number) => Math.round(v * 10) / 10;
+
+const summary = computed<NutritionSummary>(() => ({
+  kcal: round1(dish.value.kcal),
+  proteins: round1(dish.value.protein),
+  fats: round1(dish.value.fat),
+  carbs: round1(dish.value.carbs),
+}));
+
 
   // helpers
   const toast = useToast()
@@ -133,6 +143,7 @@ const handleAddNewIngredient = async (newIngredient: IngredientInDishPut) => {
  
   return {
     dish,
+    summary,
     hasPendingChanges,
     handleDeleteItem,
     handleUpdateItem,
