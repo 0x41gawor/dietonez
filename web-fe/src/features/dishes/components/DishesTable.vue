@@ -131,7 +131,7 @@ defineExpose({ getUpdatedItems });
 .name-cell-editable .edit-input {
   width: fit-content;
   max-width: 100%;
-  min-width: 100px;
+  min-width: 500px;
   flex-grow: 0;
   flex-shrink: 1;
 }

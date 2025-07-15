@@ -20,7 +20,7 @@
     @delete-item="handleDeleteItem"
     @update-item="handleUpdateItem"
     />
-    <AddRow :loading="isAddingIngredient" @add-ingredient="handleAddNewIngredient" />
+    <AddRow :loading="isAddingIngredient" :used-ingredients="dish.ingredients" @add-ingredient="handleAddNewIngredient" />
   </section>
 </template>
 

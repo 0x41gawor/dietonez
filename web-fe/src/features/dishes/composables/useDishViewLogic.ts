@@ -1,7 +1,8 @@
 import {ref, computed, onMounted} from 'vue'
 import {useToast} from "vue-toastification";
-import type {DishGet, DishGetShort, DishPost, DishPut, IngredientInDishPut} from '@/types/types'
+import type {DishGet, DishGetShort, DishPost, DishPut, IngredientInDishPut, IngredientGetPut, IngredientInDishGet} from '@/types/types'
 import {getDishes, getDishById, createDish, updateDish, deleteDishById, updateDishName} from '@/api/dishes'
+import { getIngredientById } from '@/api/ingredients';
 
 export function useDishViewLogic(id: number) {
   // ==== S T A T E ====
@@ -85,9 +86,30 @@ const handleUpdateButtonClick = async () => {
   }
 };
 
-const handleAddNewIngredient = (newIngredient: IngredientInDishPut) => {
+const handleAddNewIngredient = async (newIngredient: IngredientInDishPut) => {
   console.log("Adding new ingredient:", newIngredient);
-}
+
+  let newIngredientInDish: IngredientInDishGet | null = null;
+
+  try {
+    const ingredientGetPut: IngredientGetPut = await getIngredientById(newIngredient.ingredient.id);
+    newIngredientInDish = {
+      ingredient: ingredientGetPut,
+      amount: newIngredient.amount,
+    };
+  } catch (error) {
+    toast.error("Failed to fetch ingredient details.");
+    return; // ← ważne: przerwij, jeśli fetch się nie udał
+  } finally {
+    if (newIngredientInDish) {
+      dish.value.ingredients.push(newIngredientInDish);
+      hasPendingChanges.value = true;
+      isAddingIngredient.value = false;
+      toast.success("Ingredient added successfully.");
+    }
+  }
+};
+
 
 
   const handleDeleteItem = async (ingredientId: number) => {

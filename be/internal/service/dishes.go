@@ -130,7 +130,7 @@ func (s *ServiceDishes) GetByID(ctx context.Context, id int) (*model.DishGet, er
 
 	var (
 		totalKcal, totalProtein, totalFat, totalCarbs float64
-		ingredients                                   []model.IngredientInDishGet
+		ingredients                                   = make([]model.IngredientInDishGet, 0)
 	)
 
 	for rows.Next() {

@@ -294,12 +294,15 @@ td:last-child { text-align: center; }
 }
 
 .amount-wrapper {
-  display: flex;
-  justify-content: space-between;
+   display: flex;
   align-items: center;
-  gap: 4px;
-  max-width: 100px; /* lub więcej jeśli potrzeba */
-  white-space: nowrap;
+  gap: 6px;
+  max-width: 150px; /* zwiększ limit */
+}
+
+.amount-wrapper input {
+  flex: 1; /* ← to pozwoli inputowi zająć dostępne miejsce */
+  min-width: 40px; /* opcjonalnie */
 }
 
 .unit-label {

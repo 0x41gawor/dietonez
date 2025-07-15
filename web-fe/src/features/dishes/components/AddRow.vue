@@ -9,7 +9,7 @@
         aria-label="Select Ingredient"
       >
         <option disabled value="">Select ingredient</option>
-        <option v-for="opt in ingredientOptions" :key="opt.id" :value="opt.id">
+        <option v-for="opt in filteredIngredientOptions" :key="opt.id" :value="opt.id">
           {{ opt.name }}
         </option>
       </select>
@@ -62,13 +62,27 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import AddButton from '@/components/AddButton.vue';
 import { getIngredientById,  GetIngredientsParams, getIngredients } from '@/api/ingredients';
-import { IngredientMin, IngredientInDishPut, IngredientGetPut, Unit, ShopStyle } from '@/types/types';
+import { IngredientMin, IngredientInDishPut, IngredientGetPut, Unit, ShopStyle, IngredientInDishGet } from '@/types/types';
 
 const emit = defineEmits<{
   (e: 'add-ingredient', payload: IngredientInDishPut): void;
 }>();
 
 const ingredientOptions = ref<IngredientMin[]>([]);
+
+const props = defineProps<{
+  usedIngredients: IngredientInDishGet[];
+}>();
+
+const filteredIngredientOptions = computed(() => {
+  const usedIds = new Set(props.usedIngredients.map(i => i.ingredient.id));
+
+  return ingredientOptions.value
+    .filter(opt => !usedIds.has(opt.id))
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+});
+
+
 
 const fetchIngredientOptions = async () => {
   try {
