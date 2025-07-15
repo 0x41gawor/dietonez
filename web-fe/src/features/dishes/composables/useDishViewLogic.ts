@@ -94,6 +94,7 @@ const handleUpdateButtonClick = async () => {
     toast.error("Failed to update dish.");
     console.error("Update error:", error);
   }
+  fetchDish();
 };
 
 const handleAddNewIngredient = async (newIngredient: IngredientInDishPut) => {
@@ -133,7 +134,6 @@ const handleAddNewIngredient = async (newIngredient: IngredientInDishPut) => {
   }
 
   const handleUpdateItem = () => {
-    // i want to update the ingredient in the dish
     if (!dish.value) {
       toast.error("No dish to update the ingredient in.")
       return

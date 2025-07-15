@@ -153,10 +153,15 @@ func (s *ServiceDishes) GetByID(ctx context.Context, id int) (*model.DishGet, er
 			return nil, fmt.Errorf("scan ingredient in dish: %w", err)
 		}
 
-		totalKcal += ing.Kcal * amount / 100
-		totalProtein += ing.Protein * amount / 100
-		totalFat += ing.Fat * amount / 100
-		totalCarbs += ing.Carbs * amount / 100
+		totalKcal += ing.Kcal * amount / ing.DefaultAmount
+		totalProtein += ing.Protein * amount / ing.DefaultAmount
+		totalFat += ing.Fat * amount / ing.DefaultAmount
+		totalCarbs += ing.Carbs * amount / ing.DefaultAmount
+
+		ing.Kcal = round1(ing.Kcal * amount / ing.DefaultAmount)
+		ing.Protein = round1(ing.Protein * amount / ing.DefaultAmount)
+		ing.Fat = round1(ing.Fat * amount / ing.DefaultAmount)
+		ing.Carbs = round1(ing.Carbs * amount / ing.DefaultAmount)
 
 		ingredients = append(ingredients, model.IngredientInDishGet{
 			Ingredient: ing,
