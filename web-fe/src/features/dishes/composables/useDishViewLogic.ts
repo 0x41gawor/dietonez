@@ -1,5 +1,6 @@
 import {ref, computed, onMounted} from 'vue'
 import {useToast} from "vue-toastification";
+import { useRouter } from 'vue-router'
 import type {DishGet, NutritionSummary, DishPut, IngredientInDishPut, IngredientGetPut, IngredientInDishGet} from '@/types/types'
 import {getDishes, getDishById, createDish, updateDish, deleteDishById, updateDishName} from '@/api/dishes'
 import { getIngredientById } from '@/api/ingredients';
@@ -21,6 +22,8 @@ export function useDishViewLogic(id: number) {
   const isLoading = ref(true)
   const isAddingIngredient = ref(false)
   const hasPendingChanges = ref<boolean>(false)
+
+  const showDeleteModal = ref(false)
 
 const round1 = (v: number) => Math.round(v * 10) / 10;
 
@@ -128,7 +131,6 @@ const handleAddNewIngredient = async (newIngredient: IngredientInDishPut) => {
 
 
   const handleDeleteItem = async (ingredientId: number) => {
-    // i want to delete the ingredient from the dish
     if (!dish.value) {
       toast.error("No dish to delete the ingredient from.")
       return
@@ -144,6 +146,25 @@ const handleAddNewIngredient = async (newIngredient: IngredientInDishPut) => {
     }
     hasPendingChanges.value = true
   }
+
+const handleDeleteButtonClick = () => {
+  showDeleteModal.value = true
+}
+
+const router = useRouter()
+
+const confirmDelete = async () => {
+  try {
+    await deleteDishById(dish.value.id)
+    toast.success("Dish deleted.")
+    router.back() // albo router.push('/dishes') jeśli masz stały path
+  } catch (err) {
+    toast.error("Failed to delete dish.")
+    console.error(err)
+  } finally {
+    showDeleteModal.value = false
+  }
+}
  
   return {
     dish,
@@ -153,7 +174,10 @@ const handleAddNewIngredient = async (newIngredient: IngredientInDishPut) => {
     handleUpdateItem,
     handleRevertButtonClick,
     handleUpdateButtonClick,
+    handleDeleteButtonClick,
     isAddingIngredient,
     handleAddNewIngredient,
+    confirmDelete,
+    showDeleteModal,
   }
 }
