@@ -22,6 +22,7 @@
     @update-item="handleUpdateItem"
     />
     <AddRow :loading="isAddingIngredient" :used-ingredients="dish.ingredients" @add-ingredient="handleAddNewIngredient" />
+    <Recipe :recipe="dish.recipe" v-model:has-pending-changes="hasPendingChanges"/>
   </section>
 </template>
 
@@ -29,6 +30,7 @@
 import './PW2X1_DishView.style.css'
 import { useDishViewLogic } from '../composables/useDishViewLogic';
 import AddRow  from '../components/AddRow.vue';
+import Recipe from '../components/Recipe.vue';
 import UpdateButton from '@/components/UpdateButton.vue';
 import RevertButton from '@/components/RevertButton.vue';
 import IngredientsInDishTable from '../components/IngredientsInDishTable.vue';
