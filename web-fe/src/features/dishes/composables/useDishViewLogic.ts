@@ -114,6 +114,10 @@ const handleAddNewIngredient = async (newIngredient: IngredientInDishPut) => {
   } finally {
     if (newIngredientInDish) {
       dish.value.ingredients.push(newIngredientInDish);
+      dish.value.kcal += (newIngredientInDish.ingredient.kcal ?? 0) * newIngredientInDish.amount / (newIngredientInDish.ingredient.default_amount ?? 1);
+      dish.value.protein += (newIngredientInDish.ingredient.protein ?? 0) * newIngredientInDish.amount / (newIngredientInDish.ingredient.default_amount ?? 1);
+      dish.value.fat += (newIngredientInDish.ingredient.fat ?? 0) * newIngredientInDish.amount / (newIngredientInDish.ingredient.default_amount ?? 1);
+      dish.value.carbs += (newIngredientInDish.ingredient.carbs ?? 0) * newIngredientInDish.amount / (newIngredientInDish.ingredient.default_amount ?? 1);
       hasPendingChanges.value = true;
       isAddingIngredient.value = false;
       toast.success("Ingredient added successfully.");
