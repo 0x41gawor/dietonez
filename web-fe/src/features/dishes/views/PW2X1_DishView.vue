@@ -23,6 +23,9 @@
     />
     <AddRow :loading="isAddingIngredient" :used-ingredients="dish.ingredients" @add-ingredient="handleAddNewIngredient" />
     <Recipe :recipe="dish.recipe" v-model:has-pending-changes="hasPendingChanges"/>
+    <div class="delete-button-wrapper">
+        <DeleteButton />
+    </div>
   </section>
 </template>
 
@@ -33,6 +36,7 @@ import AddRow  from '../components/AddRow.vue';
 import Recipe from '../components/Recipe.vue';
 import UpdateButton from '@/components/UpdateButton.vue';
 import RevertButton from '@/components/RevertButton.vue';
+import DeleteButton from '@/components/DeleteButton.vue';
 import IngredientsInDishTable from '../components/IngredientsInDishTable.vue';
 
 const {id} = defineProps<{ id: number }>()
