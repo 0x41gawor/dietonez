@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/0x41gawor/dietonez/internal/repo"
@@ -55,6 +56,11 @@ func (s *ServiceIngredients) ListPaginated(ctx context.Context, page, pageSize i
 		if err := rows.Err(); err != nil {
 			return nil, 0, fmt.Errorf("rows short err: %w", err)
 		}
+
+		sort.Slice(out, func(i, j int) bool {
+			return out[i].Name < out[j].Name
+		})
+
 		return out, total, nil
 
 	} else {
@@ -134,6 +140,10 @@ func (s *ServiceIngredients) ListPaginated(ctx context.Context, page, pageSize i
 				return nil, 0, fmt.Errorf("rows label err: %w", err)
 			}
 		}
+
+		sort.Slice(out, func(i, j int) bool {
+			return out[i].Name < out[j].Name
+		})
 
 		return out, total, nil
 	}
