@@ -7,6 +7,7 @@ import type {
   DishPut
 } from '@/types/types'
 import { getDishes, getDishById, createDish, updateDish, deleteDishById, updateDishName } from '@/api/dishes'
+import { useRouter } from 'vue-router'
 
 export function useDishesListViewLogic(meal: 'Breakfast' | 'MainMeal' | 'Pre-Workout' | 'Supper') {
     // ==== S T A T E ====
@@ -21,6 +22,7 @@ export function useDishesListViewLogic(meal: 'Breakfast' | 'MainMeal' | 'Pre-Wor
     const hasPendingChanges = computed(() => {
         return Object.keys(pendingChanges.value).length > 0
     })
+    const router = useRouter()
     // helpers
     const toast = useToast()
     // ==== L I F E C Y C L E ====
@@ -88,7 +90,8 @@ export function useDishesListViewLogic(meal: 'Breakfast' | 'MainMeal' | 'Pre-Wor
     }
     // Called when the user clicks the Add button
     const handleAddButtonClick = () => {
-        console.log('Add button clicked');
+        console.log('Add button clickdsdfed');
+        router.push(`/dishes/${meal}/0/edit`)
     }
     // ==== R E T U R N ====
     return {

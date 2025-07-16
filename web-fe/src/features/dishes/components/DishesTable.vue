@@ -98,7 +98,7 @@ watch(() => props.pageSize, (newVal) => {
 
 const goToEdit = (id: number) => {
   console.log("Navigate to edit for dish ID:", id);
-  router.push(`/dishes/${id}/edit`)
+  router.push(`/dishes/${props.meal}/${id}/edit`)
 }
 
 // ======= H A N D L E R S =======

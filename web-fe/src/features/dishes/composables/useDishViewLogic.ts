@@ -1,16 +1,16 @@
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted, Ref, watch} from 'vue'
 import {useToast} from "vue-toastification";
 import { useRouter } from 'vue-router'
-import type {DishGet, NutritionSummary, DishPut, IngredientInDishPut, IngredientGetPut, IngredientInDishGet} from '@/types/types'
+import type {DishGet, NutritionSummary, DishPut, IngredientInDishPut, IngredientGetPut, IngredientInDishGet, Meal} from '@/types/types'
 import {getDishes, getDishById, createDish, updateDish, deleteDishById, updateDishName} from '@/api/dishes'
 import { getIngredientById } from '@/api/ingredients';
 
-export function useDishViewLogic(id: number) {
+export function useDishViewLogic(id: Ref<number>, initialMeal: Meal) {
   // ==== S T A T E ====
   const dish = ref<DishGet>({
   id: 0,
   name: '',
-  meal: 'Breakfast',
+  meal: initialMeal, // ← kluczowe
   kcal : 0,
   protein: 0,
   fat: 0,
@@ -22,8 +22,8 @@ export function useDishViewLogic(id: number) {
   const isLoading = ref(true)
   const isAddingIngredient = ref(false)
   const hasPendingChanges = ref<boolean>(false)
-
   const showDeleteModal = ref(false)
+  const isCreatingNew = computed(() => id.value === 0);
 
 const round1 = (v: number) => Math.round(v * 10) / 10;
 
@@ -39,14 +39,24 @@ const summary = computed<NutritionSummary>(() => ({
   const toast = useToast()
 
   // ==== L I F E C Y C L E ====
-  onMounted(fetchDish)
+watch(
+  id,
+  async (newId) => {
+    if (newId > 0) {
+      await fetchDish();
+    }
+  },
+  { immediate: true }
+)
+
+
 
   // ==== M E T H O D S ====
   async function fetchDish() {
     console.log(id)
     try {
       isLoading.value = true
-      const response = await getDishById(id)
+      const response = await getDishById(id.value)
       console.log("Fetched dish response:", response)
       dish.value = response
     } catch (error) {
@@ -165,6 +175,34 @@ const confirmDelete = async () => {
     showDeleteModal.value = false
   }
 }
+
+const handleCreateButtonClick = async () => {
+  try {
+    const newDish: DishPut = {
+      id: 0,
+      name: dish.value.name,
+      meal: dish.value.meal,
+      recipe: dish.value.recipe,
+      ingredients: dish.value.ingredients.map(item => ({
+        ingredient: {
+          id: item.ingredient.id,
+          name: item.ingredient.name,
+        },
+        amount: item.amount,
+      })),
+    };
+
+    const createdDish = await createDish(newDish);
+    toast.success("Dish created.");
+
+    // fetchujemy pełne dane i przestawiamy widok
+    router.push(`/dishes/${dish.value.meal}/${createdDish.id}/edit`);
+  } catch (err) {
+    toast.error("Failed to create dish.");
+    console.error(err);
+  }
+}
+
  
   return {
     dish,
@@ -174,10 +212,12 @@ const confirmDelete = async () => {
     handleUpdateItem,
     handleRevertButtonClick,
     handleUpdateButtonClick,
+    handleCreateButtonClick,
     handleDeleteButtonClick,
     isAddingIngredient,
     handleAddNewIngredient,
     confirmDelete,
     showDeleteModal,
+    isCreatingNew,
   }
 }

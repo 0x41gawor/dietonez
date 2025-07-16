@@ -10,7 +10,12 @@
       />
       <div class="buttons">
         <RevertButton @click="handleRevertButtonClick" :disabled="!hasPendingChanges" />
-        <UpdateButton @click="handleUpdateButtonClick" :disabled="!hasPendingChanges" />
+        <template v-if="isCreatingNew">
+            <CreateButton @click="handleCreateButtonClick" :disabled="!hasPendingChanges" />
+        </template>
+        <template v-else>
+            <UpdateButton @click="handleUpdateButtonClick" :disabled="!hasPendingChanges" />
+      </template>
       </div>
     </div>
     
@@ -23,7 +28,7 @@
     <AddRow :loading="isAddingIngredient" :used-ingredients="dish.ingredients" @add-ingredient="handleAddNewIngredient" />
     <Recipe :recipe="dish.recipe" v-model:has-pending-changes="hasPendingChanges"/>
     <div class="delete-button-wrapper">
-        <DeleteButton @click="handleDeleteButtonClick" :disabled="false"/>
+        <DeleteButton @click="handleDeleteButtonClick" :disabled="isCreatingNew"/>
     </div>
 
     <Modal v-if="showDeleteModal" @close="showDeleteModal = false">
@@ -43,15 +48,25 @@
 <script setup lang="ts">
 import './PW2X1_DishView.style.css'
 import { useDishViewLogic } from '../composables/useDishViewLogic';
+import { toRef } from 'vue';
 import AddRow  from '../components/AddRow.vue';
 import Recipe from '../components/Recipe.vue';
 import UpdateButton from '@/components/UpdateButton.vue';
+import CreateButton from '@/components/CreateButton.vue';
 import RevertButton from '@/components/RevertButton.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
 import Modal from '@/components/Modal.vue'
 import IngredientsInDishTable from '../components/IngredientsInDishTable.vue';
+import { Meal } from '@/types/types';
 
-const {id} = defineProps<{ id: number }>()
+const props = defineProps<{
+  id: number
+  meal: Meal 
+}>()
+
+const id = toRef(props, 'id')
+const meal = toRef(props, 'meal')
+
 
 const {
     dish,
@@ -61,10 +76,12 @@ const {
     handleUpdateItem,
     handleRevertButtonClick,
     handleUpdateButtonClick,
+    handleCreateButtonClick,
     handleDeleteButtonClick,
     isAddingIngredient,
     handleAddNewIngredient,
     showDeleteModal,
     confirmDelete,
-} = useDishViewLogic(id);
+    isCreatingNew,
+} = useDishViewLogic(id, meal.value);
 </script>
