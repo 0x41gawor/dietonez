@@ -11,7 +11,7 @@
       <div class="buttons">
         <RevertButton @click="handleRevertButtonClick" :disabled="!hasPendingChanges" />
         <template v-if="isCreatingNew">
-            <CreateButton @click="handleCreateButtonClick" :disabled="!hasPendingChanges" />
+            <CreateButton @click="handleCreateButtonClick" :disabled="!hasNameAndIngredients" />
         </template>
         <template v-else>
             <UpdateButton @click="handleUpdateButtonClick" :disabled="!hasPendingChanges" />
@@ -72,6 +72,7 @@ const {
     dish,
     summary,
     hasPendingChanges,
+    hasNameAndIngredients,
     handleDeleteItem,
     handleUpdateItem,
     handleRevertButtonClick,

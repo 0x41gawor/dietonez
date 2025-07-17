@@ -22,6 +22,9 @@ export function useDishViewLogic(id: Ref<number>, initialMeal: Meal) {
   const isLoading = ref(true)
   const isAddingIngredient = ref(false)
   const hasPendingChanges = ref<boolean>(false)
+  const hasNameAndIngredients = computed(() => {
+    return dish.value.name.trim() !== '' && dish.value.ingredients.length > 0;
+  });
   const showDeleteModal = ref(false)
   const isCreatingNew = computed(() => id.value === 0);
 
@@ -71,7 +74,24 @@ watch(
   const handleRevertButtonClick = () => {
     toast.info("Reverted all pending changes.")
     hasPendingChanges.value = false
-    fetchDish()
+    if (isCreatingNew.value) {
+      // Reset to initial state for new dish
+      dish.value = {
+        id: 0,
+        name: '',
+        meal: initialMeal,
+        kcal: 0,
+        protein: 0,
+        fat: 0,
+        carbs: 0,
+        ingredients: [],
+        recipe: {total_time: '', before: '', when_to_start: '', preparation: ''},
+        labels: [],
+      };
+      isAddingIngredient.value = false;
+    } else {
+      fetchDish();
+    }
   }
 
 const handleUpdateButtonClick = async () => {
@@ -111,7 +131,6 @@ const handleUpdateButtonClick = async () => {
 };
 
 const handleAddNewIngredient = async (newIngredient: IngredientInDishPut) => {
-  console.log("Adding new ingredient:", newIngredient);
 
   let newIngredientInDish: IngredientInDishGet | null = null;
 
@@ -133,7 +152,6 @@ const handleAddNewIngredient = async (newIngredient: IngredientInDishPut) => {
       dish.value.carbs += (newIngredientInDish.ingredient.carbs ?? 0) * newIngredientInDish.amount / (newIngredientInDish.ingredient.default_amount ?? 1);
       hasPendingChanges.value = true;
       isAddingIngredient.value = false;
-      toast.success("Ingredient added successfully.");
     }
   }
 };
@@ -167,7 +185,7 @@ const confirmDelete = async () => {
   try {
     await deleteDishById(dish.value.id)
     toast.success("Dish deleted.")
-    router.back() // albo router.push('/dishes') jeśli masz stały path
+    router.push(`/dishes/${dish.value.meal}`);
   } catch (err) {
     toast.error("Failed to delete dish.")
     console.error(err)
@@ -197,6 +215,7 @@ const handleCreateButtonClick = async () => {
 
     // fetchujemy pełne dane i przestawiamy widok
     router.push(`/dishes/${dish.value.meal}/${createdDish.id}/edit`);
+    hasPendingChanges.value = false;
   } catch (err) {
     toast.error("Failed to create dish.");
     console.error(err);
@@ -208,6 +227,7 @@ const handleCreateButtonClick = async () => {
     dish,
     summary,
     hasPendingChanges,
+    hasNameAndIngredients,
     handleDeleteItem,
     handleUpdateItem,
     handleRevertButtonClick,
