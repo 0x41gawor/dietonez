@@ -47,3 +47,8 @@ export async function updateDietContext(context: DietContext): Promise<DietConte
   const response = await client.put('/diet-context', context)
   return response.data
 }
+
+// PATCH /diets/{id}/short
+export async function updateDietShort(id: number, diet: DietShort): Promise<void> {
+  await client.patch(`/diets/${id}/short`, diet)
+}

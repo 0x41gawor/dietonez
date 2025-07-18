@@ -2,6 +2,7 @@ import { DietShort } from "@/types/types";
 import { onMounted, ref } from "vue";
 import { computed } from "vue";
 import { useToast } from "vue-toastification";
+import { updateDietShort } from '@/api/diets'
 
 
 export function useDietsListViewLogic() {
@@ -23,6 +24,7 @@ export function useDietsListViewLogic() {
             console.error('Failed to fetch diets:', error);
         }
     };
+    
     // ==== L I F E C Y C L E ====
     onMounted(() => {
         fetchDiets();
@@ -41,9 +43,27 @@ export function useDietsListViewLogic() {
         toast.info('Changes reverted');
         fetchDiets();
     }
-    const handleUpdateButtonClick = () => {
+    const handleUpdateButtonClick = async () => {
         console.log('Update button clicked');
-    }
+
+        const updates = Object.values(pendingChanges.value);
+
+        if (updates.length === 0) {
+            toast.info('No changes to update');
+            return;
+        }
+
+        try {
+            await Promise.all(updates.map(diet => updateDietShort(diet.id, diet)));
+
+            toast.success('Changes saved');
+            pendingChanges.value = {};
+            await fetchDiets();
+        } catch (err) {
+            console.error('Failed to update diets:', err);
+            toast.error('Update failed');
+        }
+    };
     const handleAddButtonClick = () => {
         console.log('Add button clicked');
     }
