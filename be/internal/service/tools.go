@@ -18,7 +18,7 @@ func NewServiceTools() *ServiceTools {
 	db := repo.GetDatabaseInstance().DB
 	return &ServiceTools{db: db}
 }
-func (s *ServiceTools) CaclucateIngredientSummary(ctx context.Context, input model.IngredientInDishPut) (model.NutritionSummary, error) {
+func (s *ServiceTools) CalculateIngredientSummary(ctx context.Context, input model.IngredientInDishPut) (model.NutritionSummary, error) {
 	var total model.NutritionSummary
 
 	var kcal, proteins, fats, carbs, default_amount float64

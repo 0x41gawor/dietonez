@@ -28,7 +28,7 @@ func (h *HandlerTools) handleIngredientSummaryPOST(w http.ResponseWriter, r *htt
 		return errors.New("invalid JSON body")
 	}
 
-	summary, err := h.s.CaclucateIngredientSummary(r.Context(), input)
+    summary, err := h.s.CalculateIngredientSummary(r.Context(), input)
 	if err != nil {
 		return errors.New("failed to calculate ingredient summary: " + err.Error())
 	}
