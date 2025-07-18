@@ -119,10 +119,18 @@ func (s *ServiceTools) CalculateDaySummary(ctx context.Context, dishes []model.D
 	}
 
 	// Obliczenia końcowe
+	var proteinsPerKg float64
+	if weight > 0 {
+		proteinsPerKg = summary.Proteins / weight
+	}
+	var fatPercent float64
+	if summary.Kcal > 0 {
+		fatPercent = (summary.Fats * 9 / summary.Kcal) * 100
+	}
 	left := model.Left{
 		Kcal:     goal - summary.Kcal,
-		Proteins: summary.Proteins / weight,
-		Fats:     (summary.Fats * 9 / summary.Kcal) * 100, // % kcal z tłuszczu
+		Proteins: proteinsPerKg,
+		Fats:     fatPercent, // % kcal z tłuszczu
 	}
 
 	resp := model.DaySummaryResponse{
