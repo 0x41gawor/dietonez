@@ -11,6 +11,9 @@
       :items="diets"
       @itemUpdated="handleItemUpdate"
     ></DietsTable>
+    <div class="header">
+                <AddButton id="add-dish-button" @click="handleAddButtonClick" :disabled=false />
+    </div>
   </section>
 </template>
 

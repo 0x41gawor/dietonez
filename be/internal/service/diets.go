@@ -443,6 +443,64 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 	return s.GetByID(ctx, in.ID)
 }
 
+func (s *ServiceDiets) UpdateShort(ctx context.Context, in *model.DietShort) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin tx: %w", err)
+	}
+	defer tx.Rollback()
+
+	// 1. Aktualizacja name + descr
+	const qUpdate = `
+		UPDATE diets SET name = $1, descr = $2
+		WHERE id = $3;
+	`
+	res, err := tx.ExecContext(ctx, qUpdate, in.Name, in.Descr, in.ID)
+	if err != nil {
+		return fmt.Errorf("update diet: %w", err)
+	}
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("check affected rows: %w", err)
+	}
+	if affected == 0 {
+		return sql.ErrNoRows // nie znaleziono diety
+	}
+
+	// 2. Wyczyść stare etykiety
+	_, err = tx.ExecContext(ctx, `DELETE FROM diet_label_bridge WHERE diet_id = $1`, in.ID)
+	if err != nil {
+		return fmt.Errorf("delete labels: %w", err)
+	}
+
+	// 3. Dodaj nowe etykiety
+	if len(in.Labels) > 0 {
+		const qInsertLabel = `
+			INSERT INTO diet_label_bridge (diet_id, label_id)
+			SELECT $1, id FROM diet_labels
+			WHERE label = $2 AND color = $3;
+		`
+		stmt, err := tx.PrepareContext(ctx, qInsertLabel)
+		if err != nil {
+			return fmt.Errorf("prepare label insert: %w", err)
+		}
+		defer stmt.Close()
+
+		for _, lbl := range in.Labels {
+			_, err := stmt.ExecContext(ctx, in.ID, lbl.Label, lbl.Color)
+			if err != nil {
+				return fmt.Errorf("insert label: %w", err)
+			}
+		}
+	}
+
+	// 4. Commit
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit: %w", err)
+	}
+	return nil
+}
+
 func (s *ServiceDiets) Delete(ctx context.Context, id int) error {
 	// 1. Check if active
 	const qCheck = `

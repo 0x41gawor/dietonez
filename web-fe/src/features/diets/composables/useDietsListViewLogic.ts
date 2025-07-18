@@ -1,6 +1,7 @@
 import { DietShort } from "@/types/types";
 import { onMounted, ref } from "vue";
 import { computed } from "vue";
+import { useToast } from "vue-toastification";
 
 
 export function useDietsListViewLogic() {
@@ -9,8 +10,8 @@ export function useDietsListViewLogic() {
     const pendingChanges = ref<Record<number, DietShort>>({});
     const searchText = ref<string>('');
     const hasPendingChanges = computed( () => Object.keys(pendingChanges.value).length > 0 );
-
-
+    // helpers
+    const toast = useToast();
 
     // ==== M E T H O D S ====
     // ==== A P I   C A L L S ====
@@ -29,9 +30,16 @@ export function useDietsListViewLogic() {
     // ==== H A N D L E R S ====
     const handleItemUpdate = (item: DietShort) => {
         console.log('Item updated:', item);
+        const index = diets.value.findIndex(d => d.id === item.id);
+        if (index !== -1) {
+            diets.value[index] = item;
+            pendingChanges.value[item.id] = item;
+        }
     }
     const handleRevertButtonClick = () => {
-        console.log('Revert button clicked');
+        pendingChanges.value = {};
+        toast.info('Changes reverted');
+        fetchDiets();
     }
     const handleUpdateButtonClick = () => {
         console.log('Update button clicked');

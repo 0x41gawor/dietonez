@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -64,11 +63,12 @@ func parseBool(s string, fallback bool) bool {
 
 // ParseIDFromPath extracts the last segment of the URL path and parses it as an integer.
 // Example: /api/diets/42 → returns 42
-func ParseIDFromPath(r *http.Request) (int, error) {
+func ParseIDFromPath(resource string, r *http.Request) (int, error) {
 	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
-	if len(parts) == 0 {
-		return 0, errors.New("invalid path – cannot extract ID")
+	for i := 0; i < len(parts)-1; i++ {
+		if parts[i] == resource {
+			return strconv.Atoi(parts[i+1])
+		}
 	}
-	idStr := parts[len(parts)-1]
-	return strconv.Atoi(idStr)
+	return 0, fmt.Errorf("could not find ID for resource '%s' in path", resource)
 }

@@ -78,8 +78,37 @@ func (h *HandlerDiets) handlePutByID(w http.ResponseWriter, r *http.Request) err
 	return WriteJSON(w, http.StatusOK, diet)
 }
 
+func (h *HandlerDiets) handlePatchShortByID(w http.ResponseWriter, r *http.Request) error {
+	id, err := ParseIDFromPath("diets", r)
+	if err != nil {
+		http.Error(w, "invalid ID", http.StatusBadRequest)
+		return nil
+	}
+
+	var in model.DietShort
+	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
+		return fmt.Errorf("decode: %w", err)
+	}
+	if in.ID != id {
+		http.Error(w, "id mismatch", http.StatusBadRequest)
+		return nil
+	}
+
+	err = h.s.UpdateShort(r.Context(), &in)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "diet not found", http.StatusNotFound)
+			return nil
+		}
+		return fmt.Errorf("update short: %w", err)
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	return nil
+}
+
 func (h *HandlerDiets) handleDeleteByID(w http.ResponseWriter, r *http.Request) error {
-	id, err := ParseIDFromPath(r)
+	id, err := ParseIDFromPath("diets", r)
 	if err != nil {
 		http.Error(w, "invalid ID", http.StatusBadRequest)
 		return nil
