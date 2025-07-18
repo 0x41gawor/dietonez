@@ -9,15 +9,15 @@
             </th>
           </tr>
         </thead>
-        <tbody>
-          <!-- <Week
-            v-for="(week, index) in weeks"
-            :key="index"
-            :week-data="week"
-            :week-index="index + 1"
-            :meal-options="mealOptions"
-            @update="handleWeekUpdate"
-          /> -->
+        <tbody v-if="items.length > 0">
+          <Week :week="items[0]" />
+        </tbody>
+        <tbody v-else>
+          <tr>
+            <td :colspan="days.length + 1" class="no-items">
+              No items to display
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -26,6 +26,7 @@
 
 <script setup lang="ts">
 import { WeekGet } from '@/types/types';
+import Week from '../components/Week.vue'
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 // const weeks = [] // tutaj w przyszłości wejdzie realna lista tygodni
