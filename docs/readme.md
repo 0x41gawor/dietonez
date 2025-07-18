@@ -14,12 +14,12 @@ Chcę wprowadzić do swojego życia zdrową dietę. Zdrową tzn. taką która:
 - pozwala na nieco luzu i spełnienie "zachcianek" (tzn. pozwala na zjedzenie od czasu do czasu czegoś niezdrowego)
 
 Aby spełnić te potrzeby poczyniłem następujące założenia takowej diety:
-- 5 posiłków dziennie o stałych porach -> w celu maskymalizacji procesu syntezy białek mięśniowych
+- 5 posiłków dziennie o stałych porach -> w celu maksymalizacji procesu syntezy białek mięśniowych
 - z góry zaplanowane posiłki na każdy dzień -> aby odciążyć głowę w kwestii planowania
 - kilkutygodniowa rotacja (tzn. dni z identycznymi posiłkami występują co kilka tygodni) -> aby uniknąć nudy
-- każdy posiłek musi dostarczać 30-40g białka -> w celu masymalizacji procesu syntezy białek mięśniowych 
+- każdy posiłek musi dostarczać 30-40g białka -> w celu maksymalizacji procesu syntezy białek mięśniowych 
 - sumarycznie posiłki danego dnia muszą pokrywać wszystkie wymienionione wyżej zapotrzebowania rozliczane w bilansie dziennym
-- sumarycznie posiłki danego tygodnia muszą pokrywać wszystkie wymienione wyżej zapotrzebowania rozliczane w bilasne tygodniowym
+- sumarycznie posiłki danego tygodnia muszą pokrywać wszystkie wymienione wyżej zapotrzebowania rozliczane w bilansie tygodniowym
 - niedziela jest dniem bez planowania -> w celu wprowadzenia lekkiego luzu, pozwalam wtedy sobie olać wszystkie zapotrzebowania oprócz kalorycznego oraz zjeść niezdrowy posiłek
 
 Wprowadzenie takiej diety do życia wiążę się z dwiema fazami:
