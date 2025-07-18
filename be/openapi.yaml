@@ -310,6 +310,7 @@ paths:
           description: Invalid ID or missing/invalid name
         '404':
           description: Dish not found
+
   /diets:
     get:
       summary: Get all diets

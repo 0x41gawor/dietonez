@@ -1,0 +1,16 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#add-dish-button {
+  margin-top: 0.5rem;
+  margin-left: auto;
+}

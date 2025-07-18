@@ -9,11 +9,6 @@
         </div>
         <DishesTable 
             :items="dishes"
-            :current-page="1"
-            :total-pages="totalPages"
-            :page-size="pageSize"
-            :page="page"
-            :total="total"
             :meal="meal"
             @item-updated="handleItemUpdate"
             @pageSizeChanged="handlePageSizeUpdate"
@@ -40,9 +35,6 @@ const { meal } = defineProps<{ meal: 'Breakfast' | 'MainMeal' | 'Pre-Workout' | 
 const {
     dishes,
     total,
-    page,
-    pageSize,
-    totalPages,
     searchText,
     hasPendingChanges,
     handleItemUpdate,

@@ -5,7 +5,7 @@ import IngredientsView from '@/features/ingredients/views/IngredientsView.vue';
 import DishesView from '@/features/dishes/views/PW2_DishesView.vue';
 import DishesListView from '@/features/dishes/views/PW2X_DishesListView.vue';
 import DishView from '@/features/dishes/views/PW2X1_DishView.vue';
-import DietsView from '@/features/diets/views/DietsView.vue';
+import DietsView from '@/features/diets/views/PW3_DietsView.vue';
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/home' },

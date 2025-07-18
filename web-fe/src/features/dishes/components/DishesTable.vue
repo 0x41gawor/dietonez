@@ -59,11 +59,6 @@ const router = useRouter()
 // Props passed from parent component
 const props = defineProps({
   items: { type: Array as PropType<DishGetShort[]>, required: true },
-  currentPage: { type: Number, default: 1 },
-  totalPages: { type: Number, default: 1 },
-  pageSize: { type: Number, required: true },
-  page: { type: Number, default: 1 },
-  total: { type: Number, default: 0 },
   meal: { type: String as PropType<'Breakfast' | 'MainMeal' | 'Pre-Workout' | 'Supper'>, required: true }
 });
   
@@ -80,21 +75,15 @@ const mealClass = computed(() => {
 })
 
 // Definition of emits (events that this component can emit to its parent)
-const emit = defineEmits(['deleteItem', 'itemUpdated', 'pageChanged', 'pageSizeChanged']);
+const emit = defineEmits(['deleteItem', 'itemUpdated', ]);
 // ====== S T A T E ======
 // Local copy of ingredients (this way we can edit them without affecting the original array until changes are confirmed)
 const items = ref<DishGetShort[]>([]);
-// Page size, initialized with the prop value
-const pageSize = ref(props.pageSize);
 // ====== W A T C H E R S ======
 // Watch for changes in the ingredients prop and update local items
 watch(() => props.items, (newVal) => {
   items.value = JSON.parse(JSON.stringify(newVal));
 }, { immediate: true, deep: true });
-// Watch for changes in the pageSize prop and update local pageSize
-watch(() => props.pageSize, (newVal) => {
-    pageSize.value = newVal;
-});
 
 const goToEdit = (id: number) => {
   console.log("Navigate to edit for dish ID:", id);
@@ -105,15 +94,6 @@ const goToEdit = (id: number) => {
 // Handle edits commited in the table cells, emitting the updated item to the parent
 const handleCellEdition = (updatedItem: DishGetShort) => {
   emit('itemUpdated', updatedItem);
-};
-// Handle page size edition, emitting the new size to the parent
-const handlePageSizeEdition = () => {
-  const newSize = Number(pageSize.value);
-  if (newSize > 0 && newSize !== props.pageSize) {
-    emit('pageSizeChanged', newSize);
-  } else {
-    pageSize.value = props.pageSize;
-  }
 };
 // ======= E X P O S E D    M E T H O D S =======
 // Method to get all current data if needed by parent
