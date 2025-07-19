@@ -18,6 +18,7 @@
 
         <WeeksTable
         :items="diet?.weeks || []"
+        :dishOptions="dishOptions"
         </WeeksTable>            
 
     </section>
@@ -38,6 +39,7 @@ const id = toRef(props, 'id')
 
 const {
     diet,
+    dishOptions,
     hasPendingChanges,
     handleRevertButtonClick,
     handleUpdateButtonClick,

@@ -138,3 +138,21 @@ func (s *ServiceTools) CalculateDaySummary(ctx context.Context, dishes []model.D
 
 	return resp, nil
 }
+
+func (s *ServiceTools) CalculateDaySummaryFromSlots(ctx context.Context, slots []model.SlotGet, goal float64) (model.Summary, error) {
+	var summary model.Summary
+
+	for _, slot := range slots {
+		if slot.Dish == nil {
+			continue // pomiń puste sloty
+		}
+		summary.Kcal += slot.Dish.Kcal
+		summary.Proteins += slot.Dish.Protein
+		summary.Fats += slot.Dish.Fat
+		summary.Carbs += slot.Dish.Carbs
+	}
+
+	summary.Goal = goal
+
+	return summary, nil
+}

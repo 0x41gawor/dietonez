@@ -1,78 +1,148 @@
 <template>
   <div class="day-card">
-    <h2 class="day-header">{{ day.name }}</h2>
 
-    <div
-      v-for="(slot, index) in day.slots"
-      :key="index"
-      class="slot-wrapper"
-    >
-      <div class="slot-header" :style="getSlotStyle(slot.meal)">
-        <span class="meal-name">{{ slot.meal.replace('-', ' ') }}</span>
-        <select
-          class="dish-select"
-          :style="getSlotStyle(slot.meal)"
-          @change="handleDishChange(index, $event)"
-        >
-          <option v-if="!slot.dish" :value="null" selected disabled>
-            Wybierz danie...
-          </option>
-          <option v-if="slot.dish" :value="slot.dish.id" selected disabled>
-            {{ slot.dish.name }}
-          </option>
-          
+    <!-- BREAKFAST -->
+    <div class="slot-wrapper">
+      <div class="slot-header" :style="getSlotStyle('Breakfast')">
+        <select class="dish-select" :style="getSlotStyle('Breakfast')" @change="handleDishChange(0, $event) ">
+          <option disabled :value="null" :selected="!findSlot('Breakfast')?.dish"> <!-- pusty tekst--> </option> 
           <option
-            v-for="option in getOptionsForMeal(slot.meal)"
+            v-for="option in getOptionsForMeal('Breakfast')"
             :key="option.id"
             :value="option.id"
+            :selected="option.id === findSlot('Breakfast')?.dish?.id"
           >
             {{ option.name }}
           </option>
         </select>
       </div>
-
       <div class="nutrition-grid">
-        <span class="cell">{{ formatNumber(slot.dish?.kcal) }}</span>
-        <span class="cell">{{ formatNumber(slot.dish?.protein) }}</span>
-        <span class="cell">{{ formatNumber(slot.dish?.fat) }}</span>
-        <span class="cell">{{ formatNumber(slot.dish?.carbs) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Breakfast')?.dish?.kcal) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Breakfast')?.dish?.protein) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Breakfast')?.dish?.fat) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Breakfast')?.dish?.carbs) }}</span>
       </div>
     </div>
 
+    <!-- LUNCH -->
+    <div class="slot-wrapper">
+      <div class="slot-header" :style="getSlotStyle('Lunch')">
+        <select class="dish-select" :style="getSlotStyle('Lunch')" @change="handleDishChange(1, $event)">
+          <option disabled :value="null" :selected="!findSlot('Lunch')?.dish"> <!-- pusty tekst--> </option>
+          <option
+            v-for="option in getOptionsForMeal('Lunch')"
+            :key="option.id"
+            :value="option.id"
+            :selected="option.id === findSlot('Lunch')?.dish?.id"
+          >
+            {{ option.name }}
+          </option>
+        </select>
+      </div>
+      <div class="nutrition-grid">
+        <span class="cell">{{ formatNumber(findSlot('Lunch')?.dish?.kcal) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Lunch')?.dish?.protein) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Lunch')?.dish?.fat) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Lunch')?.dish?.carbs) }}</span>
+      </div>
+    </div>
+
+    <!-- PRE-WORKOUT -->
+    <div class="slot-wrapper">
+      <div class="slot-header" :style="getSlotStyle('Pre-Workout')">
+        <select class="dish-select" :style="getSlotStyle('Pre-Workout')" @change="handleDishChange(2, $event)">
+          <option disabled :value="null" :selected="!findSlot('Pre-Workout')?.dish"><!-- pusty tekst--></option>
+          <option
+            v-for="option in getOptionsForMeal('Pre-Workout')"
+            :key="option.id"
+            :value="option.id"
+            :selected="option.id === findSlot('Pre-Workout')?.dish?.id"
+          >
+            {{ option.name }}
+          </option>
+        </select>
+      </div>
+      <div class="nutrition-grid">
+        <span class="cell">{{ formatNumber(findSlot('Pre-Workout')?.dish?.kcal) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Pre-Workout')?.dish?.protein) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Pre-Workout')?.dish?.fat) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Pre-Workout')?.dish?.carbs) }}</span>
+      </div>
+    </div>
+
+    <!-- POST-WORKOUT -->
+    <div class="slot-wrapper">
+      <div class="slot-header" :style="getSlotStyle('Post-Workout')">
+        <select class="dish-select" :style="getSlotStyle('Post-Workout')" @change="handleDishChange(3, $event)">
+          <option disabled :value="null" :selected="!findSlot('Post-Workout')?.dish"><!-- pusty tekst--></option>
+          <option
+            v-for="option in getOptionsForMeal('Post-Workout')"
+            :key="option.id"
+            :value="option.id"
+            :selected="option.id === findSlot('Post-Workout')?.dish?.id"
+          >
+            {{ option.name }}
+          </option>
+        </select>
+      </div>
+      <div class="nutrition-grid">
+        <span class="cell">{{ formatNumber(findSlot('Post-Workout')?.dish?.kcal) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Post-Workout')?.dish?.protein) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Post-Workout')?.dish?.fat) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Post-Workout')?.dish?.carbs) }}</span>
+      </div>
+    </div>
+
+    <!-- SUPPER -->
+    <div class="slot-wrapper">
+      <div class="slot-header" :style="getSlotStyle('Supper')">
+        <select class="dish-select" :style="getSlotStyle('Supper')" @change="handleDishChange(4, $event)">
+          <option disabled :value="null" :selected="!findSlot('Supper')?.dish"><!-- pusty tekst--></option>
+          <option
+            v-for="option in getOptionsForMeal('Supper')"
+            :key="option.id"
+            :value="option.id"
+            :selected="option.id === findSlot('Supper')?.dish?.id"
+          >
+            {{ option.name }}
+          </option>
+        </select>
+      </div>
+      <div class="nutrition-grid">
+        <span class="cell">{{ formatNumber(findSlot('Supper')?.dish?.kcal) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Supper')?.dish?.protein) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Supper')?.dish?.fat) }}</span>
+        <span class="cell">{{ formatNumber(findSlot('Supper')?.dish?.carbs) }}</span>
+      </div>
+    </div>
+
+    <!-- PODSUMOWANIE -->
     <div class="summary">
       <span class="summary-label">Summary ({{ formatNumber(day.summary.goal) }} kcal)</span>
-      <div class="nutrition-grid">
+      <div class="nutrition-grid-summary">
         <span class="cell">{{ formatNumber(day.summary.kcal) }}</span>
         <span class="cell">{{ formatNumber(day.summary.proteins) }}</span>
         <span class="cell">{{ formatNumber(day.summary.fats) }}</span>
         <span class="cell">{{ formatNumber(day.summary.carbs) }}</span>
       </div>
     </div>
-
-    <div class="left">
-      <span class="left-label">Kcal left</span>
-      <div class="nutrition-grid">
-        <span class="cell">{{ formatNumber(day.left.kcal) }}</span>
-        <span class="cell">{{ formatNumber(day.left.proteins) }}</span>
-        <span class="cell">{{ formatNumber(day.left.fats) }}</span>
-        <span class="cell"></span>
-      </div>
-    </div>
   </div>
 </template>
 
+
 <script setup lang="ts">
 
-import type { DishGetShort, SlotGet, Summary, Left, DayGet} from '@types/types';
+import { DishGetShort, SlotGet, Summary, Left, DayGet, Meal} from '@/types/types';
+
+const MEALS: Meal[] = ['Breakfast', 'Lunch', 'Pre-Workout', 'Post-Workout', 'Supper'];
+
+const findSlot = (meal: Meal) => props.day.slots.find(s => s.meal === meal);
+
 
 // --- PROPSY KOMPONENTU ---
 const props = defineProps<{
   day: DayGet;
-  // Poniższe propsy odpowiadają opcjom dla DishType
-  breakfastOptions: DishGetShort[];
-  mainMealOptions: DishGetShort[];
-  preWorkoutOptions: DishGetShort[];
-  supperOptions: DishGetShort[];
+  dishOptions: Record<string, DishGetShort[]>
 }>();
 
 // --- EMITY ZDARZEŃ ---
@@ -90,14 +160,14 @@ const emit = defineEmits<{
 const getOptionsForMeal = (mealType: Meal): DishGetShort[] => {
   switch (mealType) {
     case 'Breakfast':
-      return props.breakfastOptions;
+      return props.dishOptions['Breakfast'];
     case 'Lunch':
     case 'Post-Workout':
-      return props.mainMealOptions; // Kluczowa zmiana
-    case 'PreWorkout': // 'Pre-Workout' z myślnikiem to nazwa Meal, 'PreWorkout' bez to DishType
-      return props.preWorkoutOptions;
+      return props.dishOptions['MainMeal']; 
+    case 'Pre-Workout': // 'Pre-Workout' z myślnikiem to nazwa Meal, 'PreWorkout' bez to DishType
+      return props.dishOptions['Pre-Workout']; 
     case 'Supper':
-      return props.supperOptions;
+      return props.dishOptions['Supper'];
     default:
       return [];
   }
@@ -108,11 +178,11 @@ const getOptionsForMeal = (mealType: Meal): DishGetShort[] => {
  */
 const getSlotStyle = (mealType: Meal) => {
   const colorMap: Partial<Record<Meal, string>> = {
-    Breakfast: '#e8b478',
-    Lunch: '#e48e8e', // Kolor jak dla MainMeal
-    PreWorkout: '#79c0e0',
-    'Post-Workout': '#e48e8e', // Kolor jak dla MainMeal
-    Supper: '#78c8a0',
+    'Breakfast': '#ca984d',
+    'Lunch': '#e62b58', // Kolor jak dla MainMeal
+    'Pre-Workout': '#379acd',
+    'Post-Workout': '#e62b58', // Kolor jak dla MainMeal
+    'Supper': '#529c64',
   };
   return { color: colorMap[mealType] || '#000000' };
 };
@@ -132,30 +202,28 @@ const formatNumber = (num: number | undefined | null) => {
 
 <style scoped>
 .day-card {
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 16px;
-  font-family: Arial, sans-serif;
-  color: #000000;
-  width: 100%;
-  max-width: 450px;
+  margin: 0; /* zapobiegawczo */
+  border-right: 1px solid #e0e0e0;
+  border-left: 1px solid #e0e0e0;
+  border-top: none;
+  border-bottom: none;
+  border-radius: 0; /* żeby się ładnie skleiło z sąsiadami */
+  font-size: 0.9rem; /* cała karta mniejsza */
 }
-
-.day-header {
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 16px;
-  font-size: 1.2em;
-  text-transform: capitalize;
+.day-card:first-child {
+  border-left: none;
+}
+.day-card:last-child {
+  border-right: none;
 }
 
 .slot-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: 2px 2px;
   border-bottom: 1px solid #f0f0f0;
+  min-height: 18px; /* stała wysokość slotu */
 }
 .slot-wrapper:last-of-type {
   border-bottom: none;
@@ -175,13 +243,18 @@ const formatNumber = (num: number | undefined | null) => {
 }
 
 .dish-select {
-  font-weight: bold;
-  font-size: 1em;
+  font-size: 0.9em;
+  font-weight: 100;
   border: none;
   background-color: transparent;
   cursor: pointer;
-  width: 100%;
+  width: 95%;
+  border-radius: 2px;
   padding: 0;
+  appearance: none; /* najważniejsze */
+  -webkit-appearance: none; /* Safari/Chrome */
+  -moz-appearance: none; /* Firefox */
+  background-image: none; /* dla pewności */
 }
 
 .dish-select:focus {
@@ -192,14 +265,14 @@ const formatNumber = (num: number | undefined | null) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 12px;
-  padding: 8px;
-  border-radius: 4px;
-  font-weight: bold;
+  margin-top: 2px;
+  padding: 2px;
+  font-size: 0.8rem;
 }
 
 .summary {
   background-color: #f5f5f5;
+  border: 1px solid #f00;
 }
 .left {
     background-color: #fafafa;
@@ -212,12 +285,19 @@ const formatNumber = (num: number | undefined | null) => {
 .nutrition-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
   text-align: center;
   width: 45%;
 }
 
+.nutrition-grid-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: center;
+  width: 45%;
+  font-weight: bold;
+}
+
 .cell {
-  font-size: 0.9em;
+  font-size: 0.7em;
 }
 </style>

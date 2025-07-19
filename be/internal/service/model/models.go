@@ -105,8 +105,8 @@ type DishMinPut struct {
 }
 
 type SlotGet struct {
-	Meal string       `json:"meal"`
-	Dish DishGetShort `json:"dish"`
+	Meal string        `json:"meal"`
+	Dish *DishGetShort `json:"dish"`
 }
 
 type SlotPut struct {

@@ -10,7 +10,7 @@
 // 'DishType' to w rzeczywistości typ dania
 export type DishType = 'Breakfast' | 'MainMeal' | 'PreWorkout' | 'Supper';
 // 'Meal' to pora posiłku
-export type Meal = 'Breakfast' | 'Lunch' | 'PreWorkout' | 'Post-Workout' | 'Supper';
+export type Meal = 'Breakfast' | 'Lunch' | 'Pre-Workout' | 'Post-Workout' | 'Supper';
 
 /* ──────────────────────────────
  * Label
@@ -143,12 +143,12 @@ export interface DietShort extends DietMin {
 }
 
 export interface SlotGet {
-  meal: DishType;
+  meal: Meal;
   dish: DishGetShort | null;
 }
 
 export interface SlotPut {
-  meal: DishType;
+  meal: Meal;
   dish: DishMinPut;
 }
 

@@ -291,21 +291,34 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 			dayName := [...]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}[dayIndex]
 			var slots []model.SlotGet
 
-			for mealIndex, meal := range [...]string{"Breakfast", "Lunch", "Pre-Workout", "Post-Workout", "Supper"} {
+			meals := [...]string{"Breakfast", "Lunch", "Pre-Workout", "Post-Workout", "Supper"}
+
+			for mealIndex, meal := range meals {
 				slotNum := start + dayIndex*mealsPerDay + mealIndex + 1
-				if dish, ok := slotMap[slotNum]; ok {
+				dish, ok := slotMap[slotNum]
+				if ok {
 					found = true
 					slots = append(slots, model.SlotGet{
 						Meal: meal,
-						Dish: dish,
+						Dish: &dish,
+					})
+				} else {
+					slots = append(slots, model.SlotGet{
+						Meal: meal,
+						Dish: nil, // brak dania, ale slot istnieje
 					})
 				}
+			}
+
+			summary, err := NewServiceTools().CalculateDaySummaryFromSlots(ctx, slots, 0)
+			if err != nil {
+				return nil, fmt.Errorf("summary count error: %w", err)
 			}
 
 			days = append(days, model.DayGet{
 				Name:    dayName,
 				Slots:   slots,
-				Summary: model.Summary{}, // TODO: Calculate summary for the day
+				Summary: summary, // TODO: Calculate summary for the day
 				Left:    model.Left{},
 			})
 		}
