@@ -7,7 +7,10 @@
  * Basic Enumerations
  * ────────────────────────────*/
 
-export type Meal = 'Breakfast' | 'MainMeal' | 'PreWorkout' | 'Supper';
+// 'DishType' to w rzeczywistości typ dania
+export type DishType = 'Breakfast' | 'MainMeal' | 'PreWorkout' | 'Supper';
+// 'Meal' to pora posiłku
+export type Meal = 'Breakfast' | 'Lunch' | 'PreWorkout' | 'Post-Workout' | 'Supper';
 
 /* ──────────────────────────────
  * Label
@@ -94,7 +97,7 @@ export interface Recipe {
 export interface DishGet {
   id: number;
   name: string;
-  meal: Meal;
+  meal: DishType;
   kcal: number;
   protein: number;
   fat: number;
@@ -106,7 +109,7 @@ export interface DishGet {
 
 export interface DishPost {
   name: string;
-  meal: Meal;
+  meal: DishType;
   ingredients: IngredientInDishPut[];
   recipe: Recipe;
   labels?: Label[];
@@ -118,6 +121,11 @@ export interface DishPut extends DishPost {
 
 export interface DishMinPut {
   id: number;
+}
+
+export interface DishMinGet {
+  id: number;
+  name: string;
 }
 
 /* ──────────────────────────────
@@ -135,12 +143,12 @@ export interface DietShort extends DietMin {
 }
 
 export interface SlotGet {
-  meal: Meal;
-  dish: DishGetShort;
+  meal: DishType;
+  dish: DishGetShort | null;
 }
 
 export interface SlotPut {
-  meal: Meal;
+  meal: DishType;
   dish: DishMinPut;
 }
 

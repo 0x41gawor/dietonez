@@ -1,11 +1,11 @@
 import {ref, computed, onMounted, Ref, watch} from 'vue'
 import {useToast} from "vue-toastification";
 import { useRouter } from 'vue-router'
-import type {DishGet, NutritionSummary, DishPut, IngredientInDishPut, IngredientGetPut, IngredientInDishGet, Meal} from '@/types/types'
+import type {DishGet, NutritionSummary, DishPut, IngredientInDishPut, IngredientGetPut, IngredientInDishGet, DishType} from '@/types/types'
 import {getDishes, getDishById, createDish, updateDish, deleteDishById, updateDishName} from '@/api/dishes'
 import { getIngredientById } from '@/api/ingredients';
 
-export function useDishViewLogic(id: Ref<number>, initialMeal: Meal) {
+export function useDishViewLogic(id: Ref<number>, initialMeal: DishType) {
   // ==== S T A T E ====
   const dish = ref<DishGet>({
   id: 0,

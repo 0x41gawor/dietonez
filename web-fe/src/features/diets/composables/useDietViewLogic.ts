@@ -2,8 +2,10 @@ import {ref, computed, onMounted, Ref, watch} from 'vue'
 import {useToast} from "vue-toastification";
 import { useRouter } from 'vue-router'
 
-import type { DietGet } from '@/types/types';
+import type { DietGet, DishGetShort } from '@/types/types';
+import {GetDishesParams} from '@/api/dishes';
 import { getDietById } from '@/api/diets';
+import { getDishes } from '@/api/dishes';
 
 export function  useDietViewLogic(id: Ref<number>) {
     // ==== STATE ====
@@ -16,6 +18,7 @@ export function  useDietViewLogic(id: Ref<number>) {
             labels: [],
         }
     );
+    const dishOptions = ref<Record<string, DishGetShort[]>>({});
     const hasPendingChanges = ref<boolean>(false)
     const isLoading = ref(true)
     // helpers
@@ -32,6 +35,8 @@ export function  useDietViewLogic(id: Ref<number>) {
     { immediate: true }
     )
 
+    onMounted(fetchDishOptions);
+
     // ==== A P I    C A L L S
     async function fetchDietGet() {
         console.log(id)
@@ -47,6 +52,22 @@ export function  useDietViewLogic(id: Ref<number>) {
         }
     }
 
+    async function fetchDishOptions() {
+        console.log('ELO')
+        const meals: GetDishesParams['meal'][] = ['Breakfast', 'MainMeal', 'Pre-Workout', 'Supper'];
+        try {
+            for (const meal of meals) {
+                const dishes = await getDishes({ meal, min: true });
+                console.log(dishes);
+                dishOptions.value[meal] = dishes;
+            }
+        } catch (error) {
+            console.error('Failed to fetch some dish options:', error);
+            toast.error('Error loading some dish options');
+        }
+    }
+
+
     // ==== H A N D L E R S  ====
     const handleRevertButtonClick = () => {
         console.log("Revert button clicked")
@@ -58,6 +79,7 @@ export function  useDietViewLogic(id: Ref<number>) {
 
     return {
         diet,
+        dishOptions,
         hasPendingChanges,
         handleRevertButtonClick,
         handleUpdateButtonClick,

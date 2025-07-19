@@ -57,11 +57,11 @@ import RevertButton from '@/components/RevertButton.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
 import Modal from '@/components/Modal.vue'
 import IngredientsInDishTable from '../components/IngredientsInDishTable.vue';
-import { Meal } from '@/types/types';
+import { DishType } from '@/types/types';
 
 const props = defineProps<{
   id: number
-  meal: Meal 
+  meal: DishType 
 }>()
 
 const id = toRef(props, 'id')

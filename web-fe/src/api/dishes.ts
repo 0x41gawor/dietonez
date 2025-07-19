@@ -8,7 +8,7 @@ import type {
   NutritionSummary
 } from '@/types/types'
 
-interface GetDishesParams {
+export interface GetDishesParams {
   meal: 'Breakfast' | 'MainMeal' | 'Pre-Workout' | 'Supper'
   min?: boolean
 }
