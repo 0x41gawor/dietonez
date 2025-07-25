@@ -55,7 +55,10 @@ const handleSlotUpdate = (payload: { weekIndex: number, dayIndex: number, slotIn
   margin: 0 auto;         /* wyśrodkowanie */
   box-sizing: border-box;
   border: 1px solid #bbbbbb;
-  border-radius: 6px 6px 0px 0px;
+  border-radius: 6px 6px 6px 6px;
+  flex: 1;
+  overflow: auto;
+  height: 765px;
 }
 
 .table-header {
@@ -69,5 +72,25 @@ const handleSlotUpdate = (payload: { weekIndex: number, dayIndex: number, slotIn
   padding: 0.3rem 0;
   border-bottom: 1px solid #ccc;
   border-radius: 6px;
+}
+
+.weeks-table::-webkit-scrollbar {
+  width: 10px;              /* szerokość paska pionowego */
+  height: 10px;             /* wysokość paska poziomego (jeśli jest) */
+}
+
+.weeks-table::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 8px;       /* zaokrąglenie toru */
+}
+
+.weeks-table::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 8px;       /* zaokrąglenie uchwytu */
+  border: 2px solid #f0f0f0; /* padding wokół thumb-a */
+}
+
+.weeks-table::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
 }
 </style>

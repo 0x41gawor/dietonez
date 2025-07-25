@@ -9,7 +9,7 @@
                 placeholder="Diet name"
             />
 
-            <textarea id="preparation" v-model="diet.descr" @input="hasPendingChanges = true"> </textarea>
+            <textarea id="descr" v-model="diet.descr" @input="hasPendingChanges = true"> </textarea>
             <div class="buttons">
                 <RevertButton @click="handleRevertButtonClick" :disabled="!hasPendingChanges" /> 
                 <UpdateButton @click="handleUpdateButtonClick" :disabled="!hasPendingChanges" />
