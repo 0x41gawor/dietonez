@@ -19,6 +19,7 @@
         <WeeksTable
         :items="diet?.weeks || []"
         :dishOptions="dishOptions"
+        @update-slot="handleSlotUpdate"
         </WeeksTable>            
 
     </section>
@@ -41,6 +42,7 @@ const {
     diet,
     dishOptions,
     hasPendingChanges,
+    handleSlotUpdate,
     handleRevertButtonClick,
     handleUpdateButtonClick,
 } = useDietViewLogic(id);

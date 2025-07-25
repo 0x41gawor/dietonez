@@ -45,7 +45,6 @@ export enum ShopStyle {
 
 export interface IngredientGetPut {
   id: number;
-  name: string;
   kcal: number  | null;
   protein: number | null;
   fat: number | null;

@@ -8,7 +8,7 @@
           class="dish-select"
           :value="day.slots[0].dish?.id ?? null"
           :style="getSlotStyle('Breakfast')" 
-          @change="handleDishChange(1, $event)"
+          @change="handleDishChange(0, $event)"
         >
           <option disabled value=""></option>
           <option
@@ -35,7 +35,7 @@
           class="dish-select"
           :value="day.slots[1].dish?.id ?? null"
           :style="getSlotStyle('Lunch')" 
-          @change="handleDishChange(2, $event)"
+          @change="handleDishChange(1, $event)"
         >
           <option disabled value=""></option>
           <option
@@ -62,7 +62,7 @@
           class="dish-select"
           :value="day.slots[2].dish?.id ?? null"
           :style="getSlotStyle('Pre-Workout')" 
-          @change="handleDishChange(3, $event)"
+          @change="handleDishChange(2, $event)"
         >
           <option disabled value=""></option>
           <option
@@ -89,7 +89,7 @@
           class="dish-select"
           :value="day.slots[3].dish?.id ?? null"
           :style="getSlotStyle('Post-Workout')" 
-          @change="handleDishChange(4, $event)"
+          @change="handleDishChange(3, $event)"
         >
           <option disabled value=""></option>
           <option
@@ -116,7 +116,7 @@
           class="dish-select"
           :value="day.slots[4].dish?.id ?? null"
           :style="getSlotStyle('Supper')" 
-          @change="handleDishChange(5, $event)"
+          @change="handleDishChange(4, $event)"
         >
           <option disabled value=""></option>
           <option
@@ -158,7 +158,6 @@ const MEALS: Meal[] = ['Breakfast', 'Lunch', 'Pre-Workout', 'Post-Workout', 'Sup
 
 const findSlot = (meal: Meal) => props.day.slots.find(s => s.meal === meal);
 
-
 // --- PROPSY KOMPONENTU ---
 const props = defineProps<{
   day: DayGet;
@@ -167,7 +166,7 @@ const props = defineProps<{
 
 // --- EMITY ZDARZEŃ ---
 const emit = defineEmits<{
-  (e: 'update-slot', payload: { dayName: string, slotIndex: number; newDishId: number }): void;
+  (e: 'update-slot', payload: { dayIndex: number, slotIndex: number; newDishId: number }): void;
 }>();
 
 
@@ -211,8 +210,17 @@ const handleDishChange = (slotIndex: number, event: Event) => {
   const target = event.target as HTMLSelectElement;
   const newDishId = parseInt(target.value, 10);
   const dayName = props.day.name;
-  console.log("DAY::update-slot", dayName, "slotIndex: ", slotIndex, "newDishId ", newDishId)
-  emit('update-slot', { dayName, slotIndex, newDishId });
+    // DayName → Index (1-based)
+  const dayNameToIndex: Record<string, number> = {
+    Monday: 0,
+    Tuesday: 1,
+    Wednesday: 2,
+    Thursday: 3,
+    Friday: 4,
+    Saturday: 5,
+  };
+  const dayIndex = dayNameToIndex[dayName]
+  emit('update-slot', { dayIndex, slotIndex, newDishId });
 };
 
 // Funkcja do formatowania liczb z wieloma miejscami po przecinku

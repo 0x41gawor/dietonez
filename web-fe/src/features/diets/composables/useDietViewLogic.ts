@@ -9,15 +9,13 @@ import { getDishes } from '@/api/dishes';
 
 export function  useDietViewLogic(id: Ref<number>) {
     // ==== STATE ====
-    const diet = ref<DietGet>(
-        {
+    const diet = ref<DietGet>({
             id: 0,
             name: '',
             descr: '',
             weeks: [],
             labels: [],
-        }
-    );
+    });
     const dishOptions = ref<Record<string, DishGetShort[]>>({});
     const hasPendingChanges = ref<boolean>(false)
     const isLoading = ref(true)
@@ -39,12 +37,11 @@ export function  useDietViewLogic(id: Ref<number>) {
 
     // ==== A P I    C A L L S
     async function fetchDietGet() {
-        console.log(id)
         try {
             isLoading.value = true
             const response = await getDietById(id.value)
-            console.log("Fetched diet: ", response)
             diet.value = response;
+            console.log(diet.value)
         } catch (error) {
             toast.error("Failed to get diet")
         } finally {
@@ -53,12 +50,10 @@ export function  useDietViewLogic(id: Ref<number>) {
     }
 
     async function fetchDishOptions() {
-        console.log('ELO')
         const meals: GetDishesParams['meal'][] = ['Breakfast', 'MainMeal', 'Pre-Workout', 'Supper'];
         try {
             for (const meal of meals) {
                 const dishes = await getDishes({ meal, min: true });
-                console.log(dishes);
                 dishOptions.value[meal] = dishes;
             }
         } catch (error) {
@@ -67,8 +62,27 @@ export function  useDietViewLogic(id: Ref<number>) {
         }
     }
 
+    const handleSlotUpdate = (payload: { weekIndex: number, dayIndex: number, slotIndex: number; newDishId: number }) => {
+        const weekIndex = payload.weekIndex;
+        const dayIndex = payload.dayIndex;
+        const slotIndexInDay = payload.slotIndex;
+        console.log("Który slot dostanie update",
+            "week:", weekIndex,
+            "day:", dayIndex,
+            "slot:", slotIndexInDay,
+            "newDishId:", payload.newDishId
+        );
+        const slot = diet.value.weeks[weekIndex].days[dayIndex].slots[slotIndexInDay];
 
-    // ==== H A N D L E R S  ====
+        if (!slot.dish) {
+            slot.dish = { id: payload.newDishId, name: 'chuj', kcal: 0, protein: 0, carbs: 0, fat: 0 };
+        } else {
+            slot.dish.id = payload.newDishId;
+        }
+        hasPendingChanges.value = true;
+        console.log("Diet new", diet.value)
+    };
+
     const handleRevertButtonClick = () => {
         console.log("Revert button clicked")
         fetchDietGet();
@@ -81,6 +95,7 @@ export function  useDietViewLogic(id: Ref<number>) {
         diet,
         dishOptions,
         hasPendingChanges,
+        handleSlotUpdate,
         handleRevertButtonClick,
         handleUpdateButtonClick,
     }

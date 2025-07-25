@@ -19,6 +19,7 @@
       <Week
         :week="week"
         :dishOptions="dishOptions"
+        @update-slot="handleSlotUpdate"
       />
     </div>
   </div>
@@ -34,7 +35,17 @@ const props = defineProps<{
   dishOptions: Record<string, DishGetShort[]>
 }>()
 
+// --- EMITY ZDARZEŃ ---
+const emit = defineEmits<{
+  (e: 'update-slot', payload: { weekIndex: number, dayIndex: number, slotIndex: number; newDishId: number }): void;
+}>();
+
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+const handleSlotUpdate = (payload: { weekIndex: number, dayIndex: number, slotIndex: number; newDishId: number }) => {
+  emit('update-slot', {weekIndex: payload.weekIndex, dayIndex: payload.dayIndex, slotIndex: payload.slotIndex, newDishId: payload.newDishId})
+};
+
 </script>
 
 <style scoped>
