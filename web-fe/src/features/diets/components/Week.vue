@@ -10,6 +10,7 @@
           :key="day.name"
           :day="day"
           :dish-options="dishOptions"
+          @update-slot="handleSlotUpdate"
         />
       </div>
   </div>
@@ -29,6 +30,36 @@ const props = withDefaults(defineProps<{
     labels: [],
   })
 });
+
+const handleSlotUpdate = (payload: { dayName: string; slotIndex: number; newDishId: number }) => {
+  const weekNum = props.week.num;
+
+  // DayName → Index (1-based)
+  const dayNameToIndex: Record<string, number> = {
+    Monday: 1,
+    Tuesday: 2,
+    Wednesday: 3,
+    Thursday: 4,
+    Friday: 5,
+    Saturday: 6,
+  };
+
+  const dayIndex = dayNameToIndex[payload.dayName];
+  const globalSlotIndex = (weekNum - 1) * 30 + (dayIndex - 1) * 5 + payload.slotIndex;
+
+  console.log('WEEK::received slot update', {
+    weekNum,
+    dayName: payload.dayName,
+    slotIndex: payload.slotIndex,
+    globalSlotIndex,
+    newDishId: payload.newDishId,
+  });
+
+  // ewentualnie dalsza logika, np. emit do nadrzędnego komponentu
+  // emit('update-slot-global', { globalSlotIndex, newDishId: payload.newDishId });
+};
+
+
 
 </script>
 
