@@ -294,7 +294,6 @@ const formatNumber = (num: number | undefined | null) => {
 
 .summary {
   background-color: #f5f5f5;
-  border: 1px solid #f00;
 }
 .left {
     background-color: #fafafa;

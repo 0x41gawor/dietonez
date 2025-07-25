@@ -65,7 +65,6 @@ const handleSlotUpdate = (payload: { dayName: string; slotIndex: number; newDish
 
 <style scoped>
 .week-container {
-  border: 1px solid #0f0;
   overflow: hidden;
 }
 

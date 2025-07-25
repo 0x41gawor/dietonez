@@ -42,8 +42,9 @@ const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   width: 100%;
   max-width: 1200px;     /* lub inna szerokość, np. 1000px */
   margin: 0 auto;         /* wyśrodkowanie */
-  border: 1px dashed #f00;
   box-sizing: border-box;
+  border: 1px solid #bbbbbb;
+  border-radius: 6px 6px 0px 0px;
 }
 
 .table-header {
@@ -56,6 +57,6 @@ const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   background-color: #fafafa;
   padding: 0.3rem 0;
   border-bottom: 1px solid #ccc;
-  border: 2px solid #f00;
+  border-radius: 6px;
 }
 </style>
