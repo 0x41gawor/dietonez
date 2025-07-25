@@ -2,8 +2,9 @@ import {ref, computed, onMounted, Ref, watch} from 'vue'
 import {useToast} from "vue-toastification";
 import { useRouter } from 'vue-router'
 
-import type { DietGet, DishGetShort } from '@/types/types';
+import type { DietGet, DietPut, DishGetShort, WeekPut } from '@/types/types';
 import {GetDishesParams} from '@/api/dishes';
+import { updateDietById } from '@/api/diets'; // upewnij się, że masz to zaimportowane
 import { getDietById } from '@/api/diets';
 import { getDishes } from '@/api/dishes';
 
@@ -86,10 +87,50 @@ export function  useDietViewLogic(id: Ref<number>) {
     const handleRevertButtonClick = () => {
         console.log("Revert button clicked")
         fetchDietGet();
+        hasPendingChanges.value = false;
     }
-    const handleUpdateButtonClick = () => {
-        console.log("Update button clicked")
-    }
+
+        const handleUpdateButtonClick = async () => {
+        console.log("Update button clicked");
+
+        if (!diet.value) {
+            toast.error("No diet to update");
+            return;
+        }
+
+        try {
+            const weeks: WeekPut[] = diet.value.weeks.map((week) => ({
+            num: week.num,
+            days: week.days.map((day) => ({
+                name: day.name,
+                slots: day.slots
+                .filter(slot => slot.dish !== null)
+                .map((slot) => ({
+                    meal: slot.meal,
+                    dish: { id: slot.dish!.id }
+                })),
+            })),
+            }));
+
+            const updatedDiet: DietPut = {
+            id: diet.value.id,
+            name: diet.value.name,
+            descr: diet.value.descr,
+            weeks,
+            labels: diet.value.labels || [],
+            };
+
+            const response = await updateDietById(diet.value.id, updatedDiet);
+            diet.value = response; // aktualizacja widoku po zapisie
+            hasPendingChanges.value = false;
+            toast.success("Diet updated successfully!");
+
+        } catch (error) {
+            toast.error("Failed to update diet");
+            console.error("Update error:", error);
+        }
+        };
+
 
     return {
         diet,
