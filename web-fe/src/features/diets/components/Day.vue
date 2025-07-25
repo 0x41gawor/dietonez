@@ -4,15 +4,19 @@
     <!-- BREAKFAST -->
     <div class="slot-wrapper">
       <div class="slot-header" :style="getSlotStyle('Breakfast')">
-        <select class="dish-select" :style="getSlotStyle('Breakfast')" @change="handleDishChange(0, $event) ">
-          <option disabled :value="null" :selected="!findSlot('Breakfast')?.dish"> <!-- pusty tekst--> </option> 
+      <select
+          class="dish-select"
+          :value="day.slots[0].dish?.id ?? null"
+          :style="getSlotStyle('Breakfast')" 
+          @change="handleDishChange(1, $event)"
+        >
+          <option disabled value=""></option>
           <option
             v-for="option in getOptionsForMeal('Breakfast')"
             :key="option.id"
             :value="option.id"
-            :selected="option.id === findSlot('Breakfast')?.dish?.id"
-          >
-            {{ option.name }}
+          > 
+           {{option.name}}
           </option>
         </select>
       </div>
@@ -27,15 +31,19 @@
     <!-- LUNCH -->
     <div class="slot-wrapper">
       <div class="slot-header" :style="getSlotStyle('Lunch')">
-        <select class="dish-select" :style="getSlotStyle('Lunch')" @change="handleDishChange(1, $event)">
-          <option disabled :value="null" :selected="!findSlot('Lunch')?.dish"> <!-- pusty tekst--> </option>
+        <select
+          class="dish-select"
+          :value="day.slots[1].dish?.id ?? null"
+          :style="getSlotStyle('Lunch')" 
+          @change="handleDishChange(1, $event)"
+        >
+          <option disabled value=""></option>
           <option
             v-for="option in getOptionsForMeal('Lunch')"
             :key="option.id"
             :value="option.id"
-            :selected="option.id === findSlot('Lunch')?.dish?.id"
-          >
-            {{ option.name }}
+          > 
+           {{option.name}}
           </option>
         </select>
       </div>
@@ -50,15 +58,19 @@
     <!-- PRE-WORKOUT -->
     <div class="slot-wrapper">
       <div class="slot-header" :style="getSlotStyle('Pre-Workout')">
-        <select class="dish-select" :style="getSlotStyle('Pre-Workout')" @change="handleDishChange(2, $event)">
-          <option disabled :value="null" :selected="!findSlot('Pre-Workout')?.dish"><!-- pusty tekst--></option>
+        <select
+          class="dish-select"
+          :value="day.slots[2].dish?.id ?? null"
+          :style="getSlotStyle('Pre-Workout')" 
+          @change="handleDishChange(1, $event)"
+        >
+          <option disabled value=""></option>
           <option
             v-for="option in getOptionsForMeal('Pre-Workout')"
             :key="option.id"
             :value="option.id"
-            :selected="option.id === findSlot('Pre-Workout')?.dish?.id"
-          >
-            {{ option.name }}
+          > 
+           {{option.name}}
           </option>
         </select>
       </div>
@@ -73,15 +85,19 @@
     <!-- POST-WORKOUT -->
     <div class="slot-wrapper">
       <div class="slot-header" :style="getSlotStyle('Post-Workout')">
-        <select class="dish-select" :style="getSlotStyle('Post-Workout')" @change="handleDishChange(3, $event)">
-          <option disabled :value="null" :selected="!findSlot('Post-Workout')?.dish"><!-- pusty tekst--></option>
+        <select
+          class="dish-select"
+          :value="day.slots[3].dish?.id ?? null"
+          :style="getSlotStyle('Post-Workout')" 
+          @change="handleDishChange(1, $event)"
+        >
+          <option disabled value=""></option>
           <option
             v-for="option in getOptionsForMeal('Post-Workout')"
             :key="option.id"
             :value="option.id"
-            :selected="option.id === findSlot('Post-Workout')?.dish?.id"
-          >
-            {{ option.name }}
+          > 
+           {{option.name}}
           </option>
         </select>
       </div>
@@ -96,15 +112,19 @@
     <!-- SUPPER -->
     <div class="slot-wrapper">
       <div class="slot-header" :style="getSlotStyle('Supper')">
-        <select class="dish-select" :style="getSlotStyle('Supper')" @change="handleDishChange(4, $event)">
-          <option disabled :value="null" :selected="!findSlot('Supper')?.dish"><!-- pusty tekst--></option>
+        <select
+          class="dish-select"
+          :value="day.slots[4].dish?.id ?? null"
+          :style="getSlotStyle('Supper')" 
+          @change="handleDishChange(1, $event)"
+        >
+          <option disabled value=""></option>
           <option
             v-for="option in getOptionsForMeal('Supper')"
             :key="option.id"
             :value="option.id"
-            :selected="option.id === findSlot('Supper')?.dish?.id"
-          >
-            {{ option.name }}
+          > 
+           {{option.name}}
           </option>
         </select>
       </div>

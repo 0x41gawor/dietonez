@@ -120,7 +120,7 @@ INSERT INTO recipes (dish_id, time_total, what_before, when_start, preparation) 
 (9, '19 minut', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.'),
 (10, '23 minuty', 'brak przygotowania', '15 minut przed posiłkiem', 'Połącz składniki i podgrzej na patelni.');
 
-INSERT INTO diets (id, name, descr) VALUES
+INSERT INTO diets (name, descr) VALUES
 ('8 weeks, 2400kcal', 'Mocna dieta dla masy'),
 ('Redukcja 12 tyg', 'Redukcja z niskim indeksem glikemicznym'),
 ('Lean Bulk Plan', 'Niewielka nadwyżka kaloryczna z dużą ilością białka');
@@ -135,6 +135,55 @@ INSERT INTO diet_label_bridge (diet_id, label_id) VALUES
 (2, 2),  -- Redukcja
 (3, 1),  -- Lean bulk = Masa
 (3, 3);  -- Lean bulk = Vege-Friendly
+
+INSERT INTO diet_slots (diet_id, slot_num, dish_id) VALUES
+(4, 1, 1),
+(4, 2, 4),
+(4, 3, 7),
+(4, 4, 2),
+(4, 5, 3),
+(4, 6, 1),
+(4, 7, 2),
+(4, 8, 3),
+(4, 9, 3),
+(4, 10, 10),
+(4, 11, 5),
+(4, 12, 6),
+(4, 13, 2),
+(4, 14, 1),
+(4, 15, 4),
+(4, 16, 8),
+(4, 17, 6),
+(4, 18, 9),
+(4, 19, 5),
+(4, 20, 2),
+(4, 21, 7),
+(4, 22, 3),
+(4, 23, 10),
+(4, 24, 1),
+(4, 25, 4),
+(4, 26, 6),
+(4, 27, 2),
+(4, 28, 9),
+(4, 29, 8),
+(4, 30, 7),
+(4, 31, 5),
+(4, 32, 10),
+(4, 33, 1),
+(4, 34, 3),
+(4, 35, 6),
+(4, 36, 4),
+(4, 37, 9),
+(4, 38, 2),
+(4, 39, 8),
+(4, 40, 7),
+(4, 41, 10),
+(4, 42, 1),
+(4, 43, 3),
+(4, 44, 6),
+(4, 45, 5);
+
+
 
 
 INSERT INTO diet_contexts (active_diet, current_week, current_weekday, current_weight)
