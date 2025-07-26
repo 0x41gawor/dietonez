@@ -8,6 +8,7 @@ import (
 
 	"github.com/0x41gawor/dietonez/internal/repo"
 	"github.com/0x41gawor/dietonez/internal/service/model"
+	"github.com/lib/pq"
 )
 
 type ServiceShoppingList struct {
@@ -23,7 +24,7 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 
 	//dodajmy offset do date w celu testów
 	// TESTOWY OFFSET (np. +3 dni)
-	date = date.AddDate(0, 0, 4)
+	date = date.AddDate(0, 0, 0)
 
 	var activeDietID int
 	var startDate time.Time
@@ -82,6 +83,25 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 
 	freshSlotsRange := getFreshSlotsRange(currentDietDay, maxDietDay)
 	fmt.Printf("Fresh slot range: %v\n", freshSlotsRange)
+	lidlAndStockSlotsRange := getLidlAndStockSlotsRange(currentDietDay, maxDietDay)
+	fmt.Printf("Lidl&Stock slot range: %v\n", lidlAndStockSlotsRange)
+
+	freshIngredients, err := s.getFreshIngredients(ctx, activeDietID, freshSlotsRange)
+	if err != nil {
+		return nil, fmt.Errorf("getFreshIngredients")
+	}
+	stockIngredients, err := s.getStockIngredients(ctx, activeDietID, lidlAndStockSlotsRange)
+	if err != nil {
+		return nil, fmt.Errorf("getStockIngredients")
+	}
+	lidlIngredients, err := s.getLidlIngredients(ctx, activeDietID, lidlAndStockSlotsRange)
+	if err != nil {
+		return nil, fmt.Errorf("getLidlIngredients")
+	}
+
+	fmt.Println(freshIngredients)
+	fmt.Println(stockIngredients)
+	fmt.Println(lidlIngredients)
 
 	return nil, nil
 }
@@ -119,4 +139,222 @@ func getFreshSlotsRange(currentDietDay, maxDietDay int) []int {
 	start := 6 + index*5
 
 	return []int{start, start + 1, start + 2, start + 3, start + 4}
+}
+
+// Lidl & Zapasy: zwraca ciąg 15‑slotowy lub pusty slice
+func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
+	if currentDietDay <= 0 {
+		return []int{}
+	}
+
+	// Specjalny przypadek: dzień przed ostatnim
+	if currentDietDay == maxDietDay-1 {
+		return []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+	}
+
+	// Niedopuszczamy ostatniego dnia (maxDay) – ma być pusty
+	if currentDietDay >= maxDietDay {
+		return []int{}
+	}
+
+	posInWeek := (currentDietDay - 1) % 7
+	if posInWeek != 2 && posInWeek != 5 { // nie środa i nie sobota → brak slotów
+		return []int{}
+	}
+
+	weekNum := (currentDietDay - 1) / 7 // ile pełnych tygodni minęło
+	// Która to „slotowa” pozycja w całym harmonogramie:
+	// - w każdym tygodniu są dokładnie 2 slotowe dni (śr = indeks 0, sob = indeks 1)
+	var withinWeekIndex int
+	if posInWeek == 2 { // środa
+		withinWeekIndex = 0
+	} else { // sobota
+		withinWeekIndex = 1
+	}
+	rangeIndex := weekNum*2 + withinWeekIndex
+
+	start := 16 + rangeIndex*15 // 16, 31, 46, 61, 76, ...
+
+	result := make([]int, 15)
+	for i := 0; i < 15; i++ {
+		result[i] = start + i
+	}
+	return result
+}
+
+func (s *ServiceShoppingList) getFreshIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.IngredientInShoppingList, error) {
+	const q = `
+		SELECT
+		  i.id,
+		  i.name,
+		  i.unit,
+		  i.default_amount,
+		  i.kcal,
+		  i.proteins,
+		  i.fats,
+		  i.carbs,
+		  SUM(ia.amount) AS total_amount
+		FROM diet_slots ds
+		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
+		JOIN ingredients i ON i.id = ia.ingredient_id
+		WHERE ds.diet_id = $1
+		  AND ds.slot_num = ANY($2)
+		  AND i.shop_style = 'Świeże'
+		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
+		ORDER BY i.name;
+	`
+
+	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []model.IngredientInShoppingList
+	for rows.Next() {
+		var ing model.IngredientGetPut
+		var amount float64
+
+		err := rows.Scan(
+			&ing.ID,
+			&ing.Name,
+			&ing.Unit,
+			&ing.DefaultAmount,
+			&ing.Kcal,
+			&ing.Protein,
+			&ing.Fat,
+			&ing.Carbs,
+			&amount,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		ingMin := model.IngredientMin{ID: ing.ID, Name: ing.Name}
+
+		result = append(result, model.IngredientInShoppingList{
+			Ingredient: ingMin,
+			Amount:     amount,
+		})
+	}
+
+	return result, nil
+}
+
+func (s *ServiceShoppingList) getLidlIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.IngredientInShoppingList, error) {
+	const q = `
+		SELECT
+		  i.id,
+		  i.name,
+		  i.unit,
+		  i.default_amount,
+		  i.kcal,
+		  i.proteins,
+		  i.fats,
+		  i.carbs,
+		  SUM(ia.amount) AS total_amount
+		FROM diet_slots ds
+		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
+		JOIN ingredients i ON i.id = ia.ingredient_id
+		WHERE ds.diet_id = $1
+		  AND ds.slot_num = ANY($2)
+		  AND i.shop_style IN ('Lidl')
+		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
+		ORDER BY i.name;
+	`
+
+	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []model.IngredientInShoppingList
+	for rows.Next() {
+		var ing model.IngredientGetPut
+		var amount float64
+
+		err := rows.Scan(
+			&ing.ID,
+			&ing.Name,
+			&ing.Unit,
+			&ing.DefaultAmount,
+			&ing.Kcal,
+			&ing.Protein,
+			&ing.Fat,
+			&ing.Carbs,
+			&amount,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		ingMin := model.IngredientMin{ID: ing.ID, Name: ing.Name}
+
+		result = append(result, model.IngredientInShoppingList{
+			Ingredient: ingMin,
+			Amount:     amount,
+		})
+	}
+
+	return result, nil
+}
+
+func (s *ServiceShoppingList) getStockIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.IngredientInShoppingList, error) {
+	const q = `
+		SELECT
+		  i.id,
+		  i.name,
+		  i.unit,
+		  i.default_amount,
+		  i.kcal,
+		  i.proteins,
+		  i.fats,
+		  i.carbs,
+		  SUM(ia.amount) AS total_amount
+		FROM diet_slots ds
+		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
+		JOIN ingredients i ON i.id = ia.ingredient_id
+		WHERE ds.diet_id = $1
+		  AND ds.slot_num = ANY($2)
+		  AND i.shop_style IN ('Zapasy')
+		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
+		ORDER BY i.name;
+	`
+
+	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []model.IngredientInShoppingList
+	for rows.Next() {
+		var ing model.IngredientGetPut
+		var amount float64
+
+		err := rows.Scan(
+			&ing.ID,
+			&ing.Name,
+			&ing.Unit,
+			&ing.DefaultAmount,
+			&ing.Kcal,
+			&ing.Protein,
+			&ing.Fat,
+			&ing.Carbs,
+			&amount,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		ingMin := model.IngredientMin{ID: ing.ID, Name: ing.Name}
+
+		result = append(result, model.IngredientInShoppingList{
+			Ingredient: ingMin,
+			Amount:     amount,
+		})
+	}
+
+	return result, nil
 }

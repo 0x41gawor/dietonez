@@ -6,7 +6,7 @@ type IngredientInShoppingList struct {
 }
 
 type ShoppingList struct {
-	Fresh *[]IngredientInShoppingList `json:"fresh"`
-	Lidl  *[]IngredientInShoppingList `json:"lidl"`
-	Stock *[]IngredientInShoppingList `json:"stock"`
+	Fresh []IngredientInShoppingList `json:"fresh"`
+	Lidl  []IngredientInShoppingList `json:"lidl"`
+	Stock []IngredientInShoppingList `json:"stock"`
 }
