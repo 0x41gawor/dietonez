@@ -1,8 +1,9 @@
-import {ref, computed, onMounted, Ref, watch} from 'vue'
+import {ref, computed, onMounted, Ref, watch, mergeProps} from 'vue'
 import {useToast} from "vue-toastification";
 import { useRouter } from 'vue-router'
 
-import type { DietGet, DietPut, DishGetShort, WeekPut } from '@/types/types';
+import type { Meal } from '@/types/types'; // lub inna ścieżka, jeśli masz enum lub typ
+import type { DietGet, DietPut, DishGetShort, WeekGet, WeekPut } from '@/types/types';
 import {GetDishesParams} from '@/api/dishes';
 import { updateDietById } from '@/api/diets'; // upewnij się, że masz to zaimportowane
 import { getDietById } from '@/api/diets';
@@ -131,6 +132,37 @@ export function  useDietViewLogic(id: Ref<number>) {
         }
         };
 
+    const handleDeleteButtonClick = () => {
+        console.log("Delete");
+    }
+    const handleAddWeekButtonClick = () => {
+        const weeksCount = diet.value.weeks.length;
+
+        const meals: Meal[] = ['Breakfast', 'Lunch', 'Pre-Workout', 'Post-Workout', 'Supper'];
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        const emptySlot = (meal: Meal) => ({ meal, dish: null });
+        const emptySummary = { goal: 0, kcal: 0, proteins: 0, fats: 0, carbs: 0 };
+        const emptyLeft = { kcal: 0, proteins: 0, fats: 0 };
+
+        const newWeek: WeekGet = {
+                num: weeksCount+1,
+                days: days.map(name => ({
+                name,
+                slots: meals.map(emptySlot),
+                summary: { ...emptySummary },
+                left: { ...emptyLeft },
+                })),
+        };
+
+        diet.value.weeks.push(newWeek);
+        hasPendingChanges.value = true;
+        console.log(diet.value);
+    };
+
+        const handleDeleteWeekButtonClick = () => {
+            console.log("Delete Week");
+        }
 
     return {
         diet,
@@ -139,5 +171,8 @@ export function  useDietViewLogic(id: Ref<number>) {
         handleSlotUpdate,
         handleRevertButtonClick,
         handleUpdateButtonClick,
+        handleDeleteButtonClick,
+        handleAddWeekButtonClick,
+        handleDeleteWeekButtonClick,
     }
 }

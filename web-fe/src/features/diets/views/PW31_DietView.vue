@@ -22,6 +22,18 @@
         @update-slot="handleSlotUpdate"
         </WeeksTable>            
 
+        
+        <div class="delete-button-wrapper">
+            <div class="left-buttons">
+                <AddWeekButton @click="handleAddWeekButtonClick" :disabled="false" />
+                <DeleteWeekButton @click="handleDeleteWeekButtonClick" :disabled="false" />
+            </div>
+
+            <div class="right-buttons">
+                <DeleteButton @click="handleDeleteButtonClick" :disabled="false" />
+            </div>
+        </div>
+
     </section>
 </template>
 
@@ -32,7 +44,10 @@ import { useDietViewLogic } from '../composables/useDietViewLogic';
 import { toRef } from 'vue';
 import RevertButton from '@/components/RevertButton.vue';
 import UpdateButton from '@/components/UpdateButton.vue';
+import DeleteButton from '@/components/DeleteButton.vue';
 import WeeksTable from '../components/WeeksTable.vue';
+import AddWeekButton from '../components/AddWeekButton.vue';
+import DeleteWeekButton from '../components/DeleteWeekButton.vue';
 
 const props = defineProps<{id: number}>()
 
@@ -45,5 +60,8 @@ const {
     handleSlotUpdate,
     handleRevertButtonClick,
     handleUpdateButtonClick,
+    handleDeleteButtonClick,
+    handleAddWeekButtonClick,
+    handleDeleteWeekButtonClick,
 } = useDietViewLogic(id);
 </script>

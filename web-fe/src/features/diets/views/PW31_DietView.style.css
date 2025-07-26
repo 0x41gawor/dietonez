@@ -45,10 +45,18 @@ textarea {
   border-radius: 0px;
   transition: border-color 0.2s ease;
 }
-
 .delete-button-wrapper {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 0.5rem; 
-  margin-right: 0rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.left-buttons,
+.right-buttons {
+  display: flex;
+  gap: 0.5rem;
 }
