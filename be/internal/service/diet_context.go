@@ -46,8 +46,7 @@ func (s *ServiceDietContext) Get(ctx context.Context) (*model.DietContextGet, er
 	start := dc.StartDate.Truncate(24 * time.Hour)
 
 	// 2. Policz różnicę dni
-	daysSinceStart := int(today.Sub(start).Hours() / 24)
-
+	daysSinceStart := int(today.Sub(start).Hours()/24) + 1
 	// 3. Oblicz liczbę pełnych tygodni (jeśli 0, to tydzień 1)
 	if daysSinceStart < 0 {
 		dc.CurrentWeek = 1 // przyszłość? fallback na 1

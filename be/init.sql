@@ -1,5 +1,5 @@
 -- Drop all tables (najpierw te zależne)
-DROP TABLE IF EXISTS diet_contexts;
+DROP TABLE IF EXISTS diet_context;
 DROP TABLE IF EXISTS day_kcals;
 DROP TABLE IF EXISTS diet_slots;
 DROP TABLE IF EXISTS diet_label_bridge;
