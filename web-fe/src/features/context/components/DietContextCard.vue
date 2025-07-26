@@ -13,7 +13,21 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{ context.activeDiet.name }}</td>
+            <td>
+              <select
+                :value="context.activeDiet.id"
+                @change="handleDietChange"
+                class="diet-select"
+              >
+                <option
+                  v-for="option in dietOptions"
+                  :key="option.id"
+                  :value="option.id"
+                >
+                  {{ option.name }}
+                </option>
+              </select>
+            </td>
             <td>{{ context.currentWeek }}</td>
             <td>{{ weekday }}</td>
             <td>{{ formatDate(context.startDate) }}</td>
@@ -26,23 +40,35 @@
 </template>
 
 <script setup lang="ts">
-import { DietContextGet } from '@/types/types';
+import { DietContextGet, DietMin } from '@/types/types'
 import { computed } from 'vue'
 
 const props = defineProps<{
   context: DietContextGet
+  dietOptions: DietMin[]
 }>()
+
+const emit = defineEmits<{
+  (e: 'update-context', newDietId: number): void
+}>()
+
+function handleDietChange(event: Event) {
+  const selectedId = Number((event.target as HTMLSelectElement).value)
+  const newDietId = selectedId;
+  console.log("newID", newDietId);
+  emit('update-context', newDietId);
+}
 
 const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 const weekday = computed(() => days[props.context.currentDay - 1])
 
 function formatDate(date: Date): string {
   const d = new Date(date)
-  if (isNaN(d.getTime())) return ''
-  return d.toISOString().slice(0, 10) // YYYY-MM-DD
+  return isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10)
 }
-
 </script>
+
+
 
 <style scoped>
 .table-container {
@@ -93,5 +119,19 @@ td {
 .col-numeric {
   width: 10%;
   text-align: center;
+}
+
+.diet-select {
+  font-weight: 100;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  width: 100%;
+  border-radius: 2px;
+  padding: 0;
+  appearance: none; /* najważniejsze */
+  -webkit-appearance: none; /* Safari/Chrome */
+  -moz-appearance: none; /* Firefox */
+  background-image: none; /* dla pewności */
 }
 </style>

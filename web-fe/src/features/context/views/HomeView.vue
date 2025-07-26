@@ -7,7 +7,11 @@
       </div>
     </div>
 
-    <DietContextCard :context="dietContext" />
+    <DietContextCard 
+    :context="dietContext" 
+    :dietOptions="dietOptions"
+    @update-context="handleActiveDietChange"
+    />
   </section>
 </template>
 
@@ -21,7 +25,9 @@ import UpdateButton from '@/components/UpdateButton.vue'
 
 const {
   dietContext,
+  dietOptions,
   hasPendingChanges,
+  handleActiveDietChange,
   handleRevertButtonClick,
   handleUpdateButtonClick
  } = useHomeViewLogic()

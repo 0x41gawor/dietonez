@@ -146,13 +146,6 @@ export interface SlotGet {
   dish: DishGetShort | null;
 }
 
-export interface DayGet {
-  name: string;
-  slots: SlotGet[];
-  summary: Summary;
-  left: Left;
-}
-
 export interface SlotPut {
   meal: Meal;
   dish: DishMinPut;
@@ -171,6 +164,55 @@ export interface Left {
   proteins: number;
   fats: number;
 }
+
+export interface DayGet {
+  name: string;
+  slots: SlotGet[];
+  summary: Summary;
+  left: Left;
+}
+
+export interface DayPut {
+  name: string;
+  slots: SlotPut[];
+}
+
+export interface WeekGet {
+  num: number;
+  days: DayGet[];
+}
+
+export interface WeekPut {
+  num: number;
+  days: DayPut[];
+}
+
+export interface DietGet {
+  id: number;
+  name: string;
+  descr: string;
+  weeks: WeekGet[];
+  labels?: Label[];
+}
+
+export interface DietPost {
+  name: string;
+  descr: string;
+  weeks: WeekPut[];
+  labels?: Label[];
+}
+
+export interface DietPut extends DietPost {
+  id: number;
+}
+
+export interface DietContext {
+  activeDiet: DietMin;
+  currentWeek: number;
+  currentDay: number;
+  weight: number;
+}
+
 
 export interface DietContextPut {
   activeDiet: DietMin;

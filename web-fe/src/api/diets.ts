@@ -4,7 +4,8 @@ import type {
   DietGet,
   DietPost,
   DietPut,
-  DietContext
+  DietContext,
+  DietMin
 } from '@/types/types'
 
 // GET /diets
@@ -34,18 +35,6 @@ export async function updateDietById(id: number, diet: DietPut): Promise<DietGet
 // DELETE /diets/{id}
 export async function deleteDietById(id: number): Promise<void> {
   await client.delete(`/diets/${id}`)
-}
-
-// GET /diet-context
-export async function getDietContext(): Promise<DietContext> {
-  const response = await client.get('/diet-context')
-  return response.data
-}
-
-// PUT /diet-context
-export async function updateDietContext(context: DietContext): Promise<DietContext> {
-  const response = await client.put('/diet-context', context)
-  return response.data
 }
 
 // PATCH /diets/{id}/short

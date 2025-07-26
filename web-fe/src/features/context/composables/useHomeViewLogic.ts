@@ -1,5 +1,6 @@
-import { getDietContext } from "@/api/diets";
-import { DietContextGet, DietContextPut } from "@/types/types"
+import { getDietContext, getDietMins, updateDietContext } from "@/api/context";
+import { updateDietById } from "@/api/diets";
+import { DietContextGet, DietContextPut, DietMin } from "@/types/types"
 import { onMounted, ref } from 'vue';
 import {useToast} from "vue-toastification";
 
@@ -14,6 +15,7 @@ export function useHomeViewLogic() {
         startDate: new Date('2025-01-01'),
         weight: 82
     })
+    const dietOptions = ref<DietMin[]>([]);
     const hasPendingChanges = ref<boolean>(false)
 
     // helpers
@@ -31,21 +33,55 @@ export function useHomeViewLogic() {
         }
     }
 
-    onMounted(fetchDietContext);
+    async function fetchDietOptions() {
+        try {
+            const response = await getDietMins();
+            console.log(response)
+            dietOptions.value = response;
+        } catch (error) {
+            toast.error("Failed to fetch diet options");
+        }
+
+    }
+
+    onMounted(async () => {
+    await fetchDietContext()
+    await fetchDietOptions()
+    })
+
+    const handleActiveDietChange = (newDietId: number) => {
+        dietContext.value.activeDiet.id = newDietId
+        hasPendingChanges.value = true
+    }
+
 
     const handleRevertButtonClick = () => {
-        console.log("Revert button clicked")
         fetchDietContext();
         hasPendingChanges.value = false;
     }
 
      const handleUpdateButtonClick = async () => {
-        console.log("Update button clicked");
+        try {
+            const updatedDietContext: DietContextPut = {
+                activeDiet: {id: dietContext.value.activeDiet.id, name: ""},
+                startDate: dietContext.value.startDate,
+                weight: dietContext.value.weight,
+            }
+            const response = await updateDietContext(updatedDietContext);
+            dietContext.value = response;
+            hasPendingChanges.value = false;
+            toast.success("Diet Context updated :)")
+        } catch (error) {
+            toast.error("Failed to update dietContext")
+            console.error("Update error: ", error);
+        }
      }
 
     return {
         dietContext,
+        dietOptions,
         hasPendingChanges,
+        handleActiveDietChange,
         handleRevertButtonClick,
         handleUpdateButtonClick,
     }
