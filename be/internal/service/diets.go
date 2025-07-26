@@ -79,6 +79,33 @@ func (s *ServiceDiets) ListAll(ctx context.Context) ([]*model.DietShort, error) 
 	return out, nil
 }
 
+func (s *ServiceDiets) ListMinAll(ctx context.Context) ([]*model.DietMin, error) {
+	// Główne diety
+	const qDiets = `
+		SELECT d.id, d.name
+		FROM diets d
+		ORDER BY d.id;
+	`
+
+	rows, err := s.db.QueryContext(ctx, qDiets)
+	if err != nil {
+		return nil, fmt.Errorf("query diets: %w", err)
+	}
+	defer rows.Close()
+
+	var out []*model.DietMin
+
+	for rows.Next() {
+		var d model.DietMin
+		if err := rows.Scan(&d.ID, &d.Name); err != nil {
+			return nil, fmt.Errorf("scan diet: %w", err)
+		}
+		out = append(out, &d)
+	}
+
+	return out, nil
+}
+
 func (s *ServiceDiets) Create(ctx context.Context, in *model.DietPost) (*model.DietGet, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {

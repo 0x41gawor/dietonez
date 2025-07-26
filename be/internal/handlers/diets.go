@@ -24,6 +24,14 @@ func NewHandlerDiets() *HandlerDiets {
 }
 
 func (h *HandlerDiets) handleBaseGET(w http.ResponseWriter, r *http.Request) error {
+	min := parseBool(r.URL.Query().Get("min"), false)
+	if min {
+		diets, err := h.s.ListMinAll(r.Context())
+		if err != nil {
+			return err
+		}
+		return WriteJSON(w, http.StatusOK, diets)
+	}
 	diets, err := h.s.ListAll(r.Context())
 	if err != nil {
 		return err

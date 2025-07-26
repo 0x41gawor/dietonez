@@ -80,12 +80,14 @@ td {
   padding: 2px 10px;
   border-bottom: 1px solid #e0e0e0;
   color: #333;
-  font-size: 0.75rem;
+  font-size: 1rem;
   vertical-align: middle;
+  border: 1px solid green;
 }
 
 .col-name {
-  width: 50%;
+  width: 55%;
+  border: 1px solid red;
 }
 
 .col-numeric {
