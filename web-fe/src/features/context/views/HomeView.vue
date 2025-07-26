@@ -11,7 +11,10 @@
     :context="dietContext" 
     :dietOptions="dietOptions"
     @update-context="handleActiveDietChange"
-    />
+    @update-weight="handleWeightChange"
+    @update-start-date="handleStartDateChange"
+  />
+
   </section>
 </template>
 
@@ -28,7 +31,9 @@ const {
   dietOptions,
   hasPendingChanges,
   handleActiveDietChange,
+  handleWeightChange,
+  handleStartDateChange,
   handleRevertButtonClick,
-  handleUpdateButtonClick
+  handleUpdateButtonClick,
  } = useHomeViewLogic()
 </script>

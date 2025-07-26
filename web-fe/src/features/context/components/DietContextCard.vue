@@ -28,10 +28,26 @@
                 </option>
               </select>
             </td>
-            <td>{{ context.currentWeek }}</td>
-            <td>{{ weekday }}</td>
-            <td>{{ formatDate(context.startDate) }}</td>
-            <td>{{ context.weight.toFixed(1) }}</td>
+            <td class="col-numeric">{{ context.currentWeek }}</td>
+            <td class="col-numeric">{{ weekday }}</td>
+            <td>
+            <input
+              type="date"
+              :value="formatDateForInput(context.startDate)"
+              @change="handleDateChange"
+              class="diet-input"
+            />
+          </td>
+          <td>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              :value="context.weight"
+              @input="handleWeightChange"
+              class="diet-input"
+            />
+          </td>
           </tr>
         </tbody>
       </table>
@@ -50,13 +66,27 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update-context', newDietId: number): void
+  (e: 'update-weight', newWeight: number): void
+  (e: 'update-start-date', newDate: Date): void
 }>()
 
 function handleDietChange(event: Event) {
   const selectedId = Number((event.target as HTMLSelectElement).value)
-  const newDietId = selectedId;
-  console.log("newID", newDietId);
-  emit('update-context', newDietId);
+  emit('update-context', selectedId)
+}
+
+function handleWeightChange(event: Event) {
+  const newWeight = Number((event.target as HTMLInputElement).value)
+  emit('update-weight', newWeight)
+}
+
+function handleDateChange(event: Event) {
+  const newDate = new Date((event.target as HTMLInputElement).value)
+  emit('update-start-date', newDate)
+}
+
+function formatDateForInput(date: Date): string {
+  return new Date(date).toISOString().slice(0, 10)
 }
 
 const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
@@ -108,17 +138,21 @@ td {
   color: #333;
   font-size: 1rem;
   vertical-align: middle;
-  border: 1px solid green;
 }
 
 .col-name {
   width: 55%;
-  border: 1px solid red;
 }
 
 .col-numeric {
   width: 10%;
   text-align: center;
+}
+
+td.col-numeric {
+  text-align: center;
+  vertical-align: middle;
+  padding: 6px 0;
 }
 
 .diet-select {
@@ -133,5 +167,33 @@ td {
   -webkit-appearance: none; /* Safari/Chrome */
   -moz-appearance: none; /* Firefox */
   background-image: none; /* dla pewności */
+}
+
+.diet-input {
+  width: 100%;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background-color: transparent;
+  font-size: 0.95rem;
+  font-family: inherit;
+  text-align: center;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: textfield; /* dla number w FF */
+  box-sizing: border-box;
+}
+
+.diet-input:focus {
+  outline: none;
+  background-color: #f0f0f0;
+}
+
+/* Styl ikonki kalendarza */
+input[type="date"].diet-input::-webkit-calendar-picker-indicator {
+  filter: grayscale(100%);
+  cursor: pointer;
+  margin-right: 6px;
 }
 </style>

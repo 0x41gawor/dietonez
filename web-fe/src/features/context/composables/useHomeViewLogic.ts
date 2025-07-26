@@ -54,6 +54,15 @@ export function useHomeViewLogic() {
         hasPendingChanges.value = true
     }
 
+    const handleWeightChange = (newWeight: number) => {
+        dietContext.value.weight = newWeight
+        hasPendingChanges.value = true
+    }
+
+    const handleStartDateChange = (newDate: Date) => {
+        dietContext.value.startDate = newDate
+        hasPendingChanges.value = true
+    }
 
     const handleRevertButtonClick = () => {
         fetchDietContext();
@@ -82,6 +91,8 @@ export function useHomeViewLogic() {
         dietOptions,
         hasPendingChanges,
         handleActiveDietChange,
+        handleWeightChange,
+        handleStartDateChange,
         handleRevertButtonClick,
         handleUpdateButtonClick,
     }
