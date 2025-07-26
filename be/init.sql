@@ -131,9 +131,8 @@ CREATE TABLE day_kcals (
 );
 
 -- diet_contexts
-CREATE TABLE diet_contexts (
+CREATE TABLE diet_context (
     active_diet INT REFERENCES diets(id),
-    current_week INT,
-    current_weekday INT,
+    start_date DATE,
     current_weight FLOAT
 );

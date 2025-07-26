@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Label struct {
 	Label string `json:"label"`
 	Color string `json:"color"`
@@ -185,11 +187,18 @@ type DietPut struct {
 	Labels []Label   `json:"labels"`
 }
 
-type DietContext struct {
-	ActiveDiet  DietMin `json:"activeDiet"`
-	CurrentWeek int     `json:"currentWeek"`
-	CurrentDay  int     `json:"currentDay"`
-	Weight      float64 `json:"weight"`
+type DietContextGet struct {
+	ActiveDiet  DietMin   `json:"activeDiet"`
+	StartDate   time.Time `json:"startDate"`
+	CurrentWeek int       `json:"currentWeek"`
+	CurrentDay  int       `json:"currentDay"`
+	Weight      float64   `json:"weight"`
+}
+
+type DietContextPut struct {
+	ActiveDiet DietMin   `json:"activeDiet"`
+	StartDate  time.Time `json:"startDate"`
+	Weight     float64   `json:"weight"`
 }
 
 type DishNamePatch struct {

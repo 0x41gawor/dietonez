@@ -34,7 +34,7 @@ func (h *HandlerDietContext) handleGet(w http.ResponseWriter, r *http.Request) e
 }
 
 func (h *HandlerDietContext) handlePut(w http.ResponseWriter, r *http.Request) error {
-	var payload model.DietContext
+	var payload model.DietContextPut
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		return WriteJSON(w, http.StatusBadRequest, "invalid JSON body")
 	}

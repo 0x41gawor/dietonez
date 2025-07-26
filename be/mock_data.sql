@@ -186,5 +186,5 @@ INSERT INTO diet_slots (diet_id, slot_num, dish_id) VALUES
 
 
 
-INSERT INTO diet_contexts (active_diet, current_week, current_weekday, current_weight)
-VALUES (1, 2, 4, 81.7);
+INSERT INTO diet_context (active_diet, start_date, current_weight)
+VALUES (1, '2025-07-26', 81.7);

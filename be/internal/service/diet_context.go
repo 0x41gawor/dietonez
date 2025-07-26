@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/0x41gawor/dietonez/internal/repo"
 	"github.com/0x41gawor/dietonez/internal/service/model"
@@ -18,19 +19,18 @@ func NewServiceDietContext() *ServiceDietContext {
 	return &ServiceDietContext{db: db}
 }
 
-func (s *ServiceDietContext) Get(ctx context.Context) (*model.DietContext, error) {
+func (s *ServiceDietContext) Get(ctx context.Context) (*model.DietContextGet, error) {
 	const q = `
-		SELECT dc.active_diet, dc.current_week, dc.current_weekday, dc.current_weight,
+		SELECT dc.active_diet, dc.start_date, dc.current_weight,
 		       d.name
-		FROM diet_contexts dc
+		FROM diet_context dc
 		LEFT JOIN diets d ON d.id = dc.active_diet;
 	`
 
-	var dc model.DietContext
+	var dc model.DietContextGet
 	err := s.db.QueryRowContext(ctx, q).Scan(
 		&dc.ActiveDiet.ID,
-		&dc.CurrentWeek,
-		&dc.CurrentDay,
+		&dc.StartDate,
 		&dc.Weight,
 		&dc.ActiveDiet.Name,
 	)
@@ -41,25 +41,47 @@ func (s *ServiceDietContext) Get(ctx context.Context) (*model.DietContext, error
 		return nil, fmt.Errorf("query context: %w", err)
 	}
 
+	// 1. Pobierz dzisiejszą datę (tylko data, bez czasu)
+	today := time.Now().Truncate(24 * time.Hour)
+	start := dc.StartDate.Truncate(24 * time.Hour)
+
+	// 2. Policz różnicę dni
+	daysSinceStart := int(today.Sub(start).Hours() / 24)
+
+	// 3. Oblicz liczbę pełnych tygodni (jeśli 0, to tydzień 1)
+	if daysSinceStart < 0 {
+		dc.CurrentWeek = 1 // przyszłość? fallback na 1
+		dc.CurrentDay = 1
+	} else {
+		dc.CurrentWeek = daysSinceStart/7 + 1
+
+		// 4. Oblicz currentDay: Monday = 1, Sunday = 7
+		weekday := today.Weekday()
+		if weekday == time.Sunday {
+			dc.CurrentDay = 7
+		} else {
+			dc.CurrentDay = int(weekday)
+		}
+	}
+
 	return &dc, nil
 }
 
-func (s *ServiceDietContext) Update(ctx context.Context, in *model.DietContext) (*model.DietContext, error) {
+func (s *ServiceDietContext) Update(ctx context.Context, in *model.DietContextPut) (*model.DietContextGet, error) {
 	// 1. Usuń istniejący rekord (bo mamy tylko jeden – singleton)
-	const delQ = `DELETE FROM diet_contexts;`
+	const delQ = `DELETE FROM diet_context;`
 	if _, err := s.db.ExecContext(ctx, delQ); err != nil {
 		return nil, fmt.Errorf("delete old context: %w", err)
 	}
 
 	// 2. Wstaw nowy
 	const insertQ = `
-		INSERT INTO diet_contexts (active_diet, current_week, current_weekday, current_weight)
-		VALUES ($1, $2, $3, $4);
+		INSERT INTO diet_context (active_diet, start_date, current_weight)
+		VALUES ($1, $2, $3);
 	`
 	_, err := s.db.ExecContext(ctx, insertQ,
 		in.ActiveDiet.ID,
-		in.CurrentWeek,
-		in.CurrentDay,
+		in.StartDate,
 		in.Weight,
 	)
 	if err != nil {
