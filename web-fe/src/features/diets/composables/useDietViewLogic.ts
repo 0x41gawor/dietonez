@@ -99,6 +99,11 @@ export function  useDietViewLogic(id: Ref<number>) {
             return;
         }
 
+        if (!diet.value.weeks) {
+            toast.error("Add at least one week");
+            return;
+        }
+
         try {
             const weeks: WeekPut[] = diet.value.weeks.map((week) => ({
             num: week.num,
@@ -136,6 +141,13 @@ export function  useDietViewLogic(id: Ref<number>) {
         console.log("Delete");
     }
     const handleAddWeekButtonClick = () => {
+        if (!diet.value) return;
+
+        // Jeśli weeks jest niezainicjalizowane, zainicjalizuj jako pustą tablicę
+        if (!Array.isArray(diet.value.weeks)) {
+            diet.value.weeks = [];
+        }
+
         const weeksCount = diet.value.weeks.length;
 
         const meals: Meal[] = ['Breakfast', 'Lunch', 'Pre-Workout', 'Post-Workout', 'Supper'];
@@ -146,13 +158,13 @@ export function  useDietViewLogic(id: Ref<number>) {
         const emptyLeft = { kcal: 0, proteins: 0, fats: 0 };
 
         const newWeek: WeekGet = {
-                num: weeksCount+1,
-                days: days.map(name => ({
-                name,
-                slots: meals.map(emptySlot),
-                summary: { ...emptySummary },
-                left: { ...emptyLeft },
-                })),
+            num: weeksCount + 1,
+            days: days.map(name => ({
+            name,
+            slots: meals.map(emptySlot),
+            summary: { ...emptySummary },
+            left: { ...emptyLeft },
+            })),
         };
 
         diet.value.weeks.push(newWeek);
@@ -160,9 +172,10 @@ export function  useDietViewLogic(id: Ref<number>) {
         console.log(diet.value);
     };
 
-        const handleDeleteWeekButtonClick = () => {
-            console.log("Delete Week");
-        }
+    const handleDeleteWeekButtonClick = () => {
+        diet.value.weeks.pop();
+        hasPendingChanges.value = true;
+    }
 
     return {
         diet,

@@ -5,21 +5,26 @@
   margin-bottom: 1rem;
 }
 
-textarea {
+.header textarea {
   width: 200%;
   padding: 10px 12px;
   border: 1px solid #dcdfe6; /* Delikatna, szara ramka */
   border-radius: 4px; /* Lekko zaokrąglone rogi */
-  font-size: 0.6rem;
+  font-size: 0.9rem;
   box-sizing: border-box; /* Gwarantuje, że padding i border nie powiększą elementu */
   transition: border-color 0.2s ease-in-out;
   background-color: #ffffff; /* Białe tło dla inputów */
   margin-right: 30px;
+  color: #555;
 
   height: 40px;           /* Stała wysokość lub początkowa */
   max-height: 40px;       /* Nigdy nie przekroczy tej wysokości */
   resize: none;            /* Użytkownik nie może sam rozciągać */
   overflow-y: auto;        /* Pojawi się scrollbar, jeśli tekstu za dużo */
+}
+
+.header textarea:focus {
+  outline: none;
 }
 
 .buttons {
