@@ -67,6 +67,11 @@ func (s *ServiceDietContext) Get(ctx context.Context) (*model.DietContextGet, er
 }
 
 func (s *ServiceDietContext) Update(ctx context.Context, in *model.DietContextPut) (*model.DietContextGet, error) {
+	// 0. Walidacja: start date musi być poniedziałkiem
+	if in.StartDate.Weekday() != time.Monday {
+		return nil, fmt.Errorf("start_date must be a Monday (got %s)", in.StartDate.Weekday())
+	}
+
 	// 1. Usuń istniejący rekord (bo mamy tylko jeden – singleton)
 	const delQ = `DELETE FROM diet_context;`
 	if _, err := s.db.ExecContext(ctx, delQ); err != nil {

@@ -80,10 +80,16 @@ export function useHomeViewLogic() {
             dietContext.value = response;
             hasPendingChanges.value = false;
             toast.success("Diet Context updated :)")
-        } catch (error) {
+        } catch (error: any) {
             toast.error("Failed to update dietContext")
-            console.error("Update error: ", error);
+
+            if (error.response && error.response.data) {
+                toast.error(`Update error: ${error.response.data}`)
+            } else {
+                toast.error(`Unexpected error: ${error.message || error}`)
+            }
         }
+
      }
 
     return {

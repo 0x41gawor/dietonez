@@ -21,11 +21,6 @@ func NewServiceShoppingList() *ServiceShoppingList {
 }
 
 func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.ShoppingList, error) {
-
-	//dodajmy offset do date w celu testów
-	// TESTOWY OFFSET (np. +3 dni)
-	date = date.AddDate(0, 0, 0)
-
 	var activeDietID int
 	var startDate time.Time
 
@@ -46,11 +41,6 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 		}
 		return nil, fmt.Errorf("failed to fetch active diet: %w", err)
 	}
-
-	print("Active Diet ID: ", activeDietID, "\n")
-	print("Start Date: ", startDate.String(), "\n")
-	print("Current Date: ", date.String(), "\n")
-
 	var maxSlotNum int
 	err = s.db.QueryRowContext(ctx, `
 		SELECT MAX(slot_num)
@@ -62,29 +52,17 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 		return nil, fmt.Errorf("failed to fetch max slot_num: %w", err)
 	}
 
-	print("Max slot_num: ", maxSlotNum, "\n")
-
 	// Obliczenie różnicy dni (startDate → date) +1
 	daysBetween := int(date.Sub(startDate).Hours()/24) + 1
 	if daysBetween <= 0 {
 		return nil, fmt.Errorf("current date is before start date")
 	}
-	print("Days between: ", daysBetween, "\n")
-
-	// Dzień tygodnia
-	weekday := date.Weekday()
-	print("Weekday: ", weekday.String(), "\n")
 
 	maxDietDay := maxSlotNum / 30 * 7
 	currentDietDay := daysBetween % maxDietDay
 
-	print("Current diet day num: ", currentDietDay, "\n")
-	print("Max   diet  day  num: ", maxDietDay, "\n")
-
 	freshSlotsRange := getFreshSlotsRange(currentDietDay, maxDietDay)
-	fmt.Printf("Fresh slot range: %v\n", freshSlotsRange)
 	lidlAndStockSlotsRange := getLidlAndStockSlotsRange(currentDietDay, maxDietDay)
-	fmt.Printf("Lidl&Stock slot range: %v\n", lidlAndStockSlotsRange)
 
 	freshIngredients, err := s.getFreshIngredients(ctx, activeDietID, freshSlotsRange)
 	if err != nil {
@@ -98,12 +76,13 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 	if err != nil {
 		return nil, fmt.Errorf("getLidlIngredients")
 	}
+	result := &model.ShoppingList{
+		Fresh: freshIngredients,
+		Lidl:  lidlIngredients,
+		Stock: stockIngredients,
+	}
 
-	fmt.Println(freshIngredients)
-	fmt.Println(stockIngredients)
-	fmt.Println(lidlIngredients)
-
-	return nil, nil
+	return result, nil
 }
 
 func getFreshSlotsRange(currentDietDay, maxDietDay int) []int {

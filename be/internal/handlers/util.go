@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -71,4 +73,22 @@ func ParseIDFromPath(resource string, r *http.Request) (int, error) {
 		}
 	}
 	return 0, fmt.Errorf("could not find ID for resource '%s' in path", resource)
+}
+
+// ParseDateFromQuery parses ?date=YYYY-MM-DD or returns today's date if empty.
+// Returns (time.Time, error)
+func ParseDateFromQuery(r *http.Request) (time.Time, error) {
+	const layout = "2006-01-02"
+
+	dateStr := r.URL.Query().Get("date")
+	if dateStr == "" {
+		return time.Now().Truncate(24 * time.Hour), nil
+	}
+
+	date, err := time.Parse(layout, dateStr)
+	if err != nil {
+		return time.Time{}, errors.New("invalid date format (expected YYYY-MM-DD)")
+	}
+
+	return date, nil
 }
