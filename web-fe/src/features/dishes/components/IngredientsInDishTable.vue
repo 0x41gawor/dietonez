@@ -303,7 +303,7 @@ td:last-child { text-align: center; }
 }
 
 .macro-badge.kcal {
-  border-color: #f9a825; /* żółty */
+  border-color: var(--color-brand-pizzas); /* żółty */
   font-weight: bold;
 }
 .macro-badge.protein {

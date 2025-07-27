@@ -3,6 +3,7 @@
     <!-- Name Column -->
     <div class="add-cell col-name">
       <input
+        ref="nameInput"
         v-model="newIngredient.name"
         type="text"
         class="form-input"
@@ -39,7 +40,7 @@
 
     <!-- Kcal Column -->
     <div class="add-cell col-numeric">
-      <input
+      <input id="kcal-input"
         v-model.number="newIngredient.kcal"
         type="number"
         class="form-input form-input-numeric"
@@ -50,7 +51,7 @@
 
     <!-- Prot. Column -->
     <div class="add-cell col-numeric">
-      <input
+      <input id="prots-input"
         v-model.number="newIngredient.protein"
         type="number"
         class="form-input form-input-numeric"
@@ -61,7 +62,7 @@
 
     <!-- Fats Column -->
     <div class="add-cell col-numeric">
-      <input
+      <input id="fats-input"
         v-model.number="newIngredient.fat"
         type="number"
         class="form-input form-input-numeric"
@@ -72,7 +73,7 @@
 
     <!-- Carb. Column -->
     <div class="add-cell col-numeric">
-      <input
+      <input id="carbs-input"
         v-model.number="newIngredient.carbs"
         type="number"
         class="form-input form-input-numeric"
@@ -89,11 +90,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import AddButton from '../../../components/AddButton.vue'
 import { IngredientPost, Unit, ShopStyle } from '@/types/types';
 const unitOptions = Object.values(Unit)
 const shopStyleOptions = Object.values(ShopStyle)
+
+const nameInput = ref<HTMLInputElement | null>(null); // Refka do elementu HTML, żeby dać mu focus po kliknięciu Add
 
 const props = defineProps({
   loading: {
@@ -152,6 +155,11 @@ const handleAdd = () => {
   
   // Reset the form for the next entry
   newIngredient.value = getInitialState();
+
+   // ✨ Ustaw focus po resecie formularza
+  nextTick(() => {
+    nameInput.value?.focus();
+  });
 };
 </script>
 
@@ -206,8 +214,7 @@ const handleAdd = () => {
 
 .form-input:focus,
 .form-select:focus {
-  border-color: #818cf8;
-  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.25);
+  border-color: #222;
 }
 
 /* Main container for the add row section */
@@ -225,6 +232,32 @@ const handleAdd = () => {
   display: flex;
   align-items: center;
 }
+
+#kcal-input {
+  border: 1px solid var(--color-brand-pizzaz);
+}
+#prots-input {
+  border: 1px solid var(--color-brand-dodger-blue);
+}
+#fats-input {
+  border: 1px solid var(--color-brand-sunglo);
+}
+#carbs-input {
+  border: 1px solid var(--color-brand-scorpion);
+}
+#kcal-input:focus {
+  border-width: 2px;
+}
+#prots-input:focus {
+  border-width: 2px;
+}
+#fats-input:focus {
+  border-width: 2px;
+}
+#carbs-input:focus {
+  border-width: 2px;
+}
+
 
 /* 
   Column layout styles.

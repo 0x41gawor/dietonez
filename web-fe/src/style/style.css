@@ -22,9 +22,9 @@
   --color-brand-shakespeare: #379acd;
   --color-brand-fruit-salad: #529c64;
   --color-brand-pizzaz: #ff9800;
-  --color-brand-scorpion: #5e5e5e;
-  --color-brand-sunglo: #e57373;
   --color-brand-dodger-blue: #2196f3;
+  --color-brand-sunglo: #e57373;
+  --color-brand-scorpion: #5e5e5e;
 
   /* === semantic UI usage === */
   --bg: var(--color-grey-white);
