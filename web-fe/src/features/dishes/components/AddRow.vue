@@ -3,6 +3,7 @@
     <!-- Name Column (SELECT) -->
     <div class="add-cell col-name">
       <select
+        ref="nameInput"
         v-model="newIngredient.id"
         class="form-select"
         @change="handleIngredientSelection"
@@ -59,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import AddButton from '@/components/AddButton.vue';
 import { getIngredientById,  GetIngredientsParams, getIngredients } from '@/api/ingredients';
 import { IngredientMin, IngredientInDishPut, IngredientGetPut, Unit, ShopStyle, IngredientInDishGet } from '@/types/types';
@@ -73,6 +74,8 @@ const ingredientOptions = ref<IngredientMin[]>([]);
 const props = defineProps<{
   usedIngredients: IngredientInDishGet[];
 }>();
+
+const nameInput = ref<HTMLInputElement | null>(null);
 
 const filteredIngredientOptions = computed(() => {
   const usedIds = new Set(props.usedIngredients.map(i => i.ingredient.id));
@@ -185,6 +188,10 @@ const handleAdd = () => {
   });
 
   newIngredient.value = getInitialState();
+
+  nextTick(() => {
+    nameInput.value?.focus();
+  });
 };
 </script>
 

@@ -214,7 +214,19 @@ const handleCreateButtonClick = async () => {
     toast.success("Dish created.");
 
     // fetchujemy pełne dane i przestawiamy widok
-    router.push(`/dishes/${dish.value.meal}/${createdDish.id}/edit`);
+    router.push(`/dishes/${dish.value.meal}/0/edit`);
+    dish.value = ({
+      id: 0,
+      name: '',
+      meal: initialMeal, // ← kluczowe
+      kcal : 0,
+      protein: 0,
+      fat: 0,
+      carbs: 0,
+      ingredients: [],
+      recipe: {total_time: '', before: '', when_to_start: '', preparation: ''},
+      labels: [],
+    });
     hasPendingChanges.value = false;
   } catch (err) {
     toast.error("Failed to create dish.");
