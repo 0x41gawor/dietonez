@@ -89,7 +89,7 @@ const filteredIngredientOptions = computed(() => {
 
 const fetchIngredientOptions = async () => {
   try {
-    const params: GetIngredientsParams = { page: 1, pageSize: 100, short: true };
+    const params: GetIngredientsParams = { page: 1, pageSize: 300, short: true };
     const response = await getIngredients(params);
     ingredientOptions.value = response.ingredients;
   } catch (error) {

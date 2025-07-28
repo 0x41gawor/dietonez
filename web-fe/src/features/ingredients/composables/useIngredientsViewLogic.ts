@@ -8,7 +8,7 @@ export function useIngredientsLogic() {
   const ingredients = ref<IngredientGetPut[]>([])
   const total = ref(0)
   const page = ref(1)
-  const pageSize = ref(100)
+  const pageSize = ref(300)
   const totalPages = ref(1)
   const pendingChanges = ref<Record<number, IngredientGetPut>>({})
   const pendingDeletes = ref<Set<number>>(new Set())
