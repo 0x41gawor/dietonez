@@ -1,1 +1,3 @@
 *.out
+be/pgdata/
+be/bin/

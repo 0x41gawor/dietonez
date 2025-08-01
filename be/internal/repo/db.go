@@ -3,6 +3,7 @@ package repo
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"sync"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -27,7 +28,13 @@ func GetDatabaseInstance() *PostgresDB {
 // </ SINGLETON PATTERN >
 
 func NewPostgresDB() *PostgresDB {
-	dsn := "postgres://dietonez:dietonez123@localhost:5432/dietonez_db"
+	user := os.Getenv("NOME")
+	password := os.Getenv("AGANDSKODE")
+	port := os.Getenv("HAVN")
+	if user == "" || password == "" || port == "" {
+		panic("NOME and AGANDSKODE environment variables must be set")
+	}
+	dsn := fmt.Sprintf("user=%s password=%s host=localhost port=%s dbname=dietonez_db sslmode=disable", user, password, port)
 
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
