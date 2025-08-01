@@ -104,7 +104,7 @@ const ingredientOptions = ref<{ id: number; name: string }[]>([]);
 const fetchIngredientOptions = async () => {
   const params: GetIngredientsParams = {
     page: 1,
-    pageSize: 100,
+    pageSize: 300,
     short: true,
   };
 

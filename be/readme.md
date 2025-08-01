@@ -1,0 +1,5 @@
+Komenda na backup
+
+```sh
+docker exec -e PGPASSWORD=$AGANDSKODE dietonez-db pg_dump -U $NOME -d dietonez_db -F p > dietonez_backup_$(date +%F).sql
+```
