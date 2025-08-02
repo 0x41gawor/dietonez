@@ -143,9 +143,9 @@ type DayPut struct {
 }
 
 type WeekSummary struct {
-	AvgKcal float32 `json:"avg_kcal"`
-	AvgProt float32 `json:"avg_prot"`
-	AvgFat  float32 `json:"avg_fat"`
+	AvgKcal float64 `json:"avgKcal"`
+	AvgProt float64 `json:"avgProt"`
+	AvgFat  float64 `json:"avgFat"`
 }
 
 type WeekGet struct {

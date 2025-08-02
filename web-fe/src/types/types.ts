@@ -180,9 +180,16 @@ export interface DayPut {
   slots: SlotPut[];
 }
 
+export interface WeekSummary {
+  avgKcal: Number
+  avgProt: Number
+  avgFat: Number
+}
+
 export interface WeekGet {
   num: number;
   days: DayGet[];
+  summary: WeekSummary;
 }
 
 export interface WeekPut {

@@ -2,6 +2,7 @@
   <div class="week-container">
      <!-- Nagłówek tygodnia -->
       <div class="week-label">Week {{ week.num }}</div>
+      <div class="week-stats-label">Avg Kcal: <strong> {{ week?.summary?.avgKcal }}</strong> Avg Prot: <strong>{{ week?.summary?.avgProt }}</strong> [g/kg] Avg Fat:<strong> {{ week?.summary?.avgFat }} [%] </strong> </div>
 
       <!-- Karty Day -->
       <div class="week-row">
@@ -27,6 +28,7 @@ const props = withDefaults(defineProps<{
   week: () => ({
     num: 0,
     days: [],
+    summary: {avgKcal: 0, avgFat: 0, avgProt: 0},
     labels: [],
   })
 });
@@ -54,6 +56,15 @@ const handleSlotUpdate = (payload: { dayIndex: number; slotIndex: number; newDis
   color: white;
   font-size: 0.85rem;
   padding: 0.5rem;
+  text-align: center;
+  font-weight: 400;
+}
+
+.week-stats-label {
+  background-color: #333;
+  color: #888;
+  font-size: 0.7rem;
+  padding: 0.2rem;
   text-align: center;
   font-weight: 400;
 }

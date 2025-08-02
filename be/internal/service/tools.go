@@ -181,17 +181,61 @@ func (s *ServiceTools) CalculateDayLeftFromSlots(ctx context.Context, slots []mo
 	if err != nil {
 		return model.Left{}, fmt.Errorf("query current weight: %w", err)
 	}
-
-	left.Kcal = goal - sumKcal
-	fmt.Print("Kcal: ", left.Kcal)
-	left.Proteins = sumProt / currentWeight
-	fmt.Print("Prots: ", left.Proteins)
-	left.Fats = sumFat * 9 / sumKcal
-	fmt.Print("Fats: ", left.Fats)
 	// KCAL: calculate overall kcal and substract it from goal
 
 	// PROTEINS: calculate overall proteins and divide it by currentWeight
 
-	// FATS: calculate overall fats, multiply it by 9 and divide by overall kcal
+	left.Kcal = goal - sumKcal
+	left.Proteins = sumProt / currentWeight
+	if sumKcal > 0.0 {
+		left.Fats = (sumFat * 9) / sumKcal
+	} else {
+		left.Fats = 0
+	}
 	return left, nil
+}
+
+func (s *ServiceTools) CalculateWeekSummaryFromDays(ctx context.Context, days []model.DayGet) (model.WeekSummary, error) {
+	var sumKcal = 0.0
+	var sumProt = 0.0
+	var sumFat = 0.0
+
+	for _, d := range days {
+		sumKcal += d.Summary.Kcal
+		sumProt += d.Summary.Proteins
+		sumFat += d.Summary.Fats
+	}
+
+	const qQuery = `
+	SELECT current_weight FROM diet_context
+	`
+	var currentWeight float64
+	err := s.db.QueryRowContext(ctx, qQuery).Scan(&currentWeight)
+	if err != nil {
+		return model.WeekSummary{}, fmt.Errorf("query current weight: %w", err)
+	}
+
+	// Średnie wartości
+	avgKcal := sumKcal / 6
+	avgProt := (sumProt / 6) / currentWeight
+	var avgFat float64
+	if sumKcal > 0.0 {
+		avgFat = sumFat * 9 / sumKcal * 100
+	} else {
+		avgFat = 0.0
+	}
+
+	// Zaokrąglenie do 2 miejsc po przecinku
+	weekSummary := model.WeekSummary{
+		AvgKcal: round2(avgKcal),
+		AvgProt: round2(avgProt),
+		AvgFat:  round2(avgFat),
+	}
+
+	return weekSummary, nil
+}
+
+// round2 zaokrągla float64 do dwóch miejsc po przecinku
+func round2(val float64) float64 {
+	return math.Round(val*100) / 100
 }

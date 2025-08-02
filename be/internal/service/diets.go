@@ -302,8 +302,6 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 		}
 		slotMap[slotNum] = dish
 	}
-	fmt.Println("SLOT MAPA")
-	fmt.Println(slotMap)
 
 	// 4. Zrekonstruuj tygodnie i dni
 	const mealsPerDay = 5
@@ -312,10 +310,8 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 
 	var weeks []model.WeekGet
 	for weekNum := 1; ; weekNum++ {
-		fmt.Println("WeekNUM ", weekNum)
 		start := (weekNum - 1) * slotsPerWeek
 		found := false
-		fmt.Println("StartSlot ", start)
 
 		var days []model.DayGet
 		for dayIndex := 0; dayIndex < daysPerWeek; dayIndex++ {
@@ -345,10 +341,6 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 			SELECT kcal from day_kcals WHERE diet_id = $1 AND day_NUM=$2
 			`
 			var dayKcal int
-			fmt.Println("=============")
-			fmt.Println(weekNum)
-			fmt.Println(dayIndex)
-			fmt.Println((weekNum-1)*6 + dayIndex + 1)
 			err := s.db.QueryRowContext(ctx, qDayKcals, d.ID, ((weekNum-1)*6 + dayIndex + 1)).Scan(&dayKcal)
 			if err != nil {
 				if err == sql.ErrNoRows {
@@ -363,7 +355,6 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 				return nil, fmt.Errorf("summary count error: %w", err)
 			}
 			left, err := NewServiceTools().CalculateDayLeftFromSlots(ctx, slots, float64(dayKcal))
-			fmt.Println(left)
 			if err != nil {
 				return nil, fmt.Errorf("left count error: %w", err)
 			}
@@ -380,9 +371,15 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 			break // koniec, nie ma kolejnych tygodni
 		}
 
+		weekSummary, err := NewServiceTools().CalculateWeekSummaryFromDays(ctx, days)
+		if err != nil {
+			return nil, fmt.Errorf("week summary calculation error: %w", err)
+		}
+
 		weeks = append(weeks, model.WeekGet{
-			Num:  weekNum,
-			Days: days,
+			Num:     weekNum,
+			Days:    days,
+			Summary: weekSummary,
 		})
 	}
 
