@@ -41,6 +41,8 @@ export enum ShopStyle {
   Lidl = 'Lidl',
   Fresh = 'Świeże',
   Pantry = 'Zapasy',
+  Live = 'Na żywo',
+  G_S = 'G.S.'
 }
 
 export interface IngredientGetPut {

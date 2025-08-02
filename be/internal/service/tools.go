@@ -156,3 +156,42 @@ func (s *ServiceTools) CalculateDaySummaryFromSlots(ctx context.Context, slots [
 
 	return summary, nil
 }
+
+func (s *ServiceTools) CalculateDayLeftFromSlots(ctx context.Context, slots []model.SlotGet, goal float64) (model.Left, error) {
+	var left model.Left
+	var sumKcal float64 = 0.0
+	var sumProt float64 = 0.0
+	var sumFat float64 = 0.0
+
+	for _, slot := range slots {
+		if slot.Dish == nil {
+			continue // pomiń puste sloty
+		}
+		sumKcal += slot.Dish.Kcal
+		sumProt += slot.Dish.Protein
+		sumFat += slot.Dish.Fat
+	}
+
+	// Get current weight
+	const qQuery = `
+	SELECT current_weight from diet_context
+	`
+	var currentWeight float64
+	err := s.db.QueryRowContext(ctx, qQuery).Scan(&currentWeight)
+	if err != nil {
+		return model.Left{}, fmt.Errorf("query current weight: %w", err)
+	}
+
+	left.Kcal = goal - sumKcal
+	fmt.Print("Kcal: ", left.Kcal)
+	left.Proteins = sumProt / currentWeight
+	fmt.Print("Prots: ", left.Proteins)
+	left.Fats = sumFat * 9 / sumKcal
+	fmt.Print("Fats: ", left.Fats)
+	// KCAL: calculate overall kcal and substract it from goal
+
+	// PROTEINS: calculate overall proteins and divide it by currentWeight
+
+	// FATS: calculate overall fats, multiply it by 9 and divide by overall kcal
+	return left, nil
+}

@@ -441,6 +441,7 @@ COPY public.day_kcals (diet_id, day_num, kcal) FROM stdin;
 --
 
 COPY public.diet_context (active_diet, start_date, current_weight) FROM stdin;
+1	2025-07-28	82
 \.
 
 
@@ -465,6 +466,36 @@ COPY public.diet_labels (id, label, color) FROM stdin;
 --
 
 COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
+1	1	6
+1	2	29
+1	3	1
+1	4	22
+1	5	24
+1	6	7
+1	7	22
+1	8	2
+1	9	14
+1	10	24
+1	11	8
+1	12	14
+1	13	27
+1	14	16
+1	15	24
+1	16	9
+1	17	16
+1	18	4
+1	19	20
+1	20	25
+1	21	10
+1	22	20
+1	23	5
+1	24	18
+1	25	25
+1	26	11
+1	27	18
+1	28	27
+1	29	30
+1	30	25
 \.
 
 
@@ -473,6 +504,7 @@ COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
 --
 
 COPY public.diets (id, name, descr) FROM stdin;
+1	Reverse Diet 	Reverse diet przed Sri-Lanka
 \.
 
 
@@ -506,14 +538,11 @@ COPY public.dishes (id, meal, name, descr) FROM stdin;
 7	Breakfast	B14 Kanapki + Smoothie	
 8	Breakfast	B15 Kanapki + sardynki i kefir	
 9	Breakfast	B16 Owsianka na kefirze	
-10	Breakfast	B17 Owsianka mango	
-11	Breakfast	B18 - Owsianka owoce	
 14	MainMeal	M05 Kurczak filet - wrap	
 13	MainMeal	M04 Wołowina mielona - kofta grecka	
 15	MainMeal	M06 Kurczak filet - Tikka Masala	
 16	MainMeal	M07 Kurczak filet - Spaghetti Napoli	
 17	MainMeal	M08 Kurczak filet - Gyros	
-18	MainMeal	M13 Łosoś filet - salsa awokado	
 19	MainMeal	M14 Dorsz filet - cytrynowo-pietruszkowy	
 20	MainMeal	M15 Krewetki - masło/czosnek	
 21	MainMeal	M17 Wieprzowina polędwiczka - musztardowo-miodowa	
@@ -521,6 +550,14 @@ COPY public.dishes (id, meal, name, descr) FROM stdin;
 23	MainMeal	M19 Wątróbka drobiowa - klasyczek	
 24	Supper	Kazeina	
 25	Supper	Twaróg klinek chudy	
+26	MainMeal	Mx Miruna jak nad morzem	
+18	MainMeal	M13 Łosoś filet - salsa awokado	
+27	Pre-Workout	W6 Sam skyr	
+28	MainMeal	Sałatka Cobb Duża	
+29	MainMeal	Sałatka Cezar Duża	
+10	Breakfast	B17 Owsianka mango	
+30	MainMeal	Double Zinger (KFC)	
+11	Breakfast	B18 Owsianka owoce	
 \.
 
 
@@ -576,24 +613,6 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 9	11	10
 9	25	10
 9	39	20
-10	2	80
-10	3	200
-10	4	1
-10	26	110
-10	37	150
-10	106	150
-10	11	10
-10	25	20
-10	39	20
-11	2	80
-11	3	200
-11	4	1
-11	26	110
-11	37	150
-11	106	150
-11	31	10
-11	25	20
-11	39	20
 13	22	50
 13	45	50
 13	48	150
@@ -641,14 +660,6 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 17	19	20
 17	77	1
 17	76	30
-18	83	150
-18	84	50
-18	34	100
-18	52	8
-18	82	50
-18	63	40
-18	69	10
-18	57	1
 19	47	150
 19	52	8
 19	54	10
@@ -694,6 +705,39 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 23	72	1
 24	102	40
 25	107	150
+26	108	200
+26	51	150
+26	22	50
+26	59	10
+26	60	10
+26	71	2
+26	72	1
+26	55	10
+18	83	150
+18	34	50
+18	84	50
+18	52	8
+18	63	40
+18	82	50
+18	69	10
+18	57	1
+27	1	300
+28	111	1
+29	112	1
+10	2	80
+10	3	200
+10	37	150
+10	106	150
+10	26	110
+10	4	1
+10	11	10
+30	117	1
+11	2	80
+11	3	200
+11	26	110
+11	4	1
+11	31	10
+11	106	100
 \.
 
 
@@ -818,13 +862,26 @@ COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, prote
 99	Przyprawa meksykańska (Naturalny Koszyk)	g	100	Lidl	218	9.3	5.8	19.6
 100	Morele suszone	g	100	Lidl	301	5.4	1.2	72.2
 101	Kazeina micelarna (Biały Puch)	g	100	Lidl	355	80	1.6	5.2
-102	Kazeina SFD 750g (Truskawkowa)	g	100	Lidl	390	70	3.7	19.2
 103	Danone YoPro Jogurt smak straciatella 160g (Danone YoPro)	sztuka	1	Świeże	91	15	0.8	5.8
 104	Protein pudding Chocolate Valio 180g	sztuka	1	Lidl	148	19.8	2.7	10.8
 105	Maliny świeże	g	100	Lidl	43	1.3	0.3	12
 106	Jagody mrożone	g	100	Lidl	65	0.8	1.1	10
 82	Pomidorki koktajlowe	g	100	Świeże	19	1	0.2	2.9
 107	Twaróg klinek chudy (Delikate)	g	100	Lidl	96	20	0.2	3.5
+108	Miruna Nowozelandzka filet (Marinero)	g	100	Lidl	78	16	1.5	0
+109	Skyr pitny naturalny (Piątnica) 330g	opakowanie	1	Świeże	211	25.1	5.9	14.2
+110	Bajgiel Bekon & Kurczak (Putka)	sztuka	1	Świeże	403	19.8	11.9	52.2
+111	Sałatka Cobb Powiększona (Salad Story)	porcja	1	Świeże	440	32	28	15
+112	Sałatka Cezar (Salad Story)	porcja	1	Świeże	426	36	25	13
+113	Bowl Toskański Kurczak (Salad Story)	porcja	1	Świeże	583	32	27	53
+114	Nachos Sandwich (Kebab King)	porcja	1056	Świeże	1056	65	44	99
+115	Zinger (KFC)	sztuka	1	Świeże	438	26.7	23.3	37.6
+116	Frytki Duże (KFC)	porcja	1	Świeże	268	4.1	12	35
+117	Zinger Double (KFC)	sztuka	1	Świeże	590	41	29	41
+118	Kebab - mały lawasz z kurczakiem bez sosu (Kebab King)	sztuka	1	Świeże	618	37.1	23.2	68.4
+119	Skyr jogurt typu islandzkiego z jagodami 150g (Piątnica)	opakowanie	1	Lidl	123	14.4	0	16.5
+120	Skyr Jogurt typu islandzkiego z mango i marakują 150g (Piątnica)	opakowanie	1	Świeże	123	14.4	0	16.5
+102	Kazeina SFD 750g (Truskawkowa)	g	100	Zapasy	390	70	3.7	19.2
 \.
 
 
@@ -842,14 +899,11 @@ COPY public.recipes (dish_id, time_total, what_before, preparation, when_start) 
 7				
 8				
 9				
-10				
-11				
 13				
 14				
 15				
 16			Marchew zetrzyj	
 17				
-18				
 19				
 20				
 21				
@@ -857,6 +911,14 @@ COPY public.recipes (dish_id, time_total, what_before, preparation, when_start) 
 23				
 24				
 25				
+26			Mirunę pieprzem przed. Cyk do piekarnika frytki też. Potem sos miliona jezior z jogurtu greckiego, musztardy i ketchupu.	
+18				
+27				
+28				
+29				
+10				
+30				
+11				
 \.
 
 
@@ -871,7 +933,7 @@ SELECT pg_catalog.setval('public.diet_labels_id_seq', 1, false);
 -- Name: diets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kartezjusz
 --
 
-SELECT pg_catalog.setval('public.diets_id_seq', 1, false);
+SELECT pg_catalog.setval('public.diets_id_seq', 1, true);
 
 
 --
@@ -885,7 +947,7 @@ SELECT pg_catalog.setval('public.dish_labels_id_seq', 1, false);
 -- Name: dishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kartezjusz
 --
 
-SELECT pg_catalog.setval('public.dishes_id_seq', 25, true);
+SELECT pg_catalog.setval('public.dishes_id_seq', 30, true);
 
 
 --
@@ -899,7 +961,7 @@ SELECT pg_catalog.setval('public.ingredient_labels_id_seq', 1, false);
 -- Name: ingredients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kartezjusz
 --
 
-SELECT pg_catalog.setval('public.ingredients_id_seq', 107, true);
+SELECT pg_catalog.setval('public.ingredients_id_seq', 120, true);
 
 
 --

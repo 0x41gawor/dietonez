@@ -142,9 +142,16 @@ type DayPut struct {
 	Slots []SlotPut `json:"slots"`
 }
 
+type WeekSummary struct {
+	AvgKcal float32 `json:"avg_kcal"`
+	AvgProt float32 `json:"avg_prot"`
+	AvgFat  float32 `json:"avg_fat"`
+}
+
 type WeekGet struct {
-	Num  int      `json:"num"`
-	Days []DayGet `json:"days"`
+	Num     int         `json:"num"`
+	Days    []DayGet    `json:"days"`
+	Summary WeekSummary `json:"summary"`
 }
 
 type WeekPut struct {

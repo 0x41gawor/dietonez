@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/0x41gawor/dietonez/internal/repo"
@@ -171,8 +172,12 @@ func (s *ServiceDishes) GetByID(ctx context.Context, id int) (*model.DishGet, er
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("rows error: %w", err)
 	}
-
-	// …
+	// Sorotwanie składników według wkładu w kaloryczność
+	sort.Slice(ingredients, func(i, j int) bool {
+		kcalI := ingredients[i].Amount * ingredients[i].Ingredient.Kcal / ingredients[i].Ingredient.DefaultAmount
+		kcalJ := ingredients[j].Amount * ingredients[j].Ingredient.Kcal / ingredients[j].Ingredient.DefaultAmount
+		return kcalI > kcalJ // malejąco
+	})
 
 	// 3. pobierz powiązany przepis ---------------------------------------------
 	const recipeQuery = `
@@ -203,7 +208,6 @@ func (s *ServiceDishes) GetByID(ctx context.Context, id int) (*model.DishGet, er
 	dish.Recipe = recipe // <-- NOWE
 
 	return &dish, nil
-
 }
 
 func (s *ServiceDishes) Create(ctx context.Context, in *model.DishPost) (*model.DishGet, error) {

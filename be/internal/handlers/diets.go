@@ -39,6 +39,28 @@ func (h *HandlerDiets) handleBaseGET(w http.ResponseWriter, r *http.Request) err
 	return WriteJSON(w, http.StatusOK, diets)
 }
 
+func (h *HandlerDiets) handleGetByID(w http.ResponseWriter, r *http.Request) error {
+	// zakładamy pattern typu /api/v1/diets/{id}
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 5 {
+		http.Error(w, "invalid path", http.StatusBadRequest)
+		return nil
+	}
+
+	id, err := strconv.Atoi(parts[4])
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return nil
+	}
+
+	diet, err := h.s.GetByID(r.Context(), id)
+	if err != nil {
+		return fmt.Errorf("get diet: %w", err)
+	}
+
+	return WriteJSON(w, http.StatusOK, diet)
+}
+
 func (h *HandlerDiets) handleBasePOST(w http.ResponseWriter, r *http.Request) error {
 	var in model.DietPost
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {

@@ -138,13 +138,21 @@
 
     <!-- PODSUMOWANIE -->
     <div class="summary">
-      <span class="summary-label">Summary ({{ formatNumber(day.summary.goal) }} kcal)</span>
+      <span class="summary-label"> Goal: {{ formatNumber(day.summary.goal) }}</span>
       <div class="nutrition-grid-summary">
         <span class="cell">{{ formatNumber(day.summary.kcal) }}</span>
         <span class="cell">{{ formatNumber(day.summary.proteins) }}</span>
         <span class="cell">{{ formatNumber(day.summary.fats) }}</span>
         <span class="cell">{{ formatNumber(day.summary.carbs) }}</span>
       </div>
+    </div>
+    <!-- Left -->
+    <div class="left">
+      <span>
+        Kcal left: <strong>{{ formatNumber(day.left.kcal) }}</strong>, 
+        protein: <strong>{{ formatNumber(day.left.proteins,2) }}</strong> [g/kg], 
+        fats: <strong>{{ formatNumber(day.left.fats*100,1) }}</strong>[%]
+      </span>
     </div>
   </div>
 </template>
@@ -223,11 +231,14 @@ const handleDishChange = (slotIndex: number, event: Event) => {
   emit('update-slot', { dayIndex, slotIndex, newDishId });
 };
 
-// Funkcja do formatowania liczb z wieloma miejscami po przecinku
-const formatNumber = (num: number | undefined | null) => {
-    if (num === undefined || num === null) return 0;
-    return Math.round(num);
-}
+const formatNumber = (num: number | undefined | null, decimalPlaces?: number): string => {
+  if (num === undefined || num === null) return '0';
+  if (!decimalPlaces || decimalPlaces <= 0) {
+    return Math.round(num).toString();
+  }
+  return num.toFixed(decimalPlaces);
+};
+
 </script>
 
 <style scoped>
@@ -305,11 +316,14 @@ const formatNumber = (num: number | undefined | null) => {
 }
 .left {
     background-color: #fafafa;
+    color: #777;
 }
 
-.summary-label, .left-label {
+.summary-label {
     width: 55%;
+    color: #555;
 }
+
 
 .nutrition-grid {
   display: grid;
