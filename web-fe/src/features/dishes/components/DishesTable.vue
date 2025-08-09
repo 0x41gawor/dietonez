@@ -3,11 +3,13 @@
     <div class="table-wrapper">
       <table>
         <thead>
-           <th class="col-name" :class="['header-cell', mealClass]">Name</th>
+          <tr :class="['header-row', mealClass]">
+            <th class="col-name" :class="['header-cell', mealClass]">Name</th>
             <th class="col-numeric" :class="['header-cell', mealClass]">Kcal</th>
             <th class="col-numeric" :class="['header-cell', mealClass]">Prot.</th>
             <th class="col-numeric" :class="['header-cell', mealClass]">Fats</th>
             <th class="col-numeric" :class="['header-cell', mealClass]">Carb.</th>
+          </tr>
       </thead>
         <tbody>
           <tr v-if="!items || items.length === 0">
