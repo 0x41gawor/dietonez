@@ -66,20 +66,30 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 
 	freshIngredients, err := s.getFreshIngredients(ctx, activeDietID, freshSlotsRange)
 	if err != nil {
-		return nil, fmt.Errorf("getFreshIngredients")
+		return nil, fmt.Errorf("getFreshIngredients: %w", err)
 	}
 	stockIngredients, err := s.getStockIngredients(ctx, activeDietID, lidlAndStockSlotsRange)
 	if err != nil {
-		return nil, fmt.Errorf("getStockIngredients")
+		return nil, fmt.Errorf("getStockIngredients: %w", err)
 	}
 	lidlIngredients, err := s.getLidlIngredients(ctx, activeDietID, lidlAndStockSlotsRange)
 	if err != nil {
-		return nil, fmt.Errorf("getLidlIngredients")
+		return nil, fmt.Errorf("getLidlIngredients: %w", err)
+	}
+	liveIngredients, err := s.getLiveIngredients(ctx, activeDietID, freshSlotsRange)
+	if err != nil {
+		return nil, fmt.Errorf("getLiveIngredients: %w", err)
+	}
+	gsIngredients, err := s.getGSIngredients(ctx, activeDietID, freshSlotsRange)
+	if err != nil {
+		return nil, fmt.Errorf("getGSIngredients: %w", err)
 	}
 	result := &model.ShoppingList{
 		Fresh: freshIngredients,
 		Lidl:  lidlIngredients,
 		Stock: stockIngredients,
+		Live:  liveIngredients,
+		GS:    gsIngredients,
 	}
 
 	return result, nil
@@ -209,7 +219,7 @@ func (s *ServiceShoppingList) getFreshIngredients(ctx context.Context, dietID in
 			return nil, err
 		}
 
-		ingMin := model.IngredientMin{ID: ing.ID, Name: ing.Name}
+		ingMin := model.IngredientIdNameUnit{ID: ing.ID, Name: ing.Name, Unit: ing.Unit}
 
 		result = append(result, model.IngredientInShoppingList{
 			Ingredient: ingMin,
@@ -268,7 +278,7 @@ func (s *ServiceShoppingList) getLidlIngredients(ctx context.Context, dietID int
 			return nil, err
 		}
 
-		ingMin := model.IngredientMin{ID: ing.ID, Name: ing.Name}
+		ingMin := model.IngredientIdNameUnit{ID: ing.ID, Name: ing.Name, Unit: ing.Unit}
 
 		result = append(result, model.IngredientInShoppingList{
 			Ingredient: ingMin,
@@ -327,7 +337,125 @@ func (s *ServiceShoppingList) getStockIngredients(ctx context.Context, dietID in
 			return nil, err
 		}
 
-		ingMin := model.IngredientMin{ID: ing.ID, Name: ing.Name}
+		ingMin := model.IngredientIdNameUnit{ID: ing.ID, Name: ing.Name, Unit: ing.Unit}
+
+		result = append(result, model.IngredientInShoppingList{
+			Ingredient: ingMin,
+			Amount:     amount,
+		})
+	}
+
+	return result, nil
+}
+
+func (s *ServiceShoppingList) getLiveIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.IngredientInShoppingList, error) {
+	const q = `
+		SELECT
+		  i.id,
+		  i.name,
+		  i.unit,
+		  i.default_amount,
+		  i.kcal,
+		  i.proteins,
+		  i.fats,
+		  i.carbs,
+		  SUM(ia.amount) AS total_amount
+		FROM diet_slots ds
+		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
+		JOIN ingredients i ON i.id = ia.ingredient_id
+		WHERE ds.diet_id = $1
+		  AND ds.slot_num = ANY($2)
+		  AND i.shop_style IN ('Na żywo')
+		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
+		ORDER BY i.name;
+	`
+
+	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []model.IngredientInShoppingList
+	for rows.Next() {
+		var ing model.IngredientGetPut
+		var amount float64
+
+		err := rows.Scan(
+			&ing.ID,
+			&ing.Name,
+			&ing.Unit,
+			&ing.DefaultAmount,
+			&ing.Kcal,
+			&ing.Protein,
+			&ing.Fat,
+			&ing.Carbs,
+			&amount,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		ingMin := model.IngredientIdNameUnit{ID: ing.ID, Name: ing.Name, Unit: ing.Unit}
+
+		result = append(result, model.IngredientInShoppingList{
+			Ingredient: ingMin,
+			Amount:     amount,
+		})
+	}
+
+	return result, nil
+}
+
+func (s *ServiceShoppingList) getGSIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.IngredientInShoppingList, error) {
+	const q = `
+		SELECT
+		  i.id,
+		  i.name,
+		  i.unit,
+		  i.default_amount,
+		  i.kcal,
+		  i.proteins,
+		  i.fats,
+		  i.carbs,
+		  SUM(ia.amount) AS total_amount
+		FROM diet_slots ds
+		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
+		JOIN ingredients i ON i.id = ia.ingredient_id
+		WHERE ds.diet_id = $1
+		  AND ds.slot_num = ANY($2)
+		  AND i.shop_style IN ('G.S')
+		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
+		ORDER BY i.name;
+	`
+
+	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []model.IngredientInShoppingList
+	for rows.Next() {
+		var ing model.IngredientGetPut
+		var amount float64
+
+		err := rows.Scan(
+			&ing.ID,
+			&ing.Name,
+			&ing.Unit,
+			&ing.DefaultAmount,
+			&ing.Kcal,
+			&ing.Protein,
+			&ing.Fat,
+			&ing.Carbs,
+			&amount,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		ingMin := model.IngredientIdNameUnit{ID: ing.ID, Name: ing.Name, Unit: ing.Unit}
 
 		result = append(result, model.IngredientInShoppingList{
 			Ingredient: ingMin,

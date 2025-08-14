@@ -12,6 +12,12 @@ type IngredientMin struct {
 	Name string `json:"name"`
 }
 
+type IngredientIdNameUnit struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	Unit string `json:"unit"`
+}
+
 type IngredientGetPut struct {
 	ID            int     `json:"id"`
 	Name          string  `json:"name"`

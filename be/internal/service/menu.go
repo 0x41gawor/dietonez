@@ -24,12 +24,13 @@ func NewServiceMenu() *ServiceMenu {
 func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, error) {
 	var activeDietID int
 	var startDate time.Time
+	var currentWeight float64
 
 	err := s.db.QueryRowContext(ctx, `
-		SELECT active_diet, start_date
+		SELECT active_diet, start_date, current_weight
 		FROM diet_context
 		LIMIT 1
-	`).Scan(&activeDietID, &startDate)
+	`).Scan(&activeDietID, &startDate, &currentWeight)
 
 	// Walidacja: startDate musi być poniedziałkiem
 	if startDate.Weekday() != time.Monday {
@@ -87,12 +88,49 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		dishes[i] = dish
 	}
 
+	sumKcal := 0.0
+	sumProtein := 0.0
+	sumCarbs := 0.0
+	sumFat := 0.0
+
+	for _, dish := range dishes {
+		// count sums
+		sumKcal += round2(dish.Kcal)
+		sumProtein += round2(dish.Protein)
+		sumCarbs += round2(dish.Carbs)
+		sumFat += round2(dish.Fat)
+	}
+
+	// fetch kcal goal
+	var dayKcalGoal float64
+	err = s.db.QueryRowContext(ctx, `
+		SELECT kcal
+		FROM day_kcals
+		WHERE day_num = $1
+	`, currentDietDay).Scan(&dayKcalGoal)
+	print(dayKcalGoal)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch max dayGoal: %w", err)
+	}
+
+	summary := model.MenuSummary{
+		Kcal:         round2(sumKcal),
+		Proteins:     round2(sumProtein),
+		Fats:         round2(sumFat),
+		Carbs:        round2(sumCarbs),
+		KcalGoal:     round2(dayKcalGoal),                // Example calculation, adjust as needed
+		ProteinPerKg: round2(sumProtein / currentWeight), // Example calculation, adjust as needed
+		FatsPerc:     round2(sumFat * 9 / sumKcal * 100), // Example percentage, adjust as needed
+		CarbsPerKg:   round2(sumCarbs / currentWeight),   // Example calculation, adjust as needed
+	}
+
 	menu := &model.Menu{
 		Breakfast:   *dishes[0],
 		Lunch:       *dishes[1],
 		PreWorkout:  *dishes[2],
 		PostWorkout: *dishes[3],
 		Supper:      *dishes[4],
+		Summary:     summary,
 	}
 
 	return menu, nil
