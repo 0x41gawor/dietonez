@@ -1,35 +1,44 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme.dart';
-import '../controller.dart';
 import 'package:provider/provider.dart';
+import '../../core/theme.dart';
+
+// Kontroler jest wstrzykiwany z zewnątrz – ekran decyduje który
+typedef ChangeDay = void Function(int deltaDays);
+typedef PickDate = Future<void> Function(BuildContext);
 
 class DateHeader extends StatelessWidget {
-  const DateHeader({super.key});
+  final String dateText;
+  final String weekdayText;
+  final ChangeDay onChangeDay;
+  final PickDate onPickDate;
+
+  const DateHeader({
+    super.key,
+    required this.dateText,
+    required this.weekdayText,
+    required this.onChangeDay,
+    required this.onPickDate,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final c = context.watch<ShoppingListController>();
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
       child: Row(
         children: [
-          _roundButton(
-            context,
-            icon: Icons.chevron_left,
-            onTap: () => c.changeDay(-1),
-          ),
+          _roundButton(Icons.chevron_left, () => onChangeDay(-1)),
           Expanded(
             child: GestureDetector(
-              onTap: () => c.pickDate(context),
+              onTap: () => onPickDate(context),
               child: Container(
                 decoration: pill(),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(c.dateText(), style: Theme.of(context).textTheme.titleLarge),
+                    Text(dateText, style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 2),
-                    Text(c.weekdayText().toLowerCase(),
+                    Text(weekdayText.toLowerCase(),
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium!
@@ -39,17 +48,13 @@ class DateHeader extends StatelessWidget {
               ),
             ),
           ),
-          _roundButton(
-            context,
-            icon: Icons.chevron_right,
-            onTap: () => c.changeDay(1),
-          ),
+          _roundButton(Icons.chevron_right, () => onChangeDay(1)),
         ],
       ),
     );
   }
 
-  Widget _roundButton(BuildContext ctx, {required IconData icon, required VoidCallback onTap}) {
+  Widget _roundButton(IconData icon, VoidCallback onTap) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: pill(color: const Color(0xFFEDEDED)),
