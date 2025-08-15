@@ -15,7 +15,7 @@ class MacroChip extends StatelessWidget {
   final Macro type;
   final String text;
   final EdgeInsets padding;
-  const MacroChip({super.key, required this.type, required this.text, this.padding = const EdgeInsets.symmetric(horizontal: 14, vertical: 8)});
+  const MacroChip({super.key, required this.type, required this.text, this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 5)});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class MacroChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: c, width: 2),
+        border: Border.all(color: c, width: 1),
       ),
       child: Text(text, style: TextStyle(fontWeight: FontWeight.w700, color: Colors.black87)),
     );

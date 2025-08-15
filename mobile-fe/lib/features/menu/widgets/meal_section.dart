@@ -28,7 +28,7 @@ class _MealSectionState extends State<MealSection> {
   @override
   Widget build(BuildContext context) {
     final header = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: cardRadius,
@@ -37,12 +37,12 @@ class _MealSectionState extends State<MealSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.title, style: Theme.of(context).textTheme.titleLarge!.copyWith(color: widget.accent, fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
+          Text(widget.title, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: widget.accent, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 4),
           Row(
             children: [
               Expanded(
-                child: Text(widget.meal.name, style: Theme.of(context).textTheme.headlineSmall),
+                child: Text(widget.meal.name, style: Theme.of(context).textTheme.titleMedium),
               ),
               AnimatedRotation(
                 turns: _expanded ? 0.5 : 0,
@@ -51,7 +51,7 @@ class _MealSectionState extends State<MealSection> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
           Row(
             children: [
               MacroChip(type: Macro.kcal, text: widget.meal.kcal.round().toString()),
@@ -97,7 +97,7 @@ class _MealSectionState extends State<MealSection> {
     );
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Column(
         children: [
           InkWell(

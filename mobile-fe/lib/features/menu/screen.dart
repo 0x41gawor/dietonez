@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/theme.dart';
 import '../common/date_header.dart';
 import 'widgets/meal_section.dart';
 import 'widgets/summary_bar.dart';
@@ -40,7 +39,7 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: c.loading ? const LinearProgressIndicator(minHeight: 2) : const SizedBox(height: 2),
               ),
             ),
@@ -93,7 +92,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 ),
               ),
               SliverToBoxAdapter(child: SummaryBar(s: data.summary)),
-              const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
+              const SliverPadding(padding: EdgeInsets.only(bottom: 0)),
             ],
           ],
         ),

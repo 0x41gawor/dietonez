@@ -10,8 +10,8 @@ class SummaryBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 6, 16, 18),
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      margin: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+      padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: cardRadius,
