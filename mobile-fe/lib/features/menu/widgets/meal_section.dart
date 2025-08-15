@@ -90,7 +90,7 @@ class _MealSectionState extends State<MealSection> {
             child: FloatingActionButton.small(
               onPressed: () => _toast(context, 'Not implemented yet'),
               backgroundColor: const Color(0xFF2E7D32),
-              child: const Icon(Icons.add),
+              child: const Icon(Icons.add_circle_outline, color: Colors.white),
             ),
           ),
         ],
