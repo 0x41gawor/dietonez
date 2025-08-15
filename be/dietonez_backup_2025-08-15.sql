@@ -38,7 +38,8 @@ CREATE TYPE public.shop_style AS ENUM (
     'Lidl',
     'G.S',
     'Świeże',
-    'Zapasy'
+    'Zapasy',
+    'Na żywo'
 );
 
 
@@ -433,6 +434,25 @@ ALTER TABLE ONLY public.ingredients ALTER COLUMN id SET DEFAULT nextval('public.
 --
 
 COPY public.day_kcals (diet_id, day_num, kcal) FROM stdin;
+1	2	2400
+1	4	2400
+1	5	2400
+1	3	2300
+1	1	2400
+1	6	2300
+1	7	2500
+1	8	2500
+1	9	2500
+1	10	2500
+1	11	2500
+1	12	2500
+1	13	2500
+1	14	2500
+1	15	2500
+1	16	2500
+1	17	2500
+1	18	2500
+1	19	2500
 \.
 
 
@@ -441,7 +461,7 @@ COPY public.day_kcals (diet_id, day_num, kcal) FROM stdin;
 --
 
 COPY public.diet_context (active_diet, start_date, current_weight) FROM stdin;
-1	2025-07-28	82
+1	2025-08-04	82
 \.
 
 
@@ -467,9 +487,9 @@ COPY public.diet_labels (id, label, color) FROM stdin;
 
 COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
 1	1	6
-1	2	29
+1	2	31
 1	3	1
-1	4	22
+1	4	32
 1	5	24
 1	6	7
 1	7	22
@@ -496,6 +516,36 @@ COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
 1	28	27
 1	29	30
 1	30	25
+1	31	6
+1	32	21
+1	33	2
+1	34	16
+1	35	25
+1	36	6
+1	37	14
+1	38	1
+1	39	14
+1	40	24
+1	41	6
+1	42	14
+1	43	1
+1	44	14
+1	45	24
+1	46	6
+1	47	13
+1	48	2
+1	49	14
+1	50	24
+1	51	6
+1	52	14
+1	53	1
+1	54	14
+1	55	24
+1	56	6
+1	57	14
+1	58	1
+1	59	14
+1	60	24
 \.
 
 
@@ -504,7 +554,7 @@ COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
 --
 
 COPY public.diets (id, name, descr) FROM stdin;
-1	Reverse Diet 	Reverse diet przed Sri-Lanka
+1	Reverse Diet 	Reverse diet przed Sri-Lanka. 
 \.
 
 
@@ -546,7 +596,6 @@ COPY public.dishes (id, meal, name, descr) FROM stdin;
 19	MainMeal	M14 Dorsz filet - cytrynowo-pietruszkowy	
 20	MainMeal	M15 Krewetki - masło/czosnek	
 21	MainMeal	M17 Wieprzowina polędwiczka - musztardowo-miodowa	
-22	MainMeal	M18 Wieprzowina schab – pieczony z ziołami	
 23	MainMeal	M19 Wątróbka drobiowa - klasyczek	
 24	Supper	Kazeina	
 25	Supper	Twaróg klinek chudy	
@@ -558,6 +607,9 @@ COPY public.dishes (id, meal, name, descr) FROM stdin;
 10	Breakfast	B17 Owsianka mango	
 30	MainMeal	Double Zinger (KFC)	
 11	Breakfast	B18 Owsianka owoce	
+31	MainMeal	Mx Miruna - kluski&dżem	
+32	MainMeal	Kebab King mały lawasz kurczak bez sosu	
+22	MainMeal	M18 Wieprzowina schab – pieczony z ziołami	
 \.
 
 
@@ -570,6 +622,9 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 1	25	20
 1	26	110
 1	91	150
+31	108	180
+31	121	100
+31	122	50
 3	1	300
 3	39	20
 3	26	110
@@ -684,17 +739,6 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 21	90	1
 21	71	1
 21	72	1
-22	89	150
-22	84	50
-22	52	8
-22	56	10
-22	92	1
-22	67	1
-22	73	30
-22	93	20
-22	17	30
-22	71	1
-22	72	1
 23	94	150
 23	96	50
 23	62	30
@@ -731,13 +775,25 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 10	26	110
 10	4	1
 10	11	10
+32	118	1
+22	84	100
 30	117	1
+22	89	150
+22	67	1
+22	92	1
+22	73	30
+22	17	30
 11	2	80
 11	3	200
 11	26	110
 11	4	1
 11	31	10
 11	106	100
+22	56	10
+22	93	20
+22	71	1
+22	72	1
+22	52	10
 \.
 
 
@@ -862,8 +918,6 @@ COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, prote
 99	Przyprawa meksykańska (Naturalny Koszyk)	g	100	Lidl	218	9.3	5.8	19.6
 100	Morele suszone	g	100	Lidl	301	5.4	1.2	72.2
 101	Kazeina micelarna (Biały Puch)	g	100	Lidl	355	80	1.6	5.2
-103	Danone YoPro Jogurt smak straciatella 160g (Danone YoPro)	sztuka	1	Świeże	91	15	0.8	5.8
-104	Protein pudding Chocolate Valio 180g	sztuka	1	Lidl	148	19.8	2.7	10.8
 105	Maliny świeże	g	100	Lidl	43	1.3	0.3	12
 106	Jagody mrożone	g	100	Lidl	65	0.8	1.1	10
 82	Pomidorki koktajlowe	g	100	Świeże	19	1	0.2	2.9
@@ -871,17 +925,21 @@ COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, prote
 108	Miruna Nowozelandzka filet (Marinero)	g	100	Lidl	78	16	1.5	0
 109	Skyr pitny naturalny (Piątnica) 330g	opakowanie	1	Świeże	211	25.1	5.9	14.2
 110	Bajgiel Bekon & Kurczak (Putka)	sztuka	1	Świeże	403	19.8	11.9	52.2
-111	Sałatka Cobb Powiększona (Salad Story)	porcja	1	Świeże	440	32	28	15
-112	Sałatka Cezar (Salad Story)	porcja	1	Świeże	426	36	25	13
 113	Bowl Toskański Kurczak (Salad Story)	porcja	1	Świeże	583	32	27	53
-114	Nachos Sandwich (Kebab King)	porcja	1056	Świeże	1056	65	44	99
-115	Zinger (KFC)	sztuka	1	Świeże	438	26.7	23.3	37.6
 116	Frytki Duże (KFC)	porcja	1	Świeże	268	4.1	12	35
-117	Zinger Double (KFC)	sztuka	1	Świeże	590	41	29	41
-118	Kebab - mały lawasz z kurczakiem bez sosu (Kebab King)	sztuka	1	Świeże	618	37.1	23.2	68.4
 119	Skyr jogurt typu islandzkiego z jagodami 150g (Piątnica)	opakowanie	1	Lidl	123	14.4	0	16.5
 120	Skyr Jogurt typu islandzkiego z mango i marakują 150g (Piątnica)	opakowanie	1	Świeże	123	14.4	0	16.5
 102	Kazeina SFD 750g (Truskawkowa)	g	100	Zapasy	390	70	3.7	19.2
+115	Zinger (KFC)	sztuka	1	Na żywo	438	26.7	23.3	37.6
+117	Zinger Double (KFC)	sztuka	1	Na żywo	590	41	29	41
+111	Sałatka Cobb Powiększona (Salad Story)	porcja	1	Na żywo	440	32	28	15
+112	Sałatka Cezar (Salad Story)	porcja	1	Na żywo	426	36	25	13
+118	Kebab - mały lawasz z kurczakiem bez sosu (Kebab King)	sztuka	1	Na żywo	618	37.1	23.2	68.4
+114	Nachos Sandwich (Kebab King)	porcja	1056	Na żywo	1056	65	44	99
+121	Łowicz Dżem 100% owoców czarna porzeczka 210g (Łowicz)	g	100	Lidl	132	1.1	0.5	28
+122	Makaron conchiglie (Pastani)	g	100	Lidl	354	12	1.5	71
+104	Protein pudding Chocolate Valio 180g	sztuka	1	Na żywo	148	19.8	2.7	10.8
+103	Danone YoPro Jogurt smak straciatella 160g (Danone YoPro)	sztuka	1	Na żywo	91	15	0.8	5.8
 \.
 
 
@@ -907,7 +965,6 @@ COPY public.recipes (dish_id, time_total, what_before, preparation, when_start) 
 19				
 20				
 21				
-22				
 23				
 24				
 25				
@@ -919,6 +976,9 @@ COPY public.recipes (dish_id, time_total, what_before, preparation, when_start) 
 10				
 30				
 11				
+31				
+32				
+22			Oliwę wlej tak po prostu do michy, bo za suchei za mało fatu	
 \.
 
 
@@ -947,7 +1007,7 @@ SELECT pg_catalog.setval('public.dish_labels_id_seq', 1, false);
 -- Name: dishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kartezjusz
 --
 
-SELECT pg_catalog.setval('public.dishes_id_seq', 30, true);
+SELECT pg_catalog.setval('public.dishes_id_seq', 32, true);
 
 
 --
@@ -961,7 +1021,7 @@ SELECT pg_catalog.setval('public.ingredient_labels_id_seq', 1, false);
 -- Name: ingredients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kartezjusz
 --
 
-SELECT pg_catalog.setval('public.ingredients_id_seq', 120, true);
+SELECT pg_catalog.setval('public.ingredients_id_seq', 122, true);
 
 
 --

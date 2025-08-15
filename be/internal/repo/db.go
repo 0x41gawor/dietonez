@@ -31,10 +31,14 @@ func NewPostgresDB() *PostgresDB {
 	user := os.Getenv("NOME")
 	password := os.Getenv("AGANDSKODE")
 	port := os.Getenv("HAVN")
-	if user == "" || password == "" || port == "" {
-		panic("NOME and AGANDSKODE environment variables must be set")
+	host := os.Getenv("DB_HOST")
+	if host == "" {
+		host = "localhost"
 	}
-	dsn := fmt.Sprintf("user=%s password=%s host=localhost port=%s dbname=dietonez_db sslmode=disable", user, password, port)
+	if user == "" || password == "" || port == "" {
+		panic("NOME, AGANDSKODE and HAVN environment variables must be set")
+	}
+	dsn := fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=dietonez_db sslmode=disable", user, password, host, port)
 
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
