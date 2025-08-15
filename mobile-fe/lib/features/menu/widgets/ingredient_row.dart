@@ -23,8 +23,8 @@ class IngredientRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final m = _calc();
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      margin: const EdgeInsets.only(bottom: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: cardRadius,
@@ -35,7 +35,7 @@ class IngredientRow extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: Text(mi.ingredient.name, style: Theme.of(context).textTheme.bodyLarge)),
+              Expanded(child: Text(mi.ingredient.name, style: Theme.of(context).textTheme.bodyMedium)),
               IconButton(
                 onPressed: onDelete,
                 icon: const Icon(Icons.delete_outline),
@@ -43,10 +43,10 @@ class IngredientRow extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 0),
           Row(
             children: [
-              Text('${mi.amount} ${mi.ingredient.unit}', style: Theme.of(context).textTheme.titleMedium),
+              Text('${mi.amount} ${mi.ingredient.unit}', style: Theme.of(context).textTheme.bodyLarge),
               const Spacer(),
               MacroChip(type: Macro.kcal, text: m[Macro.kcal]!.round().toString(), padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
               const SizedBox(width: 8),

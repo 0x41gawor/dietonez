@@ -38,7 +38,7 @@ class SummaryBar extends StatelessWidget {
         children: [
           Text(title, style: const TextStyle(color: Colors.black54)),
           const SizedBox(height: 6),
-          MacroChip(type: m, text: value),
+          MacroChip(type: m, text: value, slots: 4, borderThickness: 2,),
           const SizedBox(height: 6),
           if (sub != null) Text(sub, style: const TextStyle(color: Colors.black54)),
         ],

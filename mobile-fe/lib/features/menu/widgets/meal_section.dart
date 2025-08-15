@@ -54,6 +54,7 @@ class _MealSectionState extends State<MealSection> {
           const SizedBox(height: 4),
           Row(
             children: [
+              Spacer(),
               MacroChip(type: Macro.kcal, text: widget.meal.kcal.round().toString()),
               const SizedBox(width: 8),
               MacroChip(type: Macro.protein, text: widget.meal.protein.round().toString()),
@@ -70,8 +71,8 @@ class _MealSectionState extends State<MealSection> {
     final body = !_expanded
         ? const SizedBox.shrink()
         : Container(
-      margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(top: 5),
+      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: cardRadius,
@@ -84,7 +85,7 @@ class _MealSectionState extends State<MealSection> {
               mi: it,
               onDelete: () => _toast(context, 'Not implemented yet'),
             ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 2),
           Center(
             child: FloatingActionButton.small(
               onPressed: () => _toast(context, 'Not implemented yet'),

@@ -24,4 +24,4 @@ BoxDecoration pill({Color color = const Color(0xFFEFEFEF)}) => BoxDecoration(
   boxShadow: const [BoxShadow(color: Colors.black12, offset: Offset(0,2), blurRadius: 8)],
 );
 
-BorderRadius get cardRadius => BorderRadius.circular(18);
+BorderRadius get cardRadius => BorderRadius.circular(12);
