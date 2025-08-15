@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'features/placeholders/home_screen.dart';
 import 'features/placeholders/db_screen.dart';
-import 'features/placeholders/menu_screen.dart';
 import 'features/placeholders/profile_screen.dart';
 import 'features/shopping_list/screen.dart';
+import 'features/menu/screen.dart';
+import 'features/menu/screen.dart';
+
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});

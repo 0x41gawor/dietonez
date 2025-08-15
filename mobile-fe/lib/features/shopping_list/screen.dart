@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'controller.dart';
-import 'widgets/date_header.dart';
+import '../common/date_header.dart';
 import 'widgets/category_section.dart';
 
 class ShoppingListScreen extends StatefulWidget {
@@ -29,7 +29,13 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         onRefresh: () => c.fetch(),
         child: CustomScrollView(
           slivers: [
-            const SliverToBoxAdapter(child: DateHeader()),
+            SliverToBoxAdapter(child: DateHeader(
+              dateText: c.dateText(),
+              weekdayText: c.weekdayText(),
+              onChangeDay: c.changeDay,
+              onPickDate: c.pickDate,
+            ),
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
