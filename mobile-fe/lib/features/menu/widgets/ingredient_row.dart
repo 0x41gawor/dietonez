@@ -22,6 +22,25 @@ class IngredientRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final m = _calc();
+
+    // Styl cyfr: tabular figures = każda cyfra ma tę samą szerokość
+    final numStyle = TextStyle(
+      fontWeight: FontWeight.w300,
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
+
+    // Obliczamy szerokości „slotów” dla 2 i 3 cyfr, by były stałe na każdej linii
+    double slotWidth(int slots) {
+      final tp = TextPainter(
+        text: TextSpan(text: '8' * slots, style: numStyle),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      return tp.width + 6; // mały margines
+    }
+
+    final w3 = slotWidth(3); // kcal
+    final w2 = slotWidth(2); // protein/fat/carbs
+
     return Container(
       margin: const EdgeInsets.only(bottom: 5),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
@@ -48,16 +67,32 @@ class IngredientRow extends StatelessWidget {
             children: [
               Text('${mi.amount} ${mi.ingredient.unit}', style: Theme.of(context).textTheme.bodyLarge),
               const Spacer(),
-              MacroChip(type: Macro.kcal, text: m[Macro.kcal]!.round().toString(), padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
-              const SizedBox(width: 8),
-              MacroChip(type: Macro.protein, text: m[Macro.protein]!.round().toString(), padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
-              const SizedBox(width: 8),
-              MacroChip(type: Macro.fat, text: m[Macro.fat]!.round().toString(), padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
-              const SizedBox(width: 8),
-              MacroChip(type: Macro.carbs, text: m[Macro.carbs]!.round().toString(), padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
+              // Text(m[Macro.kcal]!.round().toString()),
+              _metricCell(m[Macro.kcal]!.round(), width: w3, style: numStyle),
+              const SizedBox(width: 30),
+              _metricCell(m[Macro.protein]!.round(), width: w3, style: numStyle),
+              // Text(m[Macro.protein]!.round().toString()),
+              const SizedBox(width: 22),
+              _metricCell(m[Macro.fat]!.round(), width: w3, style: numStyle),
+              // Text(m[Macro.fat]!.round().toString()),
+              const SizedBox(width: 22),
+              _metricCell(m[Macro.carbs]!.round(), width: w3, style: numStyle),
+              // Text(m[Macro.carbs]!.round().toString()),
+              const SizedBox(width: 5),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _metricCell(num value, {required double width, required TextStyle style}) {
+    return SizedBox(
+      width: width,
+      child: Text(
+        value.toString(),
+        textAlign: TextAlign.center,
+        style: style,
       ),
     );
   }
