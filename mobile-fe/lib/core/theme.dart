@@ -7,7 +7,7 @@ ThemeData buildAppTheme() {
     scaffoldBackgroundColor: const Color(0xFFF9F9F9),
     textTheme: const TextTheme(
       headlineSmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w600, color: base),
-      titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: base),
+      titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: base),
       titleMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: base),
       titleSmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w300, color: base),
       bodyLarge: TextStyle(fontSize: 16, color: base),

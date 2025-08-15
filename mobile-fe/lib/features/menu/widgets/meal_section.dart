@@ -42,7 +42,7 @@ class _MealSectionState extends State<MealSection> {
           Row(
             children: [
               Expanded(
-                child: Text(widget.meal.name, style: Theme.of(context).textTheme.titleMedium),
+                child: Text(widget.meal.name, style: Theme.of(context).textTheme.titleLarge),
               ),
               AnimatedRotation(
                 turns: _expanded ? 0.5 : 0,
