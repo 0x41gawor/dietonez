@@ -85,6 +85,24 @@ export function  useDietViewLogic(id: Ref<number>) {
         console.log("Diet new", diet.value)
     };
 
+    const handleGoalUpdate = (payload: { weekIndex: number; dayIndex: number; newGoal: number }) => {
+        const weekIndex = payload.weekIndex;
+        const dayIndex = payload.dayIndex;
+        const newGoal = payload.newGoal;
+
+        console.log("Updating goal for week:", weekIndex, "day:", dayIndex, "newGoal:", newGoal);
+
+        if (diet.value.weeks[weekIndex] && diet.value.weeks[weekIndex].days[dayIndex]) {
+            diet.value.weeks[weekIndex].days[dayIndex].summary.goal = newGoal;
+            hasPendingChanges.value = true;
+            console.log("Updated diet:", diet.value);
+        } else {
+            console.error("Invalid week or day index for goal update");
+        }
+    }
+
+    // ==== H A N D L E R S ====
+
     const handleRevertButtonClick = () => {
         console.log("Revert button clicked")
         fetchDietGet();
@@ -183,6 +201,7 @@ export function  useDietViewLogic(id: Ref<number>) {
         dishOptions,
         hasPendingChanges,
         handleSlotUpdate,
+        handleGoalUpdate,
         handleRevertButtonClick,
         handleUpdateButtonClick,
         handleDeleteButtonClick,

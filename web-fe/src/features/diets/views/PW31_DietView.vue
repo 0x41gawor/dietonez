@@ -20,6 +20,7 @@
         :items="diet?.weeks || []"
         :dishOptions="dishOptions"
         @update-slot="handleSlotUpdate"
+        @update-goal="handleGoalUpdate"
         </WeeksTable>            
 
         
@@ -58,6 +59,7 @@ const {
     dishOptions,
     hasPendingChanges,
     handleSlotUpdate,
+    handleGoalUpdate,
     handleRevertButtonClick,
     handleUpdateButtonClick,
     handleDeleteButtonClick,

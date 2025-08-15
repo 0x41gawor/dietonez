@@ -137,15 +137,26 @@
     </div>
 
     <!-- PODSUMOWANIE -->
-    <div class="summary">
-      <span class="summary-label"> Goal: {{ formatNumber(day.summary.goal) }}</span>
-      <div class="nutrition-grid-summary">
-        <span class="cell">{{ formatNumber(day.summary.kcal) }}</span>
-        <span class="cell">{{ formatNumber(day.summary.proteins) }}</span>
-        <span class="cell">{{ formatNumber(day.summary.fats) }}</span>
-        <span class="cell">{{ formatNumber(day.summary.carbs) }}</span>
-      </div>
-    </div>
+   <div class="summary">
+  <label class="summary-label">
+    Goal:
+    <input
+      class="goal-input"
+      type="number"
+      v-model.number="goal"
+      min="0"
+      step="50"
+      inputmode="numeric"
+      aria-label="Daily goal (kcal)"
+    />
+  </label>
+  <div class="nutrition-grid-summary">
+    <span class="cell">{{ formatNumber(day.summary.kcal) }}</span>
+    <span class="cell">{{ formatNumber(day.summary.proteins) }}</span>
+    <span class="cell">{{ formatNumber(day.summary.fats) }}</span>
+    <span class="cell">{{ formatNumber(day.summary.carbs) }}</span>
+  </div>
+</div>
     <!-- Left -->
     <div class="left">
       <span>
@@ -159,12 +170,23 @@
 
 
 <script setup lang="ts">
+import { computed } from 'vue';
 
 import { DishGetShort, SlotGet, Summary, Left, DayGet, Meal} from '@/types/types';
 
 const MEALS: Meal[] = ['Breakfast', 'Lunch', 'Pre-Workout', 'Post-Workout', 'Supper'];
 
 const findSlot = (meal: Meal) => props.day.slots.find(s => s.meal === meal);
+
+const dayNameToIndex: Record<string, number> = {
+  Monday: 0,
+  Tuesday: 1,
+  Wednesday: 2,
+  Thursday: 3,
+  Friday: 4,
+  Saturday: 5,
+  // Sunday: 6, // dodaj, jeśli używasz 7 dni
+};
 
 // --- PROPSY KOMPONENTU ---
 const props = defineProps<{
@@ -175,8 +197,26 @@ const props = defineProps<{
 // --- EMITY ZDARZEŃ ---
 const emit = defineEmits<{
   (e: 'update-slot', payload: { dayIndex: number, slotIndex: number; newDishId: number }): void;
+  (e: 'update-goal', payload: { dayIndex: number; newGoal: number }): void;
 }>();
 
+// --- Two-way proxy for goal ---
+const dayIndex = computed(() => dayNameToIndex[props.day.name] ?? 0);
+
+/**
+ * `goal` jest computed z setterem:
+ *  - get: czyta z props.day.summary.goal
+ *  - set: emituje 'update-goal' do rodzica
+ * Dzięki temu w <template> możemy użyć v-model.number="goal"
+ */
+const goal = computed<number>({
+  get: () => props.day.summary.goal,
+  set: (v: number) => {
+    // zabezpieczenie przed NaN
+    const nv = Number.isFinite(v) ? v : 0;
+    emit('update-goal', { dayIndex: dayIndex.value, newGoal: nv });
+  },
+});
 
 // --- FUNKCJE POMOCNICZE ---
 
@@ -218,15 +258,6 @@ const handleDishChange = (slotIndex: number, event: Event) => {
   const target = event.target as HTMLSelectElement;
   const newDishId = parseInt(target.value, 10);
   const dayName = props.day.name;
-    // DayName → Index (1-based)
-  const dayNameToIndex: Record<string, number> = {
-    Monday: 0,
-    Tuesday: 1,
-    Wednesday: 2,
-    Thursday: 3,
-    Friday: 4,
-    Saturday: 5,
-  };
   const dayIndex = dayNameToIndex[dayName]
   emit('update-slot', { dayIndex, slotIndex, newDishId });
 };
@@ -342,5 +373,22 @@ const formatNumber = (num: number | undefined | null, decimalPlaces?: number): s
 
 .cell {
   font-size: 0.7em;
+}
+
+.goal-input {
+  width: 60px;
+  font: inherit;
+  font-weight: 500;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0 4px;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.goal-input:focus {
+  outline: none;
+  border-color: #ddd;
+  background: #fff;
 }
 </style>

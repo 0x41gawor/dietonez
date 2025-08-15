@@ -12,6 +12,7 @@
           :day="day"
           :dish-options="dishOptions"
           @update-slot="handleSlotUpdate"
+          @update-goal="handleGoalUpdate"
         />
       </div>
   </div>
@@ -36,12 +37,18 @@ const props = withDefaults(defineProps<{
 // --- EMITY ZDARZEŃ ---
 const emit = defineEmits<{
   (e: 'update-slot', payload: { weekIndex: number, dayIndex: number, slotIndex: number; newDishId: number }): void;
+  (e: 'update-goal', payload: { weekIndex: number; dayIndex: number; newGoal: number }): void;
 }>();
 
 
 const handleSlotUpdate = (payload: { dayIndex: number; slotIndex: number; newDishId: number }) => {
   const weekIndex  = props.week.num -1;
   emit('update-slot', { weekIndex: weekIndex, dayIndex: payload.dayIndex, slotIndex: payload.slotIndex, newDishId: payload.newDishId})
+};
+
+const handleGoalUpdate = (payload: { dayIndex: number; newGoal: number }) => {
+  const weekIndex = props.week.num - 1;
+  emit('update-goal', { weekIndex, dayIndex: payload.dayIndex, newGoal: payload.newGoal });
 };
 
 </script>
