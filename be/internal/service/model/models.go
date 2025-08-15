@@ -146,6 +146,7 @@ type DayGet struct {
 type DayPut struct {
 	Name  string    `json:"name"`
 	Slots []SlotPut `json:"slots"`
+	Goal  float64   `json:"goal"`
 }
 
 type WeekSummary struct {

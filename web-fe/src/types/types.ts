@@ -178,6 +178,7 @@ export interface DayGet {
 export interface DayPut {
   name: string;
   slots: SlotPut[];
+  goal: number; // in kcal
 }
 
 export interface WeekSummary {

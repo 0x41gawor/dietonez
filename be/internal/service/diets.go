@@ -499,6 +499,24 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 		}
 	}
 
+	// Update day kcal goals
+	for _, week := range in.Weeks {
+		for _, day := range week.Days {
+			// Update or insert day kcal goal
+			const qDayKcal = `
+				INSERT INTO day_kcals (diet_id, day_num, kcal)
+				VALUES ($1, $2, $3)
+				ON CONFLICT (diet_id, day_num) DO UPDATE SET kcal = $3;
+			`
+			dayNum := (week.Num-1)*6 + dayIndex[day.Name] + 1
+			fmt.Println(dayNum, " ", day.Goal)
+			_, err := tx.ExecContext(ctx, qDayKcal, in.ID, dayNum, day.Goal)
+			if err != nil {
+				return nil, fmt.Errorf("update day kcal: %w", err)
+			}
+		}
+	}
+
 	if err := tx.Commit(); err != nil {
 		return nil, fmt.Errorf("commit: %w", err)
 	}

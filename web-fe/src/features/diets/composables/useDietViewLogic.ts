@@ -115,6 +115,7 @@ export function  useDietViewLogic(id: Ref<number>) {
                     meal: slot.meal,
                     dish: { id: slot.dish!.id }
                 })),
+                goal: day.summary.goal, // Dodaj goal do każdego dnia
             })),
             }));
 
