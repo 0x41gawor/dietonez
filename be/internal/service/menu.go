@@ -37,6 +37,17 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		return nil, fmt.Errorf("invalid start_date: expected Monday, got %s", startDate.Weekday().String())
 	}
 
+	if date.Weekday() == time.Sunday {
+		return &model.Menu{
+			Breakfast:   nil,
+			Lunch:       nil,
+			PreWorkout:  nil,
+			PostWorkout: nil,
+			Supper:      nil,
+			Summary:     model.MenuSummary{},
+		}, nil
+	}
+
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("no active diet set in context")
