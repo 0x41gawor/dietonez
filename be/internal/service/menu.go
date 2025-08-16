@@ -72,14 +72,15 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 	if err != nil {
 		return nil, err
 	}
-	if len(dishIDs) != 5 {
-		return nil, fmt.Errorf("expected 5 dish slots, got %d", len(dishIDs))
-	}
-
+	// if len(dishIDs) != 5 {
+	// 	return nil, fmt.Errorf("expected 5 dish slots, got %d", len(dishIDs))
+	// }
 	var dishes [5]*model.DishGet
 	for i, id := range dishIDs {
+		var dish *model.DishGet
 		if id == 0 {
-			return nil, fmt.Errorf("slot %d has no dish assigned", slotsRange[i])
+			dish = nil
+			continue
 		}
 		dish, err := s.dishes.GetByID(ctx, id)
 		if err != nil {
@@ -94,6 +95,9 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 	sumFat := 0.0
 
 	for _, dish := range dishes {
+		if dish == nil {
+			continue // pomijamy puste dania
+		}
 		// count sums
 		sumKcal += round2(dish.Kcal)
 		sumProtein += round2(dish.Protein)
@@ -124,12 +128,14 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		CarbsPerKg:   round2(sumCarbs / currentWeight),   // Example calculation, adjust as needed
 	}
 
+	print("Tu jeszcze git\n")
+
 	menu := &model.Menu{
-		Breakfast:   *dishes[0],
-		Lunch:       *dishes[1],
-		PreWorkout:  *dishes[2],
-		PostWorkout: *dishes[3],
-		Supper:      *dishes[4],
+		Breakfast:   dishes[0],
+		Lunch:       dishes[1],
+		PreWorkout:  dishes[2],
+		PostWorkout: dishes[3],
+		Supper:      dishes[4],
 		Summary:     summary,
 	}
 
