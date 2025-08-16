@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/0x41gawor/dietonez/internal/repo"
@@ -115,15 +116,14 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		sumCarbs += round2(dish.Carbs)
 		sumFat += round2(dish.Fat)
 	}
-
+	currentDietDayInDayKcal := currentDietDay - int(math.Floor(float64(currentDietDay)/7))
 	// fetch kcal goal
 	var dayKcalGoal float64
 	err = s.db.QueryRowContext(ctx, `
 		SELECT kcal
 		FROM day_kcals
 		WHERE day_num = $1
-	`, currentDietDay).Scan(&dayKcalGoal)
-	print(dayKcalGoal)
+	`, currentDietDayInDayKcal).Scan(&dayKcalGoal)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch max dayGoal: %w", err)
 	}
