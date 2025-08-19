@@ -9,14 +9,12 @@ class IngredientRow extends StatelessWidget {
 
   const IngredientRow({super.key, required this.mi, required this.onDelete});
 
-  // prosta estymacja makr dla amount – skaluje po defaultAmount
   Map<Macro, double> _calc() {
-    final f = mi.amount / mi.ingredient.defaultAmount;
     return {
-      Macro.kcal: mi.ingredient.kcal * f,
-      Macro.protein: mi.ingredient.protein * f,
-      Macro.fat: mi.ingredient.fat * f,
-      Macro.carbs: mi.ingredient.carbs * f,
+      Macro.kcal: mi.ingredient.kcal,
+      Macro.protein: mi.ingredient.protein,
+      Macro.fat: mi.ingredient.fat,
+      Macro.carbs: mi.ingredient.carbs,
     };
   }
 

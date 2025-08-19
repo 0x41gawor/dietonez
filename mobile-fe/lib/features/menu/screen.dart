@@ -55,7 +55,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 child: MealSection(
                   title: 'Breakfast',
                   accent: const Color(0xFFCC9933),
-                  meal: data.breakfast,
+                  meal: data.breakfast.dish,
                   onAdd: () {},
                 ),
               ),
@@ -63,7 +63,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 child: MealSection(
                   title: 'Lunch',
                   accent: const Color(0xFFE57390),
-                  meal: data.lunch,
+                  meal: data.lunch.dish,
                   onAdd: () {},
                 ),
               ),
@@ -71,7 +71,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 child: MealSection(
                   title: 'Pre-Workout',
                   accent: const Color(0xFF42A5F5),
-                  meal: data.preworkout,
+                  meal: data.preworkout.dish,
                   onAdd: () {},
                 ),
               ),
@@ -79,7 +79,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 child: MealSection(
                   title: 'Post-Workout',
                   accent: const Color(0xFFE57390),
-                  meal: data.postworkout,
+                  meal: data.postworkout.dish,
                   onAdd: () {},
                 ),
               ),
@@ -87,7 +87,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 child: MealSection(
                   title: 'Supper',
                   accent: const Color(0xFF66BB6A),
-                  meal: data.supper,
+                  meal: data.supper.dish,
                   onAdd: () {},
                 ),
               ),
