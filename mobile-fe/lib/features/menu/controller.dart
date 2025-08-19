@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/date_fmt.dart';
 import 'models.dart';
 import 'service.dart';
+import 'dart:convert';
 
 class MenuViewController extends ChangeNotifier {
   final MenuService _service = MenuService();
@@ -25,6 +26,7 @@ class MenuViewController extends ChangeNotifier {
       error = e.toString();
     } finally {
       loading = false;
+      debugPrint("🔥 DUPA >>> ${const JsonEncoder.withIndent('  ').convert(data?.toJson())}");
       notifyListeners();
     }
   }

@@ -32,17 +32,36 @@ class IngredientFull {
     shopStyle: j['shopStyle'] as String,
     defaultAmount: j['default_amount'] as num,
   );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'kcal': kcal,
+    'protein': protein,
+    'fat': fat,
+    'carbs': carbs,
+    'unit': unit,
+    'shopStyle': shopStyle,
+    'default_amount': defaultAmount,
+  };
+
 }
 
 class MealIngredient {
   final IngredientFull ingredient;
   final num amount;
+
   MealIngredient({required this.ingredient, required this.amount});
 
   factory MealIngredient.fromJson(Map<String, dynamic> j) => MealIngredient(
     ingredient: IngredientFull.fromJson(j['ingredient']),
     amount: j['amount'],
   );
+
+  Map<String, dynamic> toJson() => {
+    'ingredient': ingredient.toJson(),
+    'amount': amount,
+  };
 }
 
 class Recipe {
@@ -51,7 +70,12 @@ class Recipe {
   final String whenToStart;
   final String preparation;
 
-  Recipe({required this.totalTime, required this.before, required this.whenToStart, required this.preparation});
+  Recipe({
+    required this.totalTime,
+    required this.before,
+    required this.whenToStart,
+    required this.preparation,
+  });
 
   factory Recipe.fromJson(Map<String, dynamic> j) => Recipe(
     totalTime: j['total_time'] ?? '',
@@ -59,6 +83,36 @@ class Recipe {
     whenToStart: j['when_to_start'] ?? '',
     preparation: j['preparation'] ?? '',
   );
+
+  Map<String, dynamic> toJson() => {
+    'total_time': totalTime,
+    'before': before,
+    'when_to_start': whenToStart,
+    'preparation': preparation,
+  };
+}
+
+class DishInMenu {
+  final Dish dish;
+  final int slotNum;
+
+  DishInMenu({required this.dish, required this.slotNum});
+
+  factory DishInMenu.fromSectionJson(Map<String, dynamic>? j) {
+    if (j == null) {
+      return DishInMenu.empty();
+    }
+    return DishInMenu(
+      dish: Dish.fromSectionJson(j['dish'] as Map<String, dynamic>?),
+      slotNum: j['slot_num'] as int? ?? 0,
+    );
+  }
+  factory DishInMenu.empty() => DishInMenu(dish: Dish.empty(), slotNum: 0);
+
+  Map<String, dynamic> toJson() => {
+    'dish': dish.toJson(),
+    'slot_num': slotNum,
+  };
 }
 
 class Dish {
@@ -93,11 +147,12 @@ class Dish {
       protein: (j['protein'] as num?)?.toDouble() ?? 0.0,
       fat: (j['fat'] as num?)?.toDouble() ?? 0.0,
       carbs: (j['carbs'] as num?)?.toDouble() ?? 0.0,
-      ingredients: (j['ingredients'] as List<dynamic>?)
-          ?.map((e) => MealIngredient.fromJson(e))
-          .toList() ??
+      ingredients:
+          (j['ingredients'] as List<dynamic>?)
+              ?.map((e) => MealIngredient.fromJson(e))
+              .toList() ??
           [],
-      recipe: Recipe.fromJson(j['recipe'] ?? {})
+      recipe: Recipe.fromJson(j['recipe'] ?? {}),
     );
   }
 
@@ -112,6 +167,18 @@ class Dish {
     ingredients: [],
     recipe: Recipe.fromJson({}),
   );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'meal': meal,
+    'kcal': kcal,
+    'protein': protein,
+    'fat': fat,
+    'carbs': carbs,
+    'ingredients': ingredients.map((e) => e.toJson()).toList(),
+    'recipe': recipe.toJson(),
+  };
 }
 
 class MenuSummary {
@@ -139,10 +206,22 @@ class MenuSummary {
     fatsPerc: (j['fats_perc'] as num).toDouble(),
     carbsPerKg: (j['carbs_per_kg'] as num).toDouble(),
   );
+
+  Map<String, dynamic> toJson() =>
+      {
+        'kcal': kcal,
+        'proteins': proteins,
+        'fats': fats,
+        'carbs': carbs,
+        'kcalGoal': kcalGoal,
+        'proteinPerKg': proteinPerKg,
+        'fatsPerc': fatsPerc,
+        'carbsPerKg': carbsPerKg,
+      };
 }
 
 class MenuResponse {
-  final Dish breakfast, lunch, preworkout, postworkout, supper;
+  final DishInMenu breakfast, lunch, preworkout, postworkout, supper;
   final MenuSummary summary;
 
   MenuResponse({
@@ -155,11 +234,20 @@ class MenuResponse {
   });
 
   factory MenuResponse.fromJson(Map<String, dynamic> j) => MenuResponse(
-    breakfast: Dish.fromSectionJson(j['breakfast']),
-    lunch: Dish.fromSectionJson(j['lunch']),
-    preworkout: Dish.fromSectionJson(j['preworkout']),
-    postworkout: Dish.fromSectionJson(j['postworkout']),
-    supper: Dish.fromSectionJson(j['supper']),
+    breakfast: DishInMenu.fromSectionJson(j['breakfast']),
+    lunch: DishInMenu.fromSectionJson(j['lunch']),
+    preworkout: DishInMenu.fromSectionJson(j['preworkout']),
+    postworkout: DishInMenu.fromSectionJson(j['postworkout']),
+    supper: DishInMenu.fromSectionJson(j['supper']),
     summary: MenuSummary.fromJson(j['menu_summary']),
   );
+
+  Map<String, dynamic> toJson() => {
+    'breakfast': breakfast.toJson(),
+    'lunch': lunch.toJson(),
+    'preworkout': preworkout.toJson(),
+    'postworkout': postworkout.toJson(),
+    'supper': supper.toJson(),
+    'menu_summary': summary.toJson(),
+  };
 }
