@@ -61,7 +61,7 @@ class Recipe {
   );
 }
 
-class Meal {
+class Dish {
   final int id;
   final String name;
   final String meal; // Breakfast/MainMeal/...
@@ -69,7 +69,7 @@ class Meal {
   final List<MealIngredient> ingredients;
   final Recipe recipe;
 
-  Meal({
+  Dish({
     required this.id,
     required this.name,
     required this.meal,
@@ -81,18 +81,36 @@ class Meal {
     required this.recipe,
   });
 
-  factory Meal.fromSectionJson(Map<String, dynamic> j) => Meal(
-    id: j['id'] as int,
-    name: j['name'] as String,
-    meal: j['meal'] as String,
-    kcal: (j['kcal'] as num).toDouble(),
-    protein: (j['protein'] as num).toDouble(),
-    fat: (j['fat'] as num).toDouble(),
-    carbs: (j['carbs'] as num).toDouble(),
-    ingredients: (j['ingredients'] as List<dynamic>)
-        .map((e) => MealIngredient.fromJson(e))
-        .toList(),
-    recipe: Recipe.fromJson(j['recipe'] ?? {}),
+  factory Dish.fromSectionJson(Map<String, dynamic>? j) {
+    if (j == null) {
+      return Dish.empty(); // <-- defaulty
+    }
+    return Dish(
+      id: j['id'] as int? ?? 0,
+      name: j['name'] as String? ?? '',
+      meal: j['meal'] as String? ?? '',
+      kcal: (j['kcal'] as num?)?.toDouble() ?? 0.0,
+      protein: (j['protein'] as num?)?.toDouble() ?? 0.0,
+      fat: (j['fat'] as num?)?.toDouble() ?? 0.0,
+      carbs: (j['carbs'] as num?)?.toDouble() ?? 0.0,
+      ingredients: (j['ingredients'] as List<dynamic>?)
+          ?.map((e) => MealIngredient.fromJson(e))
+          .toList() ??
+          [],
+      recipe: Recipe.fromJson(j['recipe'] ?? {})
+    );
+  }
+
+  factory Dish.empty() => Dish(
+    id: 0,
+    name: '',
+    meal: '',
+    kcal: 0,
+    protein: 0,
+    fat: 0,
+    carbs: 0,
+    ingredients: [],
+    recipe: Recipe.fromJson({}),
   );
 }
 
@@ -124,7 +142,7 @@ class MenuSummary {
 }
 
 class MenuResponse {
-  final Meal breakfast, lunch, preworkout, postworkout, supper;
+  final Dish breakfast, lunch, preworkout, postworkout, supper;
   final MenuSummary summary;
 
   MenuResponse({
@@ -137,11 +155,11 @@ class MenuResponse {
   });
 
   factory MenuResponse.fromJson(Map<String, dynamic> j) => MenuResponse(
-    breakfast: Meal.fromSectionJson(j['breakfast']),
-    lunch: Meal.fromSectionJson(j['lunch']),
-    preworkout: Meal.fromSectionJson(j['preworkout']),
-    postworkout: Meal.fromSectionJson(j['postworkout']),
-    supper: Meal.fromSectionJson(j['supper']),
+    breakfast: Dish.fromSectionJson(j['breakfast']),
+    lunch: Dish.fromSectionJson(j['lunch']),
+    preworkout: Dish.fromSectionJson(j['preworkout']),
+    postworkout: Dish.fromSectionJson(j['postworkout']),
+    supper: Dish.fromSectionJson(j['supper']),
     summary: MenuSummary.fromJson(j['menu_summary']),
   );
 }

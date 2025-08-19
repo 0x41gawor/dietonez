@@ -7,7 +7,7 @@ import 'ingredient_row.dart';
 class MealSection extends StatefulWidget {
   final String title;
   final Color accent;
-  final Meal meal;
+  final Dish meal;
   final VoidCallback onAdd;
 
   const MealSection({
