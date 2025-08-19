@@ -40,11 +40,11 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 
 	if date.Weekday() == time.Sunday {
 		return &model.Menu{
-			Breakfast:   nil,
-			Lunch:       nil,
-			PreWorkout:  nil,
-			PostWorkout: nil,
-			Supper:      nil,
+			Breakfast:   model.DishInMenu{Dish: nil, SlotNum: nil},
+			Lunch:       model.DishInMenu{Dish: nil, SlotNum: nil},
+			PreWorkout:  model.DishInMenu{Dish: nil, SlotNum: nil},
+			PostWorkout: model.DishInMenu{Dish: nil, SlotNum: nil},
+			Supper:      model.DishInMenu{Dish: nil, SlotNum: nil},
 			Summary:     model.MenuSummary{},
 		}, nil
 	}
@@ -139,14 +139,12 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		CarbsPerKg:   round2(sumCarbs / currentWeight),   // Example calculation, adjust as needed
 	}
 
-	print("Tu jeszcze git\n")
-
 	menu := &model.Menu{
-		Breakfast:   dishes[0],
-		Lunch:       dishes[1],
-		PreWorkout:  dishes[2],
-		PostWorkout: dishes[3],
-		Supper:      dishes[4],
+		Breakfast:   model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
+		Lunch:       model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
+		PreWorkout:  model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
+		PostWorkout: model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
+		Supper:      model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
 		Summary:     summary,
 	}
 

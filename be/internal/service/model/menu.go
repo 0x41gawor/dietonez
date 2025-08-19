@@ -1,11 +1,11 @@
 package model
 
 type Menu struct {
-	Breakfast   *DishGet    `json:"breakfast"`
-	Lunch       *DishGet    `json:"lunch"`
-	PreWorkout  *DishGet    `json:"preworkout"`
-	PostWorkout *DishGet    `json:"postworkout"`
-	Supper      *DishGet    `json:"supper"`
+	Breakfast   DishInMenu  `json:"breakfast"`
+	Lunch       DishInMenu  `json:"lunch"`
+	PreWorkout  DishInMenu  `json:"preworkout"`
+	PostWorkout DishInMenu  `json:"postworkout"`
+	Supper      DishInMenu  `json:"supper"`
 	Summary     MenuSummary `json:"menu_summary"`
 }
 

@@ -89,6 +89,11 @@ type DishGet struct {
 	Labels      []Label               `json:"labels"`
 }
 
+type DishInMenu struct {
+	Dish    *DishGet `json:"dish"`
+	SlotNum *int     `json:"slot_num"`
+}
+
 type DishPost struct {
 	Name        string                `json:"name"`
 	Meal        string                `json:"meal"`
