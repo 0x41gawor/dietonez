@@ -141,10 +141,10 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 
 	menu := &model.Menu{
 		Breakfast:   model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
-		Lunch:       model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
-		PreWorkout:  model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
-		PostWorkout: model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
-		Supper:      model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
+		Lunch:       model.DishInMenu{Dish: dishes[1], SlotNum: &slotsRange[1]},
+		PreWorkout:  model.DishInMenu{Dish: dishes[2], SlotNum: &slotsRange[2]},
+		PostWorkout: model.DishInMenu{Dish: dishes[3], SlotNum: &slotsRange[3]},
+		Supper:      model.DishInMenu{Dish: dishes[4], SlotNum: &slotsRange[4]},
 		Summary:     summary,
 	}
 
