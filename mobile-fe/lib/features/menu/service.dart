@@ -18,4 +18,22 @@ class MenuService {
 
     return j.map((e) => DishOption.fromJson(e)).toList();
   }
+
+  Future<void> replaceDishInSlot({
+    required int dietId,
+    required int slotNum,
+    required int dishId,
+  }) async {
+    await _api.send(
+      '/diets/$dietId/slot',
+      method: 'PATCH',
+      body: {
+        'slot_num': slotNum,
+        'dish_id': dishId,
+      },
+    );
+  }
+
+
+
 }

@@ -13,4 +13,25 @@ class ApiClient {
     throw Exception('HTTP ${res.statusCode}: ${res.body}');
   }
 
+  Future<void> send(
+      String path, {
+        required String method,
+        Map<String, String>? query,
+        Map<String, dynamic>? body,
+      }) async {
+    final uri = Uri.parse('$baseUrl$path').replace(queryParameters: query);
+
+    final res = await http.Request(method, uri)
+      ..headers['Content-Type'] = 'application/json'
+      ..body = body != null ? jsonEncode(body) : '';
+
+    final streamed = await res.send();
+    final response = await http.Response.fromStream(streamed);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('HTTP ${response.statusCode}: ${response.body}');
+    }
+  }
+
+
 }

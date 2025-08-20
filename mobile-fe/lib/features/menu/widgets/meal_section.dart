@@ -10,7 +10,7 @@ import '../controller.dart';
 class MealSection extends StatefulWidget {
   final String title;
   final Color accent;
-  final Dish meal;
+  final DishInMenu meal;
   final VoidCallback onAdd;
 
   const MealSection({
@@ -48,14 +48,14 @@ class _MealSectionState extends State<MealSection> {
                 child: InkWell(
                   onTap: () async {
                     final c = context.read<MenuViewController>();
-                    final options = await c.getDishOptions(widget.meal.meal);
-
+                    final options = await c.getDishOptions(widget.meal.dish.meal);
+                    if (!mounted) return;
                     if (options.isEmpty) {
                       _toast(context, 'Brak dostępnych dań');
                       return;
                     }
 
-                    final selected = await showDialog<Dish>(
+                    final selected = await showDialog<DishOption>(
                       context: context,
                       builder: (ctx) {
                         return AlertDialog(
@@ -85,24 +85,18 @@ class _MealSectionState extends State<MealSection> {
                           title: const Text("Potwierdź zmianę"),
                           content: Text("Czy chcesz podmienić na '${selected.name}'?"),
                           actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(ctx).pop(false),
-                              child: const Text("Anuluj"),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(ctx).pop(true),
-                              child: const Text("OK"),
-                            ),
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Anuluj")),
+                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("OK")),
                           ],
                         ),
                       );
-
                       if (confirm == true) {
-                        debugPrint("✅ TODO: Wywołaj endpoint podmiany dania na id=${selected.id}");
+                        final c = context.read<MenuViewController>();
+                        await c.replaceDish(widget.meal.slotNum, selected.id);
                       }
                     }
                   },
-                  child: Text(widget.meal.name, style: Theme.of(context).textTheme.titleLarge),
+                  child: Text(widget.meal.dish.name, style: Theme.of(context).textTheme.titleLarge),
                 ),
               ),
               AnimatedRotation(
@@ -116,13 +110,13 @@ class _MealSectionState extends State<MealSection> {
           Row(
             children: [
               Spacer(),
-              MacroChip(type: Macro.kcal, text: widget.meal.kcal.round().toString()),
+              MacroChip(type: Macro.kcal, text: widget.meal.dish.kcal.round().toString()),
               const SizedBox(width: 8),
-              MacroChip(type: Macro.protein, text: widget.meal.protein.round().toString()),
+              MacroChip(type: Macro.protein, text: widget.meal.dish.protein.round().toString()),
               const SizedBox(width: 8),
-              MacroChip(type: Macro.fat, text: widget.meal.fat.round().toString()),
+              MacroChip(type: Macro.fat, text: widget.meal.dish.fat.round().toString()),
               const SizedBox(width: 8),
-              MacroChip(type: Macro.carbs, text: widget.meal.carbs.round().toString()),
+              MacroChip(type: Macro.carbs, text: widget.meal.dish.carbs.round().toString()),
             ],
           ),
         ],
@@ -141,7 +135,7 @@ class _MealSectionState extends State<MealSection> {
       ),
       child: Column(
         children: [
-          for (final it in widget.meal.ingredients)
+          for (final it in widget.meal.dish.ingredients)
             IngredientRow(
               mi: it,
               onDelete: () => _toast(context, 'Not implemented yet'),

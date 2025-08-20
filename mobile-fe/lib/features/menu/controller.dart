@@ -69,4 +69,21 @@ class MenuViewController extends ChangeNotifier {
       return [];
     }
   }
+
+  Future<void> replaceDish(int slotNum, int dishId) async {
+    try {
+      await _service.replaceDishInSlot(
+        dietId: 1, // tu wstaw swój kontekst (np. aktywna dieta)
+        slotNum: slotNum,
+        dishId: dishId,
+      );
+      // po udanej podmianie możesz odświeżyć menu
+      await fetch();
+    } catch (e) {
+      debugPrint("❌ Błąd podmiany dania: $e");
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
 }
