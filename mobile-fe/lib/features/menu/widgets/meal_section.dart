@@ -3,11 +3,14 @@ import '../../../core/theme.dart';
 import '../models.dart';
 import 'macro_chip.dart';
 import 'ingredient_row.dart';
+import 'package:provider/provider.dart';
+import '../controller.dart';
+
 
 class MealSection extends StatefulWidget {
   final String title;
   final Color accent;
-  final Dish meal;
+  final DishInMenu meal;
   final VoidCallback onAdd;
 
   const MealSection({
@@ -42,7 +45,59 @@ class _MealSectionState extends State<MealSection> {
           Row(
             children: [
               Expanded(
-                child: Text(widget.meal.name, style: Theme.of(context).textTheme.titleLarge),
+                child: InkWell(
+                  onTap: () async {
+                    final c = context.read<MenuViewController>();
+                    final options = await c.getDishOptions(widget.meal.dish.meal);
+                    if (!mounted) return;
+                    if (options.isEmpty) {
+                      _toast(context, 'Brak dostępnych dań');
+                      return;
+                    }
+
+                    final selected = await showDialog<DishOption>(
+                      context: context,
+                      builder: (ctx) {
+                        return AlertDialog(
+                          title: Text("Wybierz danie"),
+                          content: SizedBox(
+                            width: double.maxFinite,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: options.length,
+                              itemBuilder: (ctx, i) {
+                                final d = options[i];
+                                return ListTile(
+                                  title: Text(d.name),
+                                  onTap: () => Navigator.of(ctx).pop(d),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    );
+
+                    if (selected != null) {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text("Potwierdź zmianę"),
+                          content: Text("Czy chcesz podmienić na '${selected.name}'?"),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Anuluj")),
+                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("OK")),
+                          ],
+                        ),
+                      );
+                      if (confirm == true) {
+                        final c = context.read<MenuViewController>();
+                        await c.replaceDish(widget.meal.slotNum, selected.id);
+                      }
+                    }
+                  },
+                  child: Text(widget.meal.dish.name, style: Theme.of(context).textTheme.titleLarge),
+                ),
               ),
               AnimatedRotation(
                 turns: _expanded ? 0.5 : 0,
@@ -55,13 +110,13 @@ class _MealSectionState extends State<MealSection> {
           Row(
             children: [
               Spacer(),
-              MacroChip(type: Macro.kcal, text: widget.meal.kcal.round().toString()),
+              MacroChip(type: Macro.kcal, text: widget.meal.dish.kcal.round().toString()),
               const SizedBox(width: 8),
-              MacroChip(type: Macro.protein, text: widget.meal.protein.round().toString()),
+              MacroChip(type: Macro.protein, text: widget.meal.dish.protein.round().toString()),
               const SizedBox(width: 8),
-              MacroChip(type: Macro.fat, text: widget.meal.fat.round().toString()),
+              MacroChip(type: Macro.fat, text: widget.meal.dish.fat.round().toString()),
               const SizedBox(width: 8),
-              MacroChip(type: Macro.carbs, text: widget.meal.carbs.round().toString()),
+              MacroChip(type: Macro.carbs, text: widget.meal.dish.carbs.round().toString()),
             ],
           ),
         ],
@@ -80,7 +135,7 @@ class _MealSectionState extends State<MealSection> {
       ),
       child: Column(
         children: [
-          for (final it in widget.meal.ingredients)
+          for (final it in widget.meal.dish.ingredients)
             IngredientRow(
               mi: it,
               onDelete: () => _toast(context, 'Not implemented yet'),
