@@ -251,3 +251,20 @@ class MenuResponse {
     'menu_summary': summary.toJson(),
   };
 }
+
+class DishOption {
+  final int id;
+  final String name;
+
+  DishOption({required this.id, required this.name});
+
+  factory DishOption.fromJson(Map<String, dynamic> j) => DishOption(
+    id: j['id'] as int,
+    name: j['name'] as String,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+  };
+}

@@ -3,6 +3,9 @@ import '../../../core/theme.dart';
 import '../models.dart';
 import 'macro_chip.dart';
 import 'ingredient_row.dart';
+import 'package:provider/provider.dart';
+import '../controller.dart';
+
 
 class MealSection extends StatefulWidget {
   final String title;
@@ -42,7 +45,65 @@ class _MealSectionState extends State<MealSection> {
           Row(
             children: [
               Expanded(
-                child: Text(widget.meal.name, style: Theme.of(context).textTheme.titleLarge),
+                child: InkWell(
+                  onTap: () async {
+                    final c = context.read<MenuViewController>();
+                    final options = await c.getDishOptions(widget.meal.meal);
+
+                    if (options.isEmpty) {
+                      _toast(context, 'Brak dostępnych dań');
+                      return;
+                    }
+
+                    final selected = await showDialog<Dish>(
+                      context: context,
+                      builder: (ctx) {
+                        return AlertDialog(
+                          title: Text("Wybierz danie"),
+                          content: SizedBox(
+                            width: double.maxFinite,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: options.length,
+                              itemBuilder: (ctx, i) {
+                                final d = options[i];
+                                return ListTile(
+                                  title: Text(d.name),
+                                  onTap: () => Navigator.of(ctx).pop(d),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    );
+
+                    if (selected != null) {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text("Potwierdź zmianę"),
+                          content: Text("Czy chcesz podmienić na '${selected.name}'?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(ctx).pop(false),
+                              child: const Text("Anuluj"),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(ctx).pop(true),
+                              child: const Text("OK"),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true) {
+                        debugPrint("✅ TODO: Wywołaj endpoint podmiany dania na id=${selected.id}");
+                      }
+                    }
+                  },
+                  child: Text(widget.meal.name, style: Theme.of(context).textTheme.titleLarge),
+                ),
               ),
               AnimatedRotation(
                 turns: _expanded ? 0.5 : 0,
