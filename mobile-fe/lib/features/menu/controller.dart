@@ -12,6 +12,8 @@ class MenuViewController extends ChangeNotifier {
   bool loading = false;
   String? error;
 
+  Map<String, List<DishOption>> _dishOptionsCache = {};
+
   Future<void> initIfNeeded() async {
     if (data == null && !loading) await fetch();
   }
@@ -53,4 +55,35 @@ class MenuViewController extends ChangeNotifier {
 
   String dateText() => yyyyMmDd(selectedDate);
   String weekdayText() => weekdayPl(selectedDate);
+
+  Future<List<DishOption>> getDishOptions(String meal) async {
+    if (_dishOptionsCache.containsKey(meal)) {
+      return _dishOptionsCache[meal]!;
+    }
+    try {
+      final opts = await _service.fetchDishOptions(meal);
+      _dishOptionsCache[meal] = opts;
+      return opts;
+    } catch (e) {
+      debugPrint("❌ Błąd pobierania opcji dla $meal: $e");
+      return [];
+    }
+  }
+
+  Future<void> replaceDish(int slotNum, int dishId) async {
+    try {
+      await _service.replaceDishInSlot(
+        dietId: 1, // tu wstaw swój kontekst (np. aktywna dieta)
+        slotNum: slotNum,
+        dishId: dishId,
+      );
+      // po udanej podmianie możesz odświeżyć menu
+      await fetch();
+    } catch (e) {
+      debugPrint("❌ Błąd podmiany dania: $e");
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
 }

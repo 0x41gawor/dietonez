@@ -608,3 +608,25 @@ func (s *ServiceDiets) Delete(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func (s *ServiceDiets) UpdateSlot(ctx context.Context, dietId int, in *model.DietSlotPut) error {
+	// 1. Update slot
+	const qUpdate = `
+		UPDATE diet_slots SET dish_id = $1
+		WHERE diet_id = $2 AND slot_num = $3;
+	`
+	res, err := s.db.ExecContext(ctx, qUpdate, in.DishId, dietId, in.SlotNum)
+	if err != nil {
+		return fmt.Errorf("update slot: %w", err)
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("check affected rows: %w", err)
+	}
+	if affected == 0 {
+		return sql.ErrNoRows // slot not found
+	}
+
+	return nil
+}

@@ -223,3 +223,8 @@ type DietContextPut struct {
 type DishNamePatch struct {
 	Name string `json:"name"`
 }
+
+type DietSlotPut struct {
+	SlotNum int `json:"slot_num"`
+	DishId  int `json:"dish_id"`
+}

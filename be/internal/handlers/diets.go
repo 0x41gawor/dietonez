@@ -156,3 +156,28 @@ func (h *HandlerDiets) handleDeleteByID(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 	return nil
 }
+
+func (h *HandlerDiets) handlePatchSlotByID(w http.ResponseWriter, r *http.Request) error {
+	dietId, err := ParseIDFromPath("diets", r)
+	if err != nil {
+		http.Error(w, "invalid ID", http.StatusBadRequest)
+		return nil
+	}
+
+	var in model.DietSlotPut
+	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
+		return fmt.Errorf("decode: %w", err)
+	}
+
+	err = h.s.UpdateSlot(r.Context(), dietId, &in)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "diet not found", http.StatusNotFound)
+			return nil
+		}
+		return fmt.Errorf("update slot: %w", err)
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	return nil
+}
