@@ -29,6 +29,7 @@ type IngredientGetPut struct {
 	ShopStyle     string  `json:"shopStyle"`
 	DefaultAmount float64 `json:"default_amount"`
 	Labels        []Label `json:"labels"`
+	Path          int     `json:"path"`
 }
 
 type IngredientPost struct {

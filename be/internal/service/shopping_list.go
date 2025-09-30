@@ -241,6 +241,7 @@ func (s *ServiceShoppingList) getLidlIngredients(ctx context.Context, dietID int
 		  i.proteins,
 		  i.fats,
 		  i.carbs,
+		  i.path,
 		  SUM(ia.amount) AS total_amount
 		FROM diet_slots ds
 		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
@@ -249,7 +250,7 @@ func (s *ServiceShoppingList) getLidlIngredients(ctx context.Context, dietID int
 		  AND ds.slot_num = ANY($2)
 		  AND i.shop_style IN ('Lidl')
 		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
-		ORDER BY i.name;
+		ORDER BY i.path ASC, i.name ASC;
 	`
 
 	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
@@ -272,6 +273,7 @@ func (s *ServiceShoppingList) getLidlIngredients(ctx context.Context, dietID int
 			&ing.Protein,
 			&ing.Fat,
 			&ing.Carbs,
+			&ing.Path,
 			&amount,
 		)
 		if err != nil {
