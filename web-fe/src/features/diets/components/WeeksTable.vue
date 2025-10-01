@@ -42,7 +42,7 @@ const emit = defineEmits<{
   (e: 'update-goal', payload: { weekIndex: number; dayIndex: number; newGoal: number }): void;
 }>();
 
-const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 const handleSlotUpdate = (payload: { weekIndex: number, dayIndex: number, slotIndex: number; newDishId: number }) => {
   emit('update-slot', {weekIndex: payload.weekIndex, dayIndex: payload.dayIndex, slotIndex: payload.slotIndex, newDishId: payload.newDishId})
@@ -69,7 +69,7 @@ const handleGoalUpdate = (payload: { weekIndex: number; dayIndex: number; newGoa
 
 .table-header {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   font-weight: bold;
   font-size: 0.75rem;
   text-transform: uppercase;

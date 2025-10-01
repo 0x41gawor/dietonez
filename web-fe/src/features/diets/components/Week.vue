@@ -78,7 +78,7 @@ const handleGoalUpdate = (payload: { dayIndex: number; newGoal: number }) => {
 
 .week-row {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
 }
 
 .days-row {
