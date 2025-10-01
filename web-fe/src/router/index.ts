@@ -16,7 +16,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/dishes/:meal', component: DishesListView, props: true },
   { path: '/dishes/:meal/:id/edit', component: DishView, props: (route) => ({ id: Number(route.params.id), meal: route.params.meal as 'Breakfast' | 'MainMeal' | 'Pre-Workout' | 'Supper', }) },
   { path: '/diets', component: DietsView },
-  { path: '/diets/:id', component: DietView, props: (route) => ({id: Number(route.params.id)}) },
+  { path: '/diets/:id', name: 'DietView', component: DietView, props: (route) => ({id: Number(route.params.id)}) },
 ];
 
 const router = createRouter({

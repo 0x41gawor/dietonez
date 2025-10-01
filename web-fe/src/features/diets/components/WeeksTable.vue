@@ -57,7 +57,7 @@ const handleGoalUpdate = (payload: { weekIndex: number; dayIndex: number; newGoa
 <style scoped>
 .weeks-table {
   width: 100%;
-  max-width: 1200px;     /* lub inna szerokość, np. 1000px */
+  /* max-width: 1400px;     lub inna szerokość, np. 1000px */
   margin: 0 auto;         /* wyśrodkowanie */
   box-sizing: border-box;
   border: 1px solid #bbbbbb;
