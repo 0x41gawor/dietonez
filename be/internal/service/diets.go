@@ -305,17 +305,17 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 
 	// 4. Zrekonstruuj tygodnie i dni
 	const mealsPerDay = 5
-	const daysPerWeek = 6
+	const daysPerWeek = 7
 	const slotsPerWeek = mealsPerDay * daysPerWeek
 
 	var weeks []model.WeekGet
-	for weekNum := 1; ; weekNum++ {
-		start := (weekNum - 1) * slotsPerWeek
+	for weekNum := 0; ; weekNum++ {
+		start := weekNum * slotsPerWeek
 		found := false
 
 		var days []model.DayGet
 		for dayIndex := 0; dayIndex < daysPerWeek; dayIndex++ {
-			dayName := [...]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}[dayIndex]
+			dayName := [...]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}[dayIndex]
 			var slots []model.SlotGet
 
 			meals := [...]string{"Breakfast", "Lunch", "Pre-Workout", "Post-Workout", "Supper"}
