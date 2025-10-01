@@ -304,13 +304,10 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 	}
 
 	// 4. Zrekonstruuj tygodnie i dni
-	const mealsPerDay = 5
 	const daysPerWeek = 7
-	const slotsPerWeek = mealsPerDay * daysPerWeek
 
 	var weeks []model.WeekGet
 	for weekNum := 0; ; weekNum++ {
-		start := weekNum * slotsPerWeek
 		found := false
 
 		var days []model.DayGet
@@ -321,7 +318,7 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 			meals := [...]string{"Breakfast", "Lunch", "Pre-Workout", "Post-Workout", "Supper"}
 
 			for mealIndex, meal := range meals {
-				slotNum := start + dayIndex*mealsPerDay + mealIndex + 1
+				slotNum := weekNum*35 + dayIndex*5 + mealIndex
 				dish, ok := slotMap[slotNum]
 				if ok {
 					found = true
