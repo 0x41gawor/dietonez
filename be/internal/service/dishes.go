@@ -75,6 +75,7 @@ func (s *ServiceDishes) ListMinByMeal(ctx context.Context, meal string) ([]*mode
 			name
 		FROM dishes              
 		WHERE meal = $1
+		ORDER by name;
 	`
 
 	rows, err := s.db.QueryContext(ctx, q, meal)
@@ -406,6 +407,45 @@ func (s *ServiceDishes) UpdateName(ctx context.Context, id int, name string) err
 		return sql.ErrNoRows
 	}
 	return nil
+}
+
+func (s *ServiceDishes) CopyByID(ctx context.Context, id int) (*model.DishGet, error) {
+	// 1. Pobierz oryginalne danie
+	origDish, err := s.GetByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("get original dish: %w", err)
+	}
+	if origDish == nil {
+		return nil, sql.ErrNoRows // 404 later
+	}
+
+	// 2. Stwórz nową nazwę
+	newName := origDish.Name + " - copy"
+
+	// 3. Stwórz nowe danie na podstawie oryginału
+	newDishInput := &model.DishPost{
+		Name:        newName,
+		Meal:        origDish.Meal,
+		Descr:       origDish.Descr,
+		Ingredients: make([]model.IngredientInDishPut, len(origDish.Ingredients)),
+		Recipe:      origDish.Recipe,
+		Labels:      origDish.Labels,
+	}
+	// convert ingredients to Min model
+
+	for i, ing := range origDish.Ingredients {
+		newDishInput.Ingredients[i] = model.IngredientInDishPut{
+			Ingredient: model.IngredientMin{ID: ing.Ingredient.ID, Name: ing.Ingredient.Name},
+			Amount:     ing.Amount,
+		}
+	}
+
+	newDish, err := s.Create(ctx, newDishInput)
+	if err != nil {
+		return nil, fmt.Errorf("create copied dish: %w", err)
+	}
+
+	return newDish, nil
 }
 
 func (s *ServiceDishes) DeleteByID(ctx context.Context, id int) error {

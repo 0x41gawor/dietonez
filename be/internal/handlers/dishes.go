@@ -135,6 +135,23 @@ func (h *HandlerDishes) handlePatchByIdName(w http.ResponseWriter, r *http.Reque
 	return nil
 }
 
+func (h *HandlerDishes) handlePostByIdCopy(w http.ResponseWriter, r *http.Request) error {
+	id := parseInt(mux.Vars(r)["id"], 0)
+	if id <= 0 {
+		return WriteJSON(w, http.StatusBadRequest, "invalid id")
+	}
+
+	newDish, err := h.s.CopyByID(r.Context(), id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return WriteJSON(w, http.StatusNotFound, "dish not found")
+		}
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, newDish)
+}
+
 func (h *HandlerDishes) handleDeleteByID(w http.ResponseWriter, r *http.Request) error {
 	id := parseInt(mux.Vars(r)["id"], 0)
 	if id <= 0 {

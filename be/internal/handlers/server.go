@@ -35,6 +35,7 @@ func (s *Server) Run() {
 	router.HandleFunc("/api/v1/dishes", makeHTTPHandleFunc(apiDishes.handleBasePOST)).Methods("POST")
 	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handlePutByID)).Methods("PUT")
 	router.HandleFunc("/api/v1/dishes/{id}/name", makeHTTPHandleFunc(apiDishes.handlePatchByIdName)).Methods("PATCH")
+	router.HandleFunc("/api/v1/dishes/{id}/copy", makeHTTPHandleFunc(apiDishes.handlePostByIdCopy)).Methods("POST")
 	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handleDeleteByID)).Methods("DELETE")
 	apiDiets := NewHandlerDiets()
 	router.HandleFunc("/api/v1/diets", makeHTTPHandleFunc(apiDiets.handleBaseGET)).Methods("GET")
