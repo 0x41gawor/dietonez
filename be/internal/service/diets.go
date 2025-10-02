@@ -434,7 +434,7 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 
 	weekCount := len(in.Weeks)
 	const mealsPerDay = 5
-	const daysPerWeek = 6
+	const daysPerWeek = 7
 	slotsPerWeek := mealsPerDay * daysPerWeek
 	totalSlots := weekCount * slotsPerWeek
 	const qEmptySlot = `
@@ -446,7 +446,7 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 		return nil, fmt.Errorf("prepare slot insert: %w", err)
 	}
 	defer stmtSlot.Close()
-	for i := 1; i <= totalSlots; i++ {
+	for i := 0; i < totalSlots; i++ {
 		_, err := stmtSlot.ExecContext(ctx, in.ID, i)
 		if err != nil {
 			return nil, fmt.Errorf("insert empty slot #%d: %w", i, err)
@@ -470,7 +470,7 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 		"Post-Workout": 3,
 		"Supper":       4,
 	}
-	days := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
+	days := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
 	dayIndex := map[string]int{}
 	for i, d := range days {
 		dayIndex[d] = i
@@ -487,7 +487,11 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 				if !ok {
 					return nil, fmt.Errorf("invalid meal: %s", slot.Meal)
 				}
-				slotNum := (week.Num-1)*slotsPerWeek + di*mealsPerDay + mi + 1
+				print("week num: ", week.Num, "\n")
+				print("day name: ", day.Name, " index: ", di, "\n")
+				print("meal name: ", slot.Meal, " index: ", mi, "\n")
+				slotNum := (week.Num)*slotsPerWeek + di*mealsPerDay + mi
+				print("updating slot num: ", slotNum, " dish id: ", slot.Dish.ID, "\n")
 				_, err := stmtUpdate.ExecContext(ctx, slot.Dish.ID, in.ID, slotNum)
 				if err != nil {
 					return nil, fmt.Errorf("update slot %d: %w", slotNum, err)
@@ -505,7 +509,7 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 				VALUES ($1, $2, $3)
 				ON CONFLICT (diet_id, day_num) DO UPDATE SET kcal = $3;
 			`
-			dayNum := (week.Num-1)*6 + dayIndex[day.Name] + 1
+			dayNum := (week.Num)*7 + dayIndex[day.Name]
 			fmt.Println(dayNum, " ", day.Goal)
 			_, err := tx.ExecContext(ctx, qDayKcal, in.ID, dayNum, day.Goal)
 			if err != nil {

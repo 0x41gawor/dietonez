@@ -170,14 +170,14 @@ export function  useDietViewLogic(id: Ref<number>) {
         const weeksCount = diet.value.weeks.length;
 
         const meals: Meal[] = ['Breakfast', 'Lunch', 'Pre-Workout', 'Post-Workout', 'Supper'];
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Saturday'];
 
         const emptySlot = (meal: Meal) => ({ meal, dish: null });
         const emptySummary = { goal: 0, kcal: 0, proteins: 0, fats: 0, carbs: 0 };
         const emptyLeft = { kcal: 0, proteins: 0, fats: 0 };
 
         const newWeek: WeekGet = {
-            num: weeksCount + 1,
+            num: weeksCount,
             days: days.map(name => ({
             name,
             slots: meals.map(emptySlot),
