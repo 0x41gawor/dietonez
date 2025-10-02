@@ -16,7 +16,7 @@
             :key="option.id"
             :value="option.id"
           > 
-           {{option.name}}
+            {{option.name}}
           </option>
         </select>
       </div>
@@ -185,7 +185,7 @@ const dayNameToIndex: Record<string, number> = {
   Thursday: 3,
   Friday: 4,
   Saturday: 5,
-  // Sunday: 6, // dodaj, jeśli używasz 7 dni
+  Sunday: 6, 
 };
 
 // --- PROPSY KOMPONENTU ---

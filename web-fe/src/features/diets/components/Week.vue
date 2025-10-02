@@ -42,12 +42,12 @@ const emit = defineEmits<{
 
 
 const handleSlotUpdate = (payload: { dayIndex: number; slotIndex: number; newDishId: number }) => {
-  const weekIndex  = props.week.num -1;
+  const weekIndex  = props.week.num;
   emit('update-slot', { weekIndex: weekIndex, dayIndex: payload.dayIndex, slotIndex: payload.slotIndex, newDishId: payload.newDishId})
 };
 
 const handleGoalUpdate = (payload: { dayIndex: number; newGoal: number }) => {
-  const weekIndex = props.week.num - 1;
+  const weekIndex = props.week.num;
   emit('update-goal', { weekIndex, dayIndex: payload.dayIndex, newGoal: payload.newGoal });
 };
 
@@ -78,7 +78,7 @@ const handleGoalUpdate = (payload: { dayIndex: number; newGoal: number }) => {
 
 .week-row {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
 }
 
 .days-row {
