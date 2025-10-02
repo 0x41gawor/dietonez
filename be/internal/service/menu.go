@@ -38,16 +38,16 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		return nil, fmt.Errorf("invalid start_date: expected Monday, got %s", startDate.Weekday().String())
 	}
 
-	if date.Weekday() == time.Sunday {
-		return &model.Menu{
-			Breakfast:   model.DishInMenu{Dish: nil, SlotNum: nil},
-			Lunch:       model.DishInMenu{Dish: nil, SlotNum: nil},
-			PreWorkout:  model.DishInMenu{Dish: nil, SlotNum: nil},
-			PostWorkout: model.DishInMenu{Dish: nil, SlotNum: nil},
-			Supper:      model.DishInMenu{Dish: nil, SlotNum: nil},
-			Summary:     model.MenuSummary{},
-		}, nil
-	}
+	// if date.Weekday() == time.Sunday {
+	// 	return &model.Menu{
+	// 		Breakfast:   model.DishInMenu{Dish: nil, SlotNum: nil},
+	// 		Lunch:       model.DishInMenu{Dish: nil, SlotNum: nil},
+	// 		PreWorkout:  model.DishInMenu{Dish: nil, SlotNum: nil},
+	// 		PostWorkout: model.DishInMenu{Dish: nil, SlotNum: nil},
+	// 		Supper:      model.DishInMenu{Dish: nil, SlotNum: nil},
+	// 		Summary:     model.MenuSummary{},
+	// 	}, nil
+	// }
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -66,16 +66,19 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		return nil, fmt.Errorf("failed to fetch max slot_num: %w", err)
 	}
 
+	print("maxSlotNum:", maxSlotNum, "\n")
+
 	// Obliczenie różnicy dni (startDate → date) +1
-	daysBetween := int(date.Sub(startDate).Hours()/24) + 1
-	if daysBetween <= 0 {
+	daysBetween := int(date.Sub(startDate).Hours() / 24)
+	print("daysBetween:", daysBetween, "\n")
+	if daysBetween < 0 {
 		return nil, fmt.Errorf("current date is before start date")
 	}
 
-	maxDietDay := maxSlotNum / 30 * 7
+	maxDietDay := (maxSlotNum + 1) / 5
+	print("maxDietDay:", maxDietDay, "\n")
 	currentDietDay := daysBetween % maxDietDay
-
-	fmt.Println(currentDietDay)
+	print("currentDietDay:", currentDietDay, "\n")
 
 	slotsRange := getMenuSlotsRange(currentDietDay)
 	fmt.Println(slotsRange)
@@ -152,25 +155,7 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 }
 
 func getMenuSlotsRange(currentDietDay int) []int {
-	if currentDietDay <= 0 {
-		return []int{}
-	}
-
-	// 7. dzień tygodnia (niedziela, jeśli tydzień zaczyna się od poniedziałku)
-	if (currentDietDay-1)%7 == 6 {
-		return []int{}
-	}
-
-	// Liczba pełnych cykli 7-dniowych
-	weekIndex := (currentDietDay - 1) / 7
-
-	// Pozycja w cyklu (0–5)
-	posInWeek := (currentDietDay - 1) % 7
-
-	// Który to "slotowy dzień" globalnie (pomijając niedziele)
-	slotIndex := weekIndex*6 + posInWeek
-
-	start := 1 + slotIndex*5
+	start := currentDietDay * 5
 	return []int{start, start + 1, start + 2, start + 3, start + 4}
 }
 
@@ -208,6 +193,10 @@ func (s *ServiceMenu) getDishIDsForSlots(ctx context.Context, dietID int, slots 
 			dishIDs = append(dishIDs, 0) // lub panic/fallback
 		}
 	}
-
+	print("dishIDs: ")
+	for _, id := range dishIDs {
+		print(id, " ")
+	}
+	print("\n")
 	return dishIDs, nil
 }
