@@ -47,3 +47,8 @@ export async function calculateIngredientSummary(
   const response = await client.post('/tools/ingredients-summary', input)
   return response.data
 }
+
+export async function copyDishById(id: number): Promise<DishGet> {
+  const response = await client.post(`/dishes/${id}/copy`);
+  return response.data;
+}

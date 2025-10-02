@@ -9,6 +9,7 @@
             <th class="col-numeric" :class="['header-cell', mealClass]">Prot.</th>
             <th class="col-numeric" :class="['header-cell', mealClass]">Fats</th>
             <th class="col-numeric" :class="['header-cell', mealClass]">Carb.</th>
+            <th class="col-actions" :class="['header-cell', mealClass]">Actions</th>
           </tr>
       </thead>
         <tbody>
@@ -43,6 +44,12 @@
             <td>{{ item.protein }}</td>
             <td>{{ item.fat }}</td>
             <td>{{ item.carbs }}</td>
+
+            <td class="col-actions" @click.stop>
+            <button class="action-button" @click="copyDish(item.id)">
+              📄
+            </button>
+          </td>
           </tr>
         </tbody>
       </table>
@@ -54,6 +61,7 @@
 
 <script setup lang="ts">
 import { DishGetShort } from '@/types/types';
+import { copyDishById } from '@/api/dishes'
 import { ref, watch, PropType, computed } from 'vue';
 import { useRouter } from 'vue-router'
 const router = useRouter()
@@ -77,7 +85,7 @@ const mealClass = computed(() => {
 })
 
 // Definition of emits (events that this component can emit to its parent)
-const emit = defineEmits(['deleteItem', 'itemUpdated', ]);
+const emit = defineEmits(['deleteItem', 'itemUpdated', 'itemCopied']);
 // ====== S T A T E ======
 // Local copy of ingredients (this way we can edit them without affecting the original array until changes are confirmed)
 const items = ref<DishGetShort[]>([]);
@@ -102,6 +110,18 @@ const handleCellEdition = (updatedItem: DishGetShort) => {
 const getUpdatedItems = () => items.value;
 // E
 defineExpose({ getUpdatedItems });
+
+const copyDish = async (id: number) => {
+  try {
+    const newDish = await copyDishById(id)
+    console.log("Dish copied:", newDish)
+    // wyemituj event do rodzica, żeby zrobił reload
+    emit('itemCopied', newDish)
+  } catch (err) {
+    console.error("Failed to copy dish:", err)
+  }
+}
+
 </script>
 
 <style scoped>
@@ -230,4 +250,12 @@ td:last-child { text-align: center; }
 .header-supper {
   background-color: var(--meal-supper); 
 }
+/* 
+.action-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+} */
+
 </style>

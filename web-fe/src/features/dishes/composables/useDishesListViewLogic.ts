@@ -93,6 +93,10 @@ export function useDishesListViewLogic(meal: 'Breakfast' | 'MainMeal' | 'Pre-Wor
         console.log('Add button clickdsdfed');
         router.push(`/dishes/${meal}/0/edit`)
     }
+    // Called when user copies a dish
+    const refreshDishes = () => {
+        fetchDishes();
+    }
     // ==== R E T U R N ====
     return {
         dishes,
@@ -110,6 +114,7 @@ export function useDishesListViewLogic(meal: 'Breakfast' | 'MainMeal' | 'Pre-Wor
         handleUpdateButtonClick,
         handlePageSizeUpdate,
         handlePageChange,
-        handleAddButtonClick
+        handleAddButtonClick,
+        refreshDishes
     }
 }
