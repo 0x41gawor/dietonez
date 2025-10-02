@@ -138,7 +138,8 @@ func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
 
 	// Specjalny przypadek: dzień przed ostatnim
 	if currentDietDay == maxDietDay-1 {
-		return []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+		print("ostatnia sobota")
+		return []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
 	}
 
 	// Niedopuszczamy ostatniego dnia (maxDay) – ma być pusty
@@ -152,22 +153,24 @@ func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
 	}
 
 	weekNum := (currentDietDay - 1) / 7 // ile pełnych tygodni minęło
-	// Która to „slotowa” pozycja w całym harmonogramie:
-	// - w każdym tygodniu są dokładnie 2 slotowe dni (śr = indeks 0, sob = indeks 1)
-	var withinWeekIndex int
+	print("weekNum:", weekNum, "\n")
+	print("posInWeek:", posInWeek, "\n")
+	result := make([]int, 0, 20)
 	if posInWeek == 2 { // środa
-		withinWeekIndex = 0
+		start := weekNum*35 + 15
+		for i := start; i < start+20; i++ {
+			result = append(result, i)
+		}
 	} else { // sobota
-		withinWeekIndex = 1
+		start := (weekNum + 1) * 35
+		for i := start; i < start+15; i++ {
+			result = append(result, i)
+		}
 	}
-	rangeIndex := weekNum*2 + withinWeekIndex
-
-	start := 16 + rangeIndex*15 // 16, 31, 46, 61, 76, ...
-
-	result := make([]int, 15)
-	for i := 0; i < 15; i++ {
-		result[i] = start + i
+	for i := 0; i < len(result); i++ {
+		print(result[i], " ")
 	}
+	print("\n")
 	return result
 }
 

@@ -304,24 +304,21 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 	}
 
 	// 4. Zrekonstruuj tygodnie i dni
-	const mealsPerDay = 5
-	const daysPerWeek = 6
-	const slotsPerWeek = mealsPerDay * daysPerWeek
+	const daysPerWeek = 7
 
 	var weeks []model.WeekGet
-	for weekNum := 1; ; weekNum++ {
-		start := (weekNum - 1) * slotsPerWeek
+	for weekNum := 0; ; weekNum++ {
 		found := false
 
 		var days []model.DayGet
 		for dayIndex := 0; dayIndex < daysPerWeek; dayIndex++ {
-			dayName := [...]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}[dayIndex]
+			dayName := [...]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}[dayIndex]
 			var slots []model.SlotGet
 
 			meals := [...]string{"Breakfast", "Lunch", "Pre-Workout", "Post-Workout", "Supper"}
 
 			for mealIndex, meal := range meals {
-				slotNum := start + dayIndex*mealsPerDay + mealIndex + 1
+				slotNum := weekNum*35 + dayIndex*5 + mealIndex
 				dish, ok := slotMap[slotNum]
 				if ok {
 					found = true
@@ -341,7 +338,7 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 			SELECT kcal from day_kcals WHERE diet_id = $1 AND day_NUM=$2
 			`
 			var dayKcal int
-			err := s.db.QueryRowContext(ctx, qDayKcals, d.ID, ((weekNum-1)*6 + dayIndex + 1)).Scan(&dayKcal)
+			err := s.db.QueryRowContext(ctx, qDayKcals, d.ID, (weekNum*7 + dayIndex)).Scan(&dayKcal)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					dayKcal = 0
@@ -370,7 +367,7 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 		if !found {
 			break // koniec, nie ma kolejnych tygodni
 		}
-
+		print("lendays: ", len(days))
 		weekSummary, err := NewServiceTools().CalculateWeekSummaryFromDays(ctx, days)
 		if err != nil {
 			return nil, fmt.Errorf("week summary calculation error: %w", err)
@@ -437,7 +434,7 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 
 	weekCount := len(in.Weeks)
 	const mealsPerDay = 5
-	const daysPerWeek = 6
+	const daysPerWeek = 7
 	slotsPerWeek := mealsPerDay * daysPerWeek
 	totalSlots := weekCount * slotsPerWeek
 	const qEmptySlot = `
@@ -449,7 +446,7 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 		return nil, fmt.Errorf("prepare slot insert: %w", err)
 	}
 	defer stmtSlot.Close()
-	for i := 1; i <= totalSlots; i++ {
+	for i := 0; i < totalSlots; i++ {
 		_, err := stmtSlot.ExecContext(ctx, in.ID, i)
 		if err != nil {
 			return nil, fmt.Errorf("insert empty slot #%d: %w", i, err)
@@ -473,7 +470,7 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 		"Post-Workout": 3,
 		"Supper":       4,
 	}
-	days := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
+	days := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
 	dayIndex := map[string]int{}
 	for i, d := range days {
 		dayIndex[d] = i
@@ -490,7 +487,11 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 				if !ok {
 					return nil, fmt.Errorf("invalid meal: %s", slot.Meal)
 				}
-				slotNum := (week.Num-1)*slotsPerWeek + di*mealsPerDay + mi + 1
+				print("week num: ", week.Num, "\n")
+				print("day name: ", day.Name, " index: ", di, "\n")
+				print("meal name: ", slot.Meal, " index: ", mi, "\n")
+				slotNum := (week.Num)*slotsPerWeek + di*mealsPerDay + mi
+				print("updating slot num: ", slotNum, " dish id: ", slot.Dish.ID, "\n")
 				_, err := stmtUpdate.ExecContext(ctx, slot.Dish.ID, in.ID, slotNum)
 				if err != nil {
 					return nil, fmt.Errorf("update slot %d: %w", slotNum, err)
@@ -508,7 +509,7 @@ func (s *ServiceDiets) Update(ctx context.Context, in *model.DietPut) (*model.Di
 				VALUES ($1, $2, $3)
 				ON CONFLICT (diet_id, day_num) DO UPDATE SET kcal = $3;
 			`
-			dayNum := (week.Num-1)*6 + dayIndex[day.Name] + 1
+			dayNum := (week.Num)*7 + dayIndex[day.Name]
 			fmt.Println(dayNum, " ", day.Goal)
 			_, err := tx.ExecContext(ctx, qDayKcal, in.ID, dayNum, day.Goal)
 			if err != nil {

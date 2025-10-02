@@ -2,10 +2,10 @@ import {ref, computed, onMounted, Ref, watch, mergeProps} from 'vue'
 import {useToast} from "vue-toastification";
 import { useRouter } from 'vue-router'
 
-import type { Meal } from '@/types/types'; // lub inna ścieżka, jeśli masz enum lub typ
+import type { Meal } from '@/types/types'; 
 import type { DietGet, DietPut, DishGetShort, WeekGet, WeekPut } from '@/types/types';
 import {GetDishesParams} from '@/api/dishes';
-import { updateDietById } from '@/api/diets'; // upewnij się, że masz to zaimportowane
+import { updateDietById } from '@/api/diets'; 
 import { getDietById } from '@/api/diets';
 import { getDishes } from '@/api/dishes';
 
@@ -43,7 +43,7 @@ export function  useDietViewLogic(id: Ref<number>) {
             isLoading.value = true
             const response = await getDietById(id.value)
             diet.value = response;
-            console.log(diet.value)
+            // console.log(diet.value)
         } catch (error) {
             toast.error("Failed to get diet")
         } finally {
@@ -170,14 +170,14 @@ export function  useDietViewLogic(id: Ref<number>) {
         const weeksCount = diet.value.weeks.length;
 
         const meals: Meal[] = ['Breakfast', 'Lunch', 'Pre-Workout', 'Post-Workout', 'Supper'];
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Saturday'];
 
         const emptySlot = (meal: Meal) => ({ meal, dish: null });
         const emptySummary = { goal: 0, kcal: 0, proteins: 0, fats: 0, carbs: 0 };
         const emptyLeft = { kcal: 0, proteins: 0, fats: 0 };
 
         const newWeek: WeekGet = {
-            num: weeksCount + 1,
+            num: weeksCount,
             days: days.map(name => ({
             name,
             slots: meals.map(emptySlot),

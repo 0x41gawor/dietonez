@@ -216,8 +216,8 @@ func (s *ServiceTools) CalculateWeekSummaryFromDays(ctx context.Context, days []
 	}
 
 	// Średnie wartości
-	avgKcal := sumKcal / 6
-	avgProt := (sumProt / 6) / currentWeight
+	avgKcal := sumKcal / 7
+	avgProt := (sumProt / 7) / currentWeight
 	var avgFat float64
 	if sumKcal > 0.0 {
 		avgFat = sumFat * 9 / sumKcal * 100

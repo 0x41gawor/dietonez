@@ -29,10 +29,6 @@ func (h *HandlerShoppingList) handleGet(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		return err
 	}
-	if dc == nil {
-		http.Error(w, "no context set", http.StatusNotFound)
-		return nil
-	}
 
 	return WriteJSON(w, http.StatusOK, dc)
 }
