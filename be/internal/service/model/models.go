@@ -92,7 +92,7 @@ type DishGet struct {
 
 type DishInMenu struct {
 	Dish    *DishGet `json:"dish"`
-	SlotNum *int     `json:"slot_num"`
+	SlotNum int      `json:"slot_num"`
 }
 
 type DishPost struct {

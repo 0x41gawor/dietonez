@@ -87,9 +87,7 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 	if err != nil {
 		return nil, err
 	}
-	// if len(dishIDs) != 5 {
-	// 	return nil, fmt.Errorf("expected 5 dish slots, got %d", len(dishIDs))
-	// }
+
 	var dishes [5]*model.DishGet
 	for i, id := range dishIDs {
 		var dish *model.DishGet
@@ -130,24 +128,28 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch max dayGoal: %w", err)
 	}
-
+	// prepare summary
+	fatsPerc := 0.0
+	if sumKcal > 0 {
+		fatsPerc = round2(sumFat * 9 / sumKcal * 100)
+	}
 	summary := model.MenuSummary{
 		Kcal:         round2(sumKcal),
 		Proteins:     round2(sumProtein),
 		Fats:         round2(sumFat),
 		Carbs:        round2(sumCarbs),
-		KcalGoal:     round2(dayKcalGoal),                // Example calculation, adjust as needed
-		ProteinPerKg: round2(sumProtein / currentWeight), // Example calculation, adjust as needed
-		FatsPerc:     round2(sumFat * 9 / sumKcal * 100), // Example percentage, adjust as needed
-		CarbsPerKg:   round2(sumCarbs / currentWeight),   // Example calculation, adjust as needed
+		KcalGoal:     round2(dayKcalGoal),
+		ProteinPerKg: round2(sumProtein / currentWeight),
+		FatsPerc:     fatsPerc,
+		CarbsPerKg:   round2(sumCarbs / currentWeight),
 	}
 
 	menu := &model.Menu{
-		Breakfast:   model.DishInMenu{Dish: dishes[0], SlotNum: &slotsRange[0]},
-		Lunch:       model.DishInMenu{Dish: dishes[1], SlotNum: &slotsRange[1]},
-		PreWorkout:  model.DishInMenu{Dish: dishes[2], SlotNum: &slotsRange[2]},
-		PostWorkout: model.DishInMenu{Dish: dishes[3], SlotNum: &slotsRange[3]},
-		Supper:      model.DishInMenu{Dish: dishes[4], SlotNum: &slotsRange[4]},
+		Breakfast:   model.DishInMenu{Dish: dishes[0], SlotNum: slotsRange[0]},
+		Lunch:       model.DishInMenu{Dish: dishes[1], SlotNum: slotsRange[1]},
+		PreWorkout:  model.DishInMenu{Dish: dishes[2], SlotNum: slotsRange[2]},
+		PostWorkout: model.DishInMenu{Dish: dishes[3], SlotNum: slotsRange[3]},
+		Supper:      model.DishInMenu{Dish: dishes[4], SlotNum: slotsRange[4]},
 		Summary:     summary,
 	}
 
