@@ -338,7 +338,7 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 			SELECT kcal from day_kcals WHERE diet_id = $1 AND day_NUM=$2
 			`
 			var dayKcal int
-			err := s.db.QueryRowContext(ctx, qDayKcals, d.ID, ((weekNum-1)*6 + dayIndex + 1)).Scan(&dayKcal)
+			err := s.db.QueryRowContext(ctx, qDayKcals, d.ID, (weekNum*7 + dayIndex)).Scan(&dayKcal)
 			if err != nil {
 				if err == sql.ErrNoRows {
 					dayKcal = 0
@@ -367,7 +367,7 @@ func (s *ServiceDiets) GetByID(ctx context.Context, id int) (*model.DietGet, err
 		if !found {
 			break // koniec, nie ma kolejnych tygodni
 		}
-
+		print("lendays: ", len(days))
 		weekSummary, err := NewServiceTools().CalculateWeekSummaryFromDays(ctx, days)
 		if err != nil {
 			return nil, fmt.Errorf("week summary calculation error: %w", err)

@@ -16,7 +16,7 @@
             :key="option.id"
             :value="option.id"
           > 
-           {{option.name}}
+            {{option.name}}
           </option>
         </select>
       </div>
