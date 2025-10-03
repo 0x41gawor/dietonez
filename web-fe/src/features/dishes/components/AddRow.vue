@@ -2,18 +2,21 @@
   <div class="add-row">
     <!-- Name Column (SELECT) -->
     <div class="add-cell col-name">
-      <select
-        ref="nameInput"
-        v-model="newIngredient.id"
-        class="form-select"
-        @change="handleIngredientSelection"
-        aria-label="Select Ingredient"
-      >
-        <option disabled value="">Select ingredient</option>
-        <option v-for="opt in filteredIngredientOptions" :key="opt.id" :value="opt.id">
-          {{ opt.name }}
-        </option>
-      </select>
+     <div class="add-cell col-name">
+  <input
+    ref="nameInput"
+    v-model="searchQuery"
+    class="form-input"
+    list="ingredient-options"
+    placeholder="Type or select ingredient..."
+    @input="handleSearchInput"
+    aria-label="Select Ingredient"
+  />
+  <datalist id="ingredient-options">
+    <option v-for="opt in filteredIngredientOptions" :key="opt.id" :value="opt.name" />
+  </datalist>
+</div>
+ 
     </div>
 
     <!-- Amount Column -->
@@ -62,8 +65,23 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import AddButton from '@/components/AddButton.vue';
-import { getIngredientById,  GetIngredientsParams, getIngredients } from '@/api/ingredients';
+import { getIngredientById,  GetIngredientsParams, getIngredients, searchIngredients } from '@/api/ingredients';
 import { IngredientMin, IngredientInDishPut, IngredientGetPut, Unit, ShopStyle, IngredientInDishGet } from '@/types/types';
+
+const searchQuery = ref('')
+
+const handleSearchInput = async () => {
+  if (!searchQuery.value || searchQuery.value.trim() === '') {
+    ingredientOptions.value = []
+    return
+  }
+  try {
+    const response = await searchIngredients({ query: searchQuery.value, reslen: 20 })
+    ingredientOptions.value = response.ingredients
+  } catch (err) {
+    console.error('Failed to search ingredients', err)
+  }
+}
 
 const emit = defineEmits<{
   (e: 'add-ingredient', payload: IngredientInDishPut): void;
@@ -147,6 +165,32 @@ const isAddDisabled = computed(() => {
 });
 
 import { calculateIngredientSummary } from '@/api/dishes'; // lub inna ścieżka
+
+const handleSelection = () => {
+  const chosen = ingredientOptions.value.find(opt => opt.name === searchQuery.value)
+  if (!chosen) {
+    console.warn('Ingredient not found:', searchQuery.value)
+    return
+  }
+
+  emit('add-ingredient', {
+    ingredient: {
+      id: chosen.id,
+      name: chosen.name,
+    },
+    amount: amount.value,
+  })
+
+  // reset
+  searchQuery.value = ''
+  amount.value = 0
+  newIngredient.value = getInitialState()
+
+  nextTick(() => {
+    nameInput.value?.focus()
+  })
+}
+
 
 const handleIngredientSelection = async () => {
   const id = newIngredient.value.id;
