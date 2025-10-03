@@ -206,8 +206,10 @@ func (h *HandlerIngredients) handleSearchGET(w http.ResponseWriter, r *http.Requ
 		reslen = 10
 	}
 
+	short := parseBool(q.Get("short"), false)
+
 	// call service
-	ingredients, total, err := h.s.Search(r.Context(), query, reslen)
+	ingredients, total, err := h.s.Search(r.Context(), query, reslen, short)
 	if err != nil {
 		slog.Error("search failed", "err", err)
 		return err

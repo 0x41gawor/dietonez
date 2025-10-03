@@ -352,7 +352,7 @@ func (s *ServiceIngredients) FetchAllMins(ctx context.Context) ([]*model.Ingredi
 	return out, nil
 }
 
-func (s *ServiceIngredients) Search(ctx context.Context, query string, responseCount int) ([]model.IngredientGetPut, int, error) {
+func (s *ServiceIngredients) Search(ctx context.Context, query string, responseCount int, short bool) (any, int, error) {
 	rawItems, err := s.FetchAllMins(ctx)
 	if err != nil {
 		return nil, 0, fmt.Errorf("fetch all mins: %w", err)
@@ -377,17 +377,36 @@ func (s *ServiceIngredients) Search(ctx context.Context, query string, responseC
 		scoredItems = scoredItems[:responseCount]
 	}
 
-	ingredients := make([]model.IngredientGetPut, len(scoredItems))
+	if short {
+		ingredients := make([]*model.IngredientMin, len(scoredItems))
+		for i, item := range scoredItems {
+			ing, err := s.GetByID(ctx, item.Id)
+			if err != nil {
+				return nil, 0, fmt.Errorf("get by id %d: %w", item.Id, err)
+			}
+			if ing != nil {
+				ingredients[i] = &model.IngredientMin{
+					ID:   ing.ID,
+					Name: ing.Name,
+				}
+			}
+		}
 
-	for i, item := range scoredItems {
-		ing, err := s.GetByID(ctx, item.Id)
-		if err != nil {
-			return nil, 0, fmt.Errorf("get by id %d: %w", item.Id, err)
+		return ingredients, len(ingredients), nil
+	} else {
+
+		ingredients := make([]model.IngredientGetPut, len(scoredItems))
+
+		for i, item := range scoredItems {
+			ing, err := s.GetByID(ctx, item.Id)
+			if err != nil {
+				return nil, 0, fmt.Errorf("get by id %d: %w", item.Id, err)
+			}
+			if ing != nil {
+				ingredients[i] = *ing
+			}
 		}
-		if ing != nil {
-			ingredients[i] = *ing
-		}
+
+		return ingredients, len(ingredients), nil
 	}
-
-	return ingredients, len(ingredients), nil
 }
