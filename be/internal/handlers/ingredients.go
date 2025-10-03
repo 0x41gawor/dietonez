@@ -185,3 +185,38 @@ func (h *HandlerIngredients) handleDeleteByID(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusNoContent)
 	return nil
 }
+
+func (h *HandlerIngredients) handleSearchGET(w http.ResponseWriter, r *http.Request) error {
+	slog.Debug("handleSearchGET",
+		slog.String("method", r.Method),
+		slog.String("url", r.URL.String()),
+		slog.String("remote_addr", r.RemoteAddr),
+		slog.String("user_agent", r.UserAgent()),
+	)
+
+	// parse query params
+	q := r.URL.Query()
+	query := q.Get("query")
+	if query == "" {
+		return WriteJSON(w, http.StatusBadRequest, "missing query parameter")
+	}
+
+	reslen := parseInt(q.Get("reslen"), 10) // domyślnie np. 10 wyników
+	if reslen <= 0 {
+		reslen = 10
+	}
+
+	// call service
+	ingredients, total, err := h.s.Search(r.Context(), query, reslen)
+	if err != nil {
+		slog.Error("search failed", "err", err)
+		return err
+	}
+	// wrap in response object
+	resp := map[string]any{
+		"total":       total,
+		"ingredients": ingredients,
+	}
+
+	return WriteJSON(w, http.StatusOK, resp)
+}

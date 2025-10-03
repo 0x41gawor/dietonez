@@ -7,8 +7,18 @@ export interface GetIngredientsParams {
   short?: boolean
 }
 
+export interface SearchIngredientsParams {
+  query?: string
+  reslen?: number
+}
+
 export async function getIngredients(params: GetIngredientsParams = {}): Promise<PaginatedIngredients>{
   const response = await client.get('/ingredients', { params })
+  return response.data
+}
+
+export async function searchIngredients(params: SearchIngredientsParams = {}): Promise<PaginatedIngredients>{
+  const response = await client.get('/ingredients/search', { params })
   return response.data
 }
 

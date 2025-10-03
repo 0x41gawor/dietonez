@@ -1,7 +1,7 @@
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useToast } from "vue-toastification";
 import { IngredientGetPut, IngredientPost } from '@/types/types';
-import { getIngredients, updateIngredients, deleteIngredientById, createIngredient } from '@/api/ingredients'
+import { getIngredients, updateIngredients, deleteIngredientById, createIngredient, searchIngredients } from '@/api/ingredients'
 
 export function useIngredientsLogic() {
   // ==== S T A T E ====
@@ -21,6 +21,22 @@ export function useIngredientsLogic() {
   const toast = useToast()
   // ==== L I F E C Y C L E ==== 
   onMounted(fetchIngredients)
+
+   // ==== W A T C H  S E A R C H ====
+  watch(searchText, async (newValue) => {
+    if (!newValue || newValue.trim() === '') {
+      // wracamy do normalnej listy
+      await fetchIngredients()
+    } else {
+      // 🔥 tu strzelamy w API search
+      const response = await searchIngredients({ query: newValue, reslen: pageSize.value })
+      ingredients.value = response.ingredients
+      total.value = response.total
+      totalPages.value = Math.ceil(total.value / pageSize.value)
+    }
+  })
+
+
   // ==== M E T H O D S ====
   // == A P I  C A L L S ====
   async function fetchIngredients() {

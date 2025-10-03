@@ -320,3 +320,74 @@ func (s *ServiceIngredients) DeleteByID(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func (s *ServiceIngredients) FetchAllMins(ctx context.Context) ([]*model.IngredientMin, error) {
+	const q = `
+		SELECT id, name
+		FROM ingredients;
+	`
+
+	rows, err := s.db.QueryContext(ctx, q)
+	if err != nil {
+		return nil, fmt.Errorf("query all ingredients (min): %w", err)
+	}
+	defer rows.Close()
+
+	var out []*model.IngredientMin
+	for rows.Next() {
+		ing := new(model.IngredientMin)
+		if err := rows.Scan(&ing.ID, &ing.Name); err != nil {
+			return nil, fmt.Errorf("scan min: %w", err)
+		}
+		out = append(out, ing)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows min err: %w", err)
+	}
+
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Name < out[j].Name
+	})
+
+	return out, nil
+}
+
+func (s *ServiceIngredients) Search(ctx context.Context, query string, responseCount int) ([]model.IngredientGetPut, int, error) {
+	rawItems, err := s.FetchAllMins(ctx)
+	if err != nil {
+		return nil, 0, fmt.Errorf("fetch all mins: %w", err)
+	}
+
+	// Konwersja do []model.SearchResult
+	var items []model.SearchResult
+	for _, ing := range rawItems {
+		items = append(items, model.SearchResult{
+			Id:   ing.ID,
+			Name: ing.Name,
+		})
+	}
+
+	searchService := NewServiceSearch()
+	scoredItems, err := searchService.Search(query, items)
+	if err != nil {
+		return nil, 0, fmt.Errorf("search service: %w", err)
+	}
+
+	if len(scoredItems) > responseCount {
+		scoredItems = scoredItems[:responseCount]
+	}
+
+	ingredients := make([]model.IngredientGetPut, len(scoredItems))
+
+	for i, item := range scoredItems {
+		ing, err := s.GetByID(ctx, item.Id)
+		if err != nil {
+			return nil, 0, fmt.Errorf("get by id %d: %w", item.Id, err)
+		}
+		if ing != nil {
+			ingredients[i] = *ing
+		}
+	}
+
+	return ingredients, len(ingredients), nil
+}
