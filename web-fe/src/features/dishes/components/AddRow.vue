@@ -10,6 +10,7 @@
     list="ingredient-options"
     placeholder="Type or select ingredient..."
     @input="handleSearchInput"
+    @keydown.enter.prevent="handleEnterSelect"
     aria-label="Select Ingredient"
   />
   <datalist id="ingredient-options">
@@ -83,6 +84,41 @@ const handleSearchInput = async () => {
   }
 }
 
+watch(searchQuery, async (val) => {
+  const chosen = ingredientOptions.value.find(opt => opt.name === val)
+  if (!chosen) {
+    // reset jeśli wpisano coś z palca i nie ma w opcjach
+    newIngredient.value = getInitialState()
+    return
+  }
+
+  try {
+    const full = await getIngredientById(chosen.id)
+
+    newIngredient.value.id = full.id
+    newIngredient.value.name = full.name
+    newIngredient.value.unit = full.unit
+    newIngredient.value.shopStyle = full.shopStyle
+    newIngredient.value.default_amount = full.default_amount
+    newIngredient.value.labels = full.labels
+    amount.value = full.default_amount || 0
+
+    const summary = await calculateIngredientSummary({
+      ingredient: { id: full.id, name: full.name },
+      amount: amount.value,
+    })
+
+    newIngredient.value.kcal = summary.kcal
+    newIngredient.value.protein = summary.proteins
+    newIngredient.value.fat = summary.fats
+    newIngredient.value.carbs = summary.carbs
+  } catch (err) {
+    console.error('Failed to fetch ingredient:', err)
+    newIngredient.value = getInitialState()
+  }
+})
+
+
 const emit = defineEmits<{
   (e: 'add-ingredient', payload: IngredientInDishPut): void;
 }>();
@@ -103,7 +139,12 @@ const filteredIngredientOptions = computed(() => {
     .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 });
 
-
+const handleEnterSelect = () => {
+  if (filteredIngredientOptions.value.length > 0) {
+    // wybieramy pierwszą z listy
+    searchQuery.value = filteredIngredientOptions.value[0].name
+  }
+}
 
 const fetchIngredientOptions = async () => {
   try {
@@ -191,7 +232,6 @@ const handleSelection = () => {
   })
 }
 
-
 const handleIngredientSelection = async () => {
   const id = newIngredient.value.id;
   if (!id) return;
@@ -232,6 +272,7 @@ const handleAdd = () => {
   });
 
   newIngredient.value = getInitialState();
+  searchQuery.value = ''
 
   nextTick(() => {
     nameInput.value?.focus();
