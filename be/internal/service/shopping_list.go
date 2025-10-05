@@ -96,36 +96,19 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 }
 
 func getFreshSlotsRange(currentDietDay, maxDietDay int) []int {
-	if currentDietDay <= 0 {
-		return []int{}
-	}
 
-	// Specjalny przypadek: ostatni dzień całej diety
+	print("currentDietDay:", currentDietDay, "\n")
+
+	// Specjalny przypadek: dzień przed ostatnim
 	if currentDietDay == maxDietDay {
-		return []int{1, 2, 3, 4, 5}
+		print("ostatnia niedziela")
+		print("Fresh return: [0 1 2 3 4]", "\n")
+		return []int{0, 1, 2, 3, 4}
 	}
 
-	posInWeek := (currentDietDay - 1) % 7
+	start := ((currentDietDay - 1) + 1) * 5
 
-	// Sobota (6‑ty dzień licząc od poniedziałku = 0) → brak slotów
-	if posInWeek == 5 {
-		return []int{}
-	}
-
-	weekNum := (currentDietDay - 1) / 7
-
-	// Offset w tygodniu z korektą na brak soboty
-	var posOffset int
-	if posInWeek < 5 { // pon–pt
-		posOffset = posInWeek
-	} else { // niedziela
-		posOffset = 5
-	}
-
-	// Globalny indeks „slotowego” dnia
-	index := weekNum*6 + posOffset
-
-	start := 6 + index*5
+	print("Fresh return: [", start, " ", start+4, "]", "\n")
 
 	return []int{start, start + 1, start + 2, start + 3, start + 4}
 }
