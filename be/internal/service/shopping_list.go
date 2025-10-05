@@ -52,14 +52,19 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 		return nil, fmt.Errorf("failed to fetch max slot_num: %w", err)
 	}
 
-	// Obliczenie różnicy dni (startDate → date) +1
-	daysBetween := int(date.Sub(startDate).Hours()/24) + 1
-	if daysBetween <= 0 {
+	// Obliczenie różnicy dni (startDate → date)
+	daysBetween := int(date.Sub(startDate).Hours() / 24)
+	if daysBetween < 0 {
 		return nil, fmt.Errorf("current date is before start date")
 	}
 
-	maxDietDay := maxSlotNum / 30 * 7
-	currentDietDay := daysBetween % maxDietDay
+	maxDietDay := (maxSlotNum+1)/5 - 1 // ostatni dzień diety (0‑based)
+	currentDietDay := daysBetween % (maxDietDay + 1)
+	print("Shopping List - startDate:", startDate.String()[:11], "\n")
+	print("Shopping List - date:", date.String()[:11], "\n")
+	print("Shopping List - daysBetween:", daysBetween, "\n")
+	print("Shopping List - currentDietDay:", currentDietDay, "\n")
+	print("Shopping List - maxDietDay:", maxDietDay, "\n")
 
 	freshSlotsRange := getFreshSlotsRange(currentDietDay, maxDietDay)
 	lidlAndStockSlotsRange := getLidlAndStockSlotsRange(currentDietDay, maxDietDay)
@@ -97,18 +102,15 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 
 func getFreshSlotsRange(currentDietDay, maxDietDay int) []int {
 
-	print("currentDietDay:", currentDietDay, "\n")
-
 	// Specjalny przypadek: dzień przed ostatnim
 	if currentDietDay == maxDietDay {
-		print("ostatnia niedziela")
-		print("Fresh return: [0 1 2 3 4]", "\n")
+		print("Fresh: return [0..4]\n")
 		return []int{0, 1, 2, 3, 4}
 	}
 
-	start := ((currentDietDay - 1) + 1) * 5
+	start := (currentDietDay + 1) * 5
 
-	print("Fresh return: [", start, " ", start+4, "]", "\n")
+	print("Fresh: return [", start, "..", start+4, "]\n")
 
 	return []int{start, start + 1, start + 2, start + 3, start + 4}
 }
@@ -121,7 +123,7 @@ func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
 
 	// Specjalny przypadek: dzień przed ostatnim
 	if currentDietDay == maxDietDay-1 {
-		print("ostatnia sobota")
+		print("Lidl: return [0..14]\n")
 		return []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
 	}
 
@@ -130,7 +132,7 @@ func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
 		return []int{}
 	}
 
-	posInWeek := (currentDietDay - 1) % 7
+	posInWeek := (currentDietDay) % 7
 	if posInWeek != 2 && posInWeek != 5 { // nie środa i nie sobota → brak slotów
 		return []int{}
 	}
@@ -150,10 +152,9 @@ func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
 			result = append(result, i)
 		}
 	}
-	for i := 0; i < len(result); i++ {
-		print(result[i], " ")
+	for _, v := range result {
+		print(v, " ")
 	}
-	print("\n")
 	return result
 }
 
