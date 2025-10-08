@@ -631,3 +631,66 @@ func (s *ServiceDiets) UpdateSlot(ctx context.Context, dietId int, in *model.Die
 
 	return nil
 }
+
+func (s *ServiceDiets) Export(ctx context.Context, id int, start int, end int) (*model.DietExport, error) {
+	diet, err := s.GetByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("get by id: %w", err)
+	}
+	if diet == nil {
+		return nil, nil // diet not found
+	}
+
+	var export model.DietExport
+
+	for _, week := range diet.Weeks {
+		// --- Pomiń tygodnie spoza zakresu ---
+		if week.Num < start || week.Num > end {
+			continue
+		}
+
+		var exportWeek model.WeekExport
+		exportWeek.Num = week.Num
+
+		for _, day := range week.Days {
+			var exportDay model.DayExport
+			exportDay.Name = day.Name
+
+			for _, slot := range day.Slots {
+				var exportSlot model.SlotExport
+				exportSlot.Meal = slot.Meal
+
+				if slot.Dish != nil {
+					// Fetch full dish details
+					dishService := NewServiceDishes()
+					fullDish, err := dishService.GetByID(ctx, slot.Dish.ID)
+					if err != nil {
+						return nil, fmt.Errorf("fetch dish id %d: %w", slot.Dish.ID, err)
+					}
+
+					if fullDish != nil {
+						exportSlot.Dish = &model.DishExport{
+							Name:        fullDish.Name,
+							Ingredients: []model.IngredientInDishExport{},
+						}
+
+						for _, ing := range fullDish.Ingredients {
+							exportSlot.Dish.Ingredients = append(exportSlot.Dish.Ingredients, model.IngredientInDishExport{
+								Name:   ing.Ingredient.Name,
+								Amount: fmt.Sprintf("%d %s", round0(ing.Amount), ing.Ingredient.Unit),
+							})
+						}
+					}
+				}
+
+				exportDay.Slots = append(exportDay.Slots, exportSlot)
+			}
+
+			exportWeek.Days = append(exportWeek.Days, exportDay)
+		}
+
+		export.Weeks = append(export.Weeks, exportWeek)
+	}
+
+	return &export, nil
+}

@@ -32,6 +32,10 @@ type IngredientGetPut struct {
 	Path          int     `json:"path"`
 }
 
+type IngredientExport struct {
+	Name string `json:"name"`
+}
+
 type IngredientPost struct {
 	Name          string  `json:"name"`
 	Kcal          float64 `json:"kcal"`
@@ -52,6 +56,11 @@ type IngredientInDishGet struct {
 type IngredientInDishPut struct {
 	Ingredient IngredientMin `json:"ingredient"`
 	Amount     float64       `json:"amount"`
+}
+
+type IngredientInDishExport struct {
+	Name   string `json:"name"`
+	Amount string `json:"amount"`
 }
 
 type Recipe struct {
@@ -90,6 +99,11 @@ type DishGet struct {
 	Labels      []Label               `json:"labels"`
 }
 
+type DishExport struct {
+	Name        string                   `json:"name"`
+	Ingredients []IngredientInDishExport `json:"ingredients"`
+}
+
 type DishInMenu struct {
 	Dish    *DishGet `json:"dish"`
 	SlotNum int      `json:"slot_num"`
@@ -123,6 +137,11 @@ type SlotGet struct {
 	Dish *DishGetShort `json:"dish"`
 }
 
+type SlotExport struct {
+	Meal string      `json:"meal"`
+	Dish *DishExport `json:"dish"`
+}
+
 type SlotPut struct {
 	Meal string     `json:"meal"`
 	Dish DishMinPut `json:"dish"`
@@ -149,6 +168,11 @@ type DayGet struct {
 	Left    Left      `json:"left"`
 }
 
+type DayExport struct {
+	Name  string       `json:"name"`
+	Slots []SlotExport `json:"slots"`
+}
+
 type DayPut struct {
 	Name  string    `json:"name"`
 	Slots []SlotPut `json:"slots"`
@@ -165,6 +189,11 @@ type WeekGet struct {
 	Num     int         `json:"num"`
 	Days    []DayGet    `json:"days"`
 	Summary WeekSummary `json:"summary"`
+}
+
+type WeekExport struct {
+	Num  int         `json:"num"`
+	Days []DayExport `json:"days"`
 }
 
 type WeekPut struct {
@@ -190,6 +219,10 @@ type DietGet struct {
 	Descr  string    `json:"descr"`
 	Weeks  []WeekGet `json:"weeks"`
 	Labels []Label   `json:"labels"`
+}
+
+type DietExport struct {
+	Weeks []WeekExport `json:"weeks"`
 }
 
 type DietPost struct {

@@ -239,3 +239,7 @@ func (s *ServiceTools) CalculateWeekSummaryFromDays(ctx context.Context, days []
 func round2(val float64) float64 {
 	return math.Round(val*100) / 100
 }
+
+func round0(val float64) int32 {
+	return int32(math.Floor(val))
+}

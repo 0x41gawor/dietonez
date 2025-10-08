@@ -181,3 +181,52 @@ func (h *HandlerDiets) handlePatchSlotByID(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNoContent)
 	return nil
 }
+
+func (h *HandlerDiets) handleExportByID(w http.ResponseWriter, r *http.Request) error {
+	// --- Parse diet ID from path ---
+	dietId, err := ParseIDFromPath("diets", r)
+	if err != nil {
+		http.Error(w, "invalid ID", http.StatusBadRequest)
+		return nil
+	}
+
+	// --- Parse query parameters: start, end ---
+	startStr := r.URL.Query().Get("start")
+	endStr := r.URL.Query().Get("end")
+
+	if startStr == "" || endStr == "" {
+		http.Error(w, "missing start or end parameter", http.StatusBadRequest)
+		return nil
+	}
+
+	start, err := strconv.Atoi(startStr)
+	if err != nil {
+		http.Error(w, "invalid start parameter", http.StatusBadRequest)
+		return nil
+	}
+
+	end, err := strconv.Atoi(endStr)
+	if err != nil {
+		http.Error(w, "invalid end parameter", http.StatusBadRequest)
+		return nil
+	}
+
+	// --- Optional sanity check ---
+	if end < start {
+		http.Error(w, "end must be >= start", http.StatusBadRequest)
+		return nil
+	}
+
+	// --- Call service ---
+	exportData, err := h.s.Export(r.Context(), dietId, start, end)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "diet not found", http.StatusNotFound)
+			return nil
+		}
+		return fmt.Errorf("export diet: %w", err)
+	}
+
+	// --- Return JSON response (can be changed to CSV if needed) ---
+	return WriteJSON(w, http.StatusOK, exportData)
+}

@@ -46,6 +46,7 @@ func (s *Server) Run() {
 	router.HandleFunc("/api/v1/diets/{id}", makeHTTPHandleFunc(apiDiets.handleDeleteByID)).Methods("DELETE")
 	router.HandleFunc("/api/v1/diets/{id}/short", makeHTTPHandleFunc(apiDiets.handlePatchShortByID)).Methods("PATCH")
 	router.HandleFunc("/api/v1/diets/{id}/slot", makeHTTPHandleFunc(apiDiets.handlePatchSlotByID)).Methods("PATCH")
+	router.HandleFunc("/api/v1/diets/{id}/export", makeHTTPHandleFunc(apiDiets.handleExportByID)).Methods("GET")
 	apiDietContext := NewHandlerDietContext()
 	router.HandleFunc("/api/v1/diet-context", makeHTTPHandleFunc(apiDietContext.handleGet)).Methods("GET")
 	router.HandleFunc("/api/v1/diet-context", makeHTTPHandleFunc(apiDietContext.handlePut)).Methods("PUT")
