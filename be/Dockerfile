@@ -7,6 +7,8 @@ COPY go.sum ./
 COPY ./cmd ./cmd
 COPY ./internal ./internal
 COPY Makefile ./
+COPY openapi.yaml ./
+COPY swagger-ui ./swagger-ui
 
 RUN go mod download
 RUN apk add --no-cache make
