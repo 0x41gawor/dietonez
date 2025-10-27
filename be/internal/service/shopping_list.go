@@ -122,10 +122,10 @@ func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
 	}
 
 	// Specjalny przypadek: dzień przed ostatnim (czyli ostatnia sobota)
-	if currentDietDay == maxDietDay-1 {
+	if currentDietDay == (maxDietDay - 1) {
 		lastBreakfastSlot := maxDietDay * 5
 		lastSunday := []int{lastBreakfastSlot, lastBreakfastSlot + 1, lastBreakfastSlot + 2, lastBreakfastSlot + 3, lastBreakfastSlot + 4}
-		nextWeekSlots := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
+		nextWeekSlots := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 		fmt.Println(append(lastSunday, nextWeekSlots...))
 		return append(lastSunday, nextWeekSlots...)
 	}
@@ -146,14 +146,14 @@ func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
 	result := make([]int, 0, 20)
 	if posInWeek == 2 { // środa
 		// czyli zakupy na czwartek-sobota (włącznie)
-		start := weekNum*35 + 15
-		for i := start; i < start+15; i++ {
+		start := weekNum*35 + 13
+		for i := start; i < start+17; i++ {
 			result = append(result, i)
 		}
 	} else { // sobota
 		// czyli zakupy na niedziela-środa
 		start := (weekNum+1)*35 - 5
-		for i := start; i < start+20; i++ {
+		for i := start; i < start+18; i++ {
 			result = append(result, i)
 		}
 	}

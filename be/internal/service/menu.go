@@ -38,17 +38,6 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		return nil, fmt.Errorf("invalid start_date: expected Monday, got %s", startDate.Weekday().String())
 	}
 
-	// if date.Weekday() == time.Sunday {
-	// 	return &model.Menu{
-	// 		Breakfast:   model.DishInMenu{Dish: nil, SlotNum: nil},
-	// 		Lunch:       model.DishInMenu{Dish: nil, SlotNum: nil},
-	// 		PreWorkout:  model.DishInMenu{Dish: nil, SlotNum: nil},
-	// 		PostWorkout: model.DishInMenu{Dish: nil, SlotNum: nil},
-	// 		Supper:      model.DishInMenu{Dish: nil, SlotNum: nil},
-	// 		Summary:     model.MenuSummary{},
-	// 	}, nil
-	// }
-
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("no active diet set in context")
@@ -102,6 +91,7 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		dishes[i] = dish
 	}
 
+	// Liczenie summary danego dnia
 	sumKcal := 0.0
 	sumProtein := 0.0
 	sumCarbs := 0.0
