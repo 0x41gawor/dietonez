@@ -77,6 +77,10 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		return nil, err
 	}
 
+	if s.IsInTwoWeeksWindow(date) {
+		return NewServiceCounter().Get(ctx, date, dishIDs, slotsRange)
+	}
+
 	var dishes [5]*model.DishGet
 	for i, id := range dishIDs {
 		var dish *model.DishGet
@@ -193,78 +197,14 @@ func (s *ServiceMenu) getDishIDsForSlots(ctx context.Context, dietID int, slots 
 	return dishIDs, nil
 }
 
-// This method copies the menu for the given day (usually current) to the counter table.
-func (s *ServiceMenu) CopyToCounter(ctx context.Context, date time.Time, dishIDs []int) error {
-	// odtworzenie dań z diet_slots
-	var dishes [5]*model.DishGet
-	for i, id := range dishIDs {
-		var dish *model.DishGet
-		if id == 0 {
-			dish = nil
-			continue
-		}
-		dish, err := s.dishes.GetByID(ctx, id)
-		if err != nil {
-			return fmt.Errorf("fetch dish %d: %w", id, err)
-		}
-		dishes[i] = dish
-	}
-	mealSlotsStr := [5]string{"Breakfast", "Lunch", "Pre-Workout", "Post-Workout", "Supper"}
-	for i, dish := range dishes {
-		if dish == nil {
-			continue
-		} else {
-			err := s.AddIngredientsToCounter(ctx, date, mealSlotsStr[i], dish.Ingredients)
-			if err != nil {
-				return fmt.Errorf("adding ingredients to counter: %w", err)
-			}
-		}
-	}
+func (s *ServiceMenu) IsInTwoWeeksWindow(date time.Time) bool {
+	currentDate := time.Now().Truncate(24 * time.Hour)
 
-	return nil
-}
+	diff := date.Sub(currentDate)
+	daysDiff := int(diff.Hours() / 24)
 
-func (s *ServiceMenu) AddIngredientsToCounter(ctx context.Context, date time.Time, mealSlot string, ingredients []model.IngredientInDishGet) error {
-	// Otwórz transakcję, by wszystkie inserty były atomowe
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return fmt.Errorf("begin tx: %w", err)
+	if math.Abs(float64(daysDiff)) <= 7 {
+		return true
 	}
-	defer func() {
-		if err != nil {
-			_ = tx.Rollback()
-		}
-	}()
-
-	// Przygotuj zapytanie
-	stmt, err := tx.PrepareContext(ctx, `
-		INSERT INTO counter (day, ingredient_id, meal, amount)
-		VALUES ($1, $2, $3, $4)
-		ON CONFLICT (day, ingredient_id, meal)
-		DO UPDATE SET amount = EXCLUDED.amount
-	`)
-	if err != nil {
-		return fmt.Errorf("prepare stmt: %w", err)
-	}
-	defer stmt.Close()
-
-	// Iteracja po liście składników
-	for _, ing := range ingredients {
-		_, err := stmt.ExecContext(ctx,
-			date,
-			ing.Ingredient.ID,
-			mealSlot,
-			ing.Amount,
-		)
-		if err != nil {
-			return fmt.Errorf("insert ingredient %d: %w", ing.Ingredient.ID, err)
-		}
-	}
-
-	// Zatwierdź transakcję
-	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("commit: %w", err)
-	}
-
-	return nil
+	return false
 }
