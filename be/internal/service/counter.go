@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/0x41gawor/dietonez/internal/repo"
@@ -20,7 +21,7 @@ func NewServiceCounter() *ServiceCounter {
 	return &ServiceCounter{db: db, dishes: NewServiceDishes()}
 }
 
-func (s *ServiceCounter) Get(ctx context.Context, date time.Time, dishIDs []int, slotsRange []int) (*model.Menu, error) {
+func (s *ServiceCounter) Get(ctx context.Context, date time.Time, dishIDs []int, slotsRange []int, currentDietDay int, currentWeight float32) (*model.Menu, error) {
 	// sprawdzamy, czy data istnieje w tabeli counter
 	exists, err := s.IsDateInTable(ctx, date)
 	if err != nil {
@@ -33,7 +34,7 @@ func (s *ServiceCounter) Get(ctx context.Context, date time.Time, dishIDs []int,
 	}
 
 	// jeśli istnieje to pobieramy składniki z tabeli counter
-	menu, erctxr := s.GetMenuForDate(ctx, date, dishIDs, slotsRange)
+	menu, erctxr := s.GetMenuForDate(ctx, date, dishIDs, slotsRange, currentDietDay, currentWeight)
 	if erctxr != nil {
 		return nil, erctxr
 	}
@@ -142,7 +143,7 @@ func (s *ServiceCounter) AddIngredientsToCounter(ctx context.Context, date time.
 	return nil
 }
 
-func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dishIDs []int, slotsRange []int) (*model.Menu, error) {
+func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dishIDs []int, slotsRange []int, currentDietDay int, currentWeight float32) (*model.Menu, error) {
 	// Pobierz składniki z tabeli counter dla danego dnia
 	rows, err := s.db.QueryContext(ctx, `
 		SELECT meal, ingredient_id, amount
@@ -207,6 +208,141 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 	}
 
 	//Policz Summary z ingredients
+	menu, err = s.CalculateDishesSummary(menu)
+	if err != nil {
+		return nil, fmt.Errorf("calculate dishes summary: %w", err)
+	}
+	menu, err = s.CalculateMenuSummary(ctx, menu, currentDietDay, currentWeight)
+	if err != nil {
+		return nil, fmt.Errorf("calculate menu summary: %w", err)
+	}
+	return menu, nil
+}
+
+func (s *ServiceCounter) CalculateDishesSummary(menu *model.Menu) (*model.Menu, error) {
+	sumKcal := 0.0
+	sumProt := 0.0
+	sumCarb := 0.0
+	sumFats := 0.0
+	if menu.Breakfast.Dish != nil {
+		for _, ing := range menu.Breakfast.Dish.Ingredients {
+			sumKcal += round2(ing.Ingredient.Kcal * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumProt += round2(ing.Ingredient.Protein * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumCarb += round2(ing.Ingredient.Carbs * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumFats += round2(ing.Ingredient.Fat * ing.Amount / ing.Ingredient.DefaultAmount)
+		}
+		menu.Breakfast.Dish.Kcal = round2(sumKcal)
+		menu.Breakfast.Dish.Protein = round2(sumProt)
+		menu.Breakfast.Dish.Carbs = round2(sumCarb)
+		menu.Breakfast.Dish.Fat = round2(sumFats)
+	}
+	sumKcal = 0.0
+	sumProt = 0.0
+	sumCarb = 0.0
+	sumFats = 0.0
+	if menu.Lunch.Dish != nil {
+		for _, ing := range menu.Lunch.Dish.Ingredients {
+			sumKcal += round2(ing.Ingredient.Kcal * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumProt += round2(ing.Ingredient.Protein * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumCarb += round2(ing.Ingredient.Carbs * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumFats += round2(ing.Ingredient.Fat * ing.Amount / ing.Ingredient.DefaultAmount)
+		}
+		menu.Lunch.Dish.Kcal = round2(sumKcal)
+		menu.Lunch.Dish.Protein = round2(sumProt)
+		menu.Lunch.Dish.Carbs = round2(sumCarb)
+		menu.Lunch.Dish.Fat = round2(sumFats)
+	}
+	sumKcal = 0.0
+	sumProt = 0.0
+	sumCarb = 0.0
+	sumFats = 0.0
+	if menu.PreWorkout.Dish != nil {
+		for _, ing := range menu.PreWorkout.Dish.Ingredients {
+			sumKcal += round2(ing.Ingredient.Kcal * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumProt += round2(ing.Ingredient.Protein * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumCarb += round2(ing.Ingredient.Carbs * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumFats += round2(ing.Ingredient.Fat * ing.Amount / ing.Ingredient.DefaultAmount)
+		}
+		menu.PreWorkout.Dish.Kcal = round2(sumKcal)
+		menu.PreWorkout.Dish.Protein = round2(sumProt)
+		menu.PreWorkout.Dish.Carbs = round2(sumCarb)
+		menu.PreWorkout.Dish.Fat = round2(sumFats)
+	}
+	sumKcal = 0.0
+	sumProt = 0.0
+	sumCarb = 0.0
+	sumFats = 0.0
+	if menu.PostWorkout.Dish != nil {
+		for _, ing := range menu.PostWorkout.Dish.Ingredients {
+			sumKcal += round2(ing.Ingredient.Kcal * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumProt += round2(ing.Ingredient.Protein * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumCarb += round2(ing.Ingredient.Carbs * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumFats += round2(ing.Ingredient.Fat * ing.Amount / ing.Ingredient.DefaultAmount)
+		}
+		menu.PostWorkout.Dish.Kcal = round2(sumKcal)
+		menu.PostWorkout.Dish.Protein = round2(sumProt)
+		menu.PostWorkout.Dish.Carbs = round2(sumCarb)
+		menu.PostWorkout.Dish.Fat = round2(sumFats)
+	}
+	sumKcal = 0.0
+	sumProt = 0.0
+	sumCarb = 0.0
+	sumFats = 0.0
+	if menu.Supper.Dish != nil {
+		for _, ing := range menu.Supper.Dish.Ingredients {
+			sumKcal += round2(ing.Ingredient.Kcal * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumProt += round2(ing.Ingredient.Protein * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumCarb += round2(ing.Ingredient.Carbs * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumFats += round2(ing.Ingredient.Fat * ing.Amount / ing.Ingredient.DefaultAmount)
+		}
+		menu.Supper.Dish.Kcal = round2(sumKcal)
+		menu.Supper.Dish.Protein = round2(sumProt)
+		menu.Supper.Dish.Carbs = round2(sumCarb)
+		menu.Supper.Dish.Fat = round2(sumFats)
+	}
+
+	return menu, nil
+}
+
+func (s *ServiceCounter) CalculateMenuSummary(ctx context.Context, menu *model.Menu, currentDietDay int, currentWeight float32) (*model.Menu, error) {
+	totalKcal := 0.0
+	totalProteins := 0.0
+	totalFats := 0.0
+	totalCarbs := 0.0
+
+	meals := []*model.DishInMenu{&menu.Breakfast, &menu.Lunch, &menu.PreWorkout, &menu.PostWorkout, &menu.Supper}
+	for _, meal := range meals {
+		if meal.Dish != nil {
+			totalKcal += meal.Dish.Kcal
+			totalProteins += meal.Dish.Protein
+			totalFats += meal.Dish.Fat
+			totalCarbs += meal.Dish.Carbs
+		}
+	}
+
+	menu.Summary.Kcal = round2(totalKcal)
+	menu.Summary.Proteins = round2(totalProteins)
+	menu.Summary.Fats = round2(totalFats)
+	menu.Summary.Carbs = round2(totalCarbs)
+	// fetch kcal goal
+	currentDietDayInDayKcal := currentDietDay - int(math.Floor(float64(currentDietDay)/7))
+	var dayKcalGoal float64
+	err := s.db.QueryRowContext(ctx, `
+		SELECT kcal
+		FROM day_kcals
+		WHERE day_num = $1
+	`, currentDietDayInDayKcal).Scan(&dayKcalGoal)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch max dayGoal: %w", err)
+	}
+	menu.Summary.KcalGoal = round2(dayKcalGoal)
+	menu.Summary.ProteinPerKg = round2(totalProteins / float64(currentWeight))
+	fatsPerc := 0.0
+	if totalKcal > 0 {
+		fatsPerc = round2(totalFats * 9 / totalKcal * 100)
+	}
+	menu.Summary.FatsPerc = fatsPerc
+	menu.Summary.CarbsPerKg = round2(totalCarbs / float64(currentWeight))
 
 	return menu, nil
 }

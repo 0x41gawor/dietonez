@@ -78,7 +78,7 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 	}
 
 	if s.IsInTwoWeeksWindow(date) {
-		return NewServiceCounter().Get(ctx, date, dishIDs, slotsRange)
+		return NewServiceCounter().Get(ctx, date, dishIDs, slotsRange, currentDietDay, float32(currentWeight))
 	}
 
 	var dishes [5]*model.DishGet
