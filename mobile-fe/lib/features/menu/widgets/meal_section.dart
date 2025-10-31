@@ -3,6 +3,7 @@ import '../../../core/theme.dart';
 import '../models.dart';
 import 'macro_chip.dart';
 import 'ingredient_row.dart';
+import 'ingredient_edit_dialog.dart';
 import 'package:provider/provider.dart';
 import '../controller.dart';
 
@@ -161,13 +162,52 @@ class _MealSectionState extends State<MealSection> {
                   _toast(context, "Składnik usunięty");
                 }
               },
-              onEdit: () => _toast(context, "Edit not implemented yet"),
+              onEdit: () async {
+                final result = await showDialog<Map<String, dynamic>>(
+                  context: context,
+                  builder: (ctx) => IngredientEditDialog(
+                    meal: widget.title,
+                    day: context.read<MenuViewController>().selectedDate,
+                    initialIngredient: IngredientMin(id: it.ingredient.id, name: it.ingredient.name),
+                    initialAmount: it.amount,
+                  ),
+                );
+                if (result != null) {
+                  final c = context.read<MenuViewController>();
+                  await c.upsertIngredientInMenu(
+                    day: c.selectedDate,
+                    ingredientId: result['ingredient'].id,
+                    meal: widget.title,
+                    amount: result['amount'],
+                  );
+                  _toast(context, 'Składnik zaktualizowany');
+                }
+              },
+
             ),
 
           const SizedBox(height: 2),
           Center(
             child: FloatingActionButton.small(
-              onPressed: () => _toast(context, 'Add Not implemented yet'),
+              onPressed: () async {
+                final result = await showDialog<Map<String, dynamic>>(
+                  context: context,
+                  builder: (ctx) => IngredientEditDialog(
+                    meal: widget.title,
+                    day: context.read<MenuViewController>().selectedDate,
+                  ),
+                );
+                if (result != null) {
+                  final c = context.read<MenuViewController>();
+                  await c.upsertIngredientInMenu(
+                    day: c.selectedDate,
+                    ingredientId: result['ingredient'].id,
+                    meal: widget.title,
+                    amount: result['amount'],
+                  );
+                  _toast(context, 'Składnik dodany');
+                }
+              },
               backgroundColor: const Color(0xFF2E7D32),
               child: const Icon(Icons.add_circle_outline, color: Colors.white),
             ),

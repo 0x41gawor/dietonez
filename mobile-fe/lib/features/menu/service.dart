@@ -50,6 +50,42 @@ class MenuService {
     );
   }
 
+  Future<void> upsertIngredient({
+    required DateTime day,
+    required int ingredientId,
+    required String meal,
+    required num amount,
+  }) async {
+    await _api.send(
+      '/menu',
+      method: 'PUT',
+      body: {
+        'day': day.toIso8601String(),
+        'ingredient_id': ingredientId,
+        'meal': meal,
+        'amount': amount,
+      },
+    );
+  }
+
+  Future<List<IngredientMin>> searchIngredients({
+    required String query,
+    int reslen = 10,
+    bool short = true,
+  }) async {
+    final data = await _api.getJson<Map<String, dynamic>>(
+      '/ingredients/search',
+      query: {
+        'query': query,
+        'reslen': reslen.toString(),
+        'short': short.toString(),
+      },
+    );
+
+    final list = data['ingredients'] as List<dynamic>;
+    return list.map((e) => IngredientMin.fromJson(e)).toList();
+  }
+
 
 
 }
