@@ -365,14 +365,30 @@ func (s *ServiceCounter) CalculateMenuSummary(ctx context.Context, menu *model.M
 	return menu, nil
 }
 
-func (s *ServiceCounter) UpsertCounterRecord(ctx context.Context, r model.CounterRecord) error {
+func (s *ServiceCounter) UpsertCounterRecord(ctx context.Context, r model.UpsertCounterRecord) error {
+	// 1️⃣ Jeżeli składnik się zmienił — usuń stary rekord
+	if r.OldIngredientId != nil && *r.OldIngredientId != r.IngredientId {
+		_, err := s.db.ExecContext(ctx, `
+			DELETE FROM counter
+			WHERE day = $1 AND meal = $2 AND ingredient_id = $3;
+		`, r.Day, r.Meal, *r.OldIngredientId)
+		if err != nil {
+			return fmt.Errorf("delete old counter record: %w", err)
+		}
+	}
+
+	// 2️⃣ Następnie wstaw/aktualizuj nowy rekord
 	_, err := s.db.ExecContext(ctx, `
         INSERT INTO counter (day, ingredient_id, meal, amount)
         VALUES ($1, $2, $3, $4)
         ON CONFLICT (day, ingredient_id, meal)
         DO UPDATE SET amount = EXCLUDED.amount;
     `, r.Day, r.IngredientId, r.Meal, r.Amount)
-	return err
+	if err != nil {
+		return fmt.Errorf("upsert counter record: %w", err)
+	}
+
+	return nil
 }
 
 func (s *ServiceCounter) DeleteCounterRecord(ctx context.Context, r model.CounterRecordIndex) error {

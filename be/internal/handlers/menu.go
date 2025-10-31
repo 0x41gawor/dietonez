@@ -43,7 +43,7 @@ func (h *HandlerMenu) handleGet(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (h *HandlerMenu) handlePUT(w http.ResponseWriter, r *http.Request) error {
-	var record model.CounterRecord
+	var record model.UpsertCounterRecord
 	if err := json.NewDecoder(r.Body).Decode(&record); err != nil {
 		return err
 	}
