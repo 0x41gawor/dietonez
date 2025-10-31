@@ -28,15 +28,18 @@ func (s *ServiceCounter) Get(ctx context.Context, date time.Time, dishIDs []int,
 		return nil, err
 	}
 	if !exists {
-
 		// jeśli nie istnieje to wykonujemy operacje kopiowania skłądników na ten dzień według tabeli diet_slots i dishes
-		s.CopyToCounter(ctx, date, dishIDs) // tymczasowo puste dania
+		s.CopyToCounter(ctx, date, dishIDs)
 	}
-
 	// jeśli istnieje to pobieramy składniki z tabeli counter
-	menu, erctxr := s.GetMenuForDate(ctx, date, dishIDs, slotsRange, currentDietDay, currentWeight)
-	if erctxr != nil {
-		return nil, erctxr
+	menu, err := s.GetMenuForDate(ctx, date, dishIDs, slotsRange, currentDietDay, currentWeight)
+	if err != nil {
+		return nil, err
+	}
+	// przy okazji robimy TableCleanup dla counter
+	_, err = s.DeleteOldCounterRecords(ctx, 7)
+	if err != nil {
+		return nil, err
 	}
 	// zwracamy menu
 	return menu, nil
@@ -345,4 +348,39 @@ func (s *ServiceCounter) CalculateMenuSummary(ctx context.Context, menu *model.M
 	menu.Summary.CarbsPerKg = round2(totalCarbs / float64(currentWeight))
 
 	return menu, nil
+}
+
+func (s *ServiceCounter) UpsertCounterRecord(ctx context.Context, r model.CounterRecord) error {
+	_, err := s.db.ExecContext(ctx, `
+        INSERT INTO counter (day, ingredient_id, meal, amount)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (day, ingredient_id, meal)
+        DO UPDATE SET amount = EXCLUDED.amount;
+    `, r.Day, r.IngredientId, r.Meal, r.Amount)
+	return err
+}
+
+func (s *ServiceCounter) DeleteCounterRecord(ctx context.Context, r model.CounterRecordIndex) error {
+	_, err := s.db.ExecContext(ctx, `
+		DELETE FROM counter
+		WHERE day = $1 AND ingredient_id = $2 AND meal = $3
+	`, r.Day, r.IngredientId, r.Meal)
+	return err
+}
+
+func (s *ServiceCounter) DeleteOldCounterRecords(ctx context.Context, deltaDays int) (int64, error) {
+	query := `
+		DELETE FROM counter
+		WHERE day < (CURRENT_DATE - INTERVAL '%d days')
+	`
+	// interpolacja deltaDays do zapytania
+	q := fmt.Sprintf(query, deltaDays)
+
+	result, err := s.db.ExecContext(ctx, q)
+	if err != nil {
+		return 0, fmt.Errorf("delete old counter records: %w", err)
+	}
+
+	rows, _ := result.RowsAffected()
+	return rows, nil
 }

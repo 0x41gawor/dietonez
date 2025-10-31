@@ -58,6 +58,8 @@ func (s *Server) Run() {
 	router.HandleFunc("/api/v1/shopping-list", makeHTTPHandleFunc(apiShoppingList.handleGet)).Methods("GET")
 	apiMenu := NewHandlerMenu()
 	router.HandleFunc("/api/v1/menu", makeHTTPHandleFunc(apiMenu.handleGet)).Methods("GET")
+	router.HandleFunc("/api/v1/menu", makeHTTPHandleFunc(apiMenu.handlePUT)).Methods("PUT")
+	router.HandleFunc("/api/v1/menu", makeHTTPHandleFunc(apiMenu.handleDELETE)).Methods("DELETE")
 
 	router.PathPrefix("/swagger").Handler(http.StripPrefix("/swagger", http.FileServer(http.Dir("./swagger-ui/"))))
 	router.Handle("/openapi.yaml", http.FileServer(http.Dir(".")))
