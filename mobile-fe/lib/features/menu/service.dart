@@ -53,6 +53,7 @@ class MenuService {
   Future<void> upsertIngredient({
     required DateTime day,
     required int ingredientId,
+    int? oldIngredientId, // 🔹 nowy parametr opcjonalny
     required String meal,
     required num amount,
   }) async {
@@ -62,11 +63,13 @@ class MenuService {
       body: {
         'day': day.toIso8601String(),
         'ingredient_id': ingredientId,
+        if (oldIngredientId != null) 'ingredient_id_old': oldIngredientId, // 👈 tylko gdy istnieje
         'meal': meal,
         'amount': amount,
       },
     );
   }
+
 
   Future<List<IngredientMin>> searchIngredients({
     required String query,

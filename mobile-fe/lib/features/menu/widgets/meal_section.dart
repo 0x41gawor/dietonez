@@ -177,6 +177,7 @@ class _MealSectionState extends State<MealSection> {
                   await c.upsertIngredientInMenu(
                     day: c.selectedDate,
                     ingredientId: result['ingredient'].id,
+                    oldIngredientId: it.ingredient.id,
                     meal: widget.title,
                     amount: result['amount'],
                   );
