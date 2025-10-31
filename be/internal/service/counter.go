@@ -171,8 +171,18 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 			return nil, fmt.Errorf("fetch ingredient %d: %w", ingredientID, err)
 		}
 		ingInDish := model.IngredientInDishGet{
-			Ingredient: *ingredient,
-			Amount:     amount,
+			Ingredient: model.IngredientGetPut{
+				ID:            ingredient.ID,
+				Name:          ingredient.Name,
+				Kcal:          ingredient.Kcal * amount / ingredient.DefaultAmount,
+				Protein:       ingredient.Protein * amount / ingredient.DefaultAmount,
+				Carbs:         ingredient.Carbs * amount / ingredient.DefaultAmount,
+				Fat:           ingredient.Fat * amount / ingredient.DefaultAmount,
+				DefaultAmount: ingredient.DefaultAmount,
+				Labels:        ingredient.Labels,
+				Path:          ingredient.Path,
+			},
+			Amount: amount,
 		}
 		mealMap[meal] = append(mealMap[meal], ingInDish)
 	}
@@ -210,6 +220,9 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 		Summary:     model.MenuSummary{}, // Możesz dodać podsumowanie, jeśli potrzebne
 	}
 
+	fmt.Println("--fsfds--")
+	fmt.Println(dishes[0])
+
 	//Policz Summary z ingredients
 	menu, err = s.CalculateDishesSummary(menu)
 	if err != nil {
@@ -229,10 +242,12 @@ func (s *ServiceCounter) CalculateDishesSummary(menu *model.Menu) (*model.Menu, 
 	sumFats := 0.0
 	if menu.Breakfast.Dish != nil {
 		for _, ing := range menu.Breakfast.Dish.Ingredients {
-			sumKcal += round2(ing.Ingredient.Kcal * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumProt += round2(ing.Ingredient.Protein * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumCarb += round2(ing.Ingredient.Carbs * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumFats += round2(ing.Ingredient.Fat * ing.Amount / ing.Ingredient.DefaultAmount)
+			fmt.Println("PODCZAS LICZENIA DANIA: ", ing.Ingredient.Name, ing.Amount, ing.Ingredient.Kcal, ing.Ingredient.DefaultAmount)
+			sumKcal += ing.Ingredient.Kcal
+			sumProt += ing.Ingredient.Protein
+			sumCarb += ing.Ingredient.Carbs
+			sumFats += ing.Ingredient.Fat
+			fmt.Println("SUMY: ", sumKcal, sumProt, sumCarb, sumFats)
 		}
 		menu.Breakfast.Dish.Kcal = round2(sumKcal)
 		menu.Breakfast.Dish.Protein = round2(sumProt)
@@ -245,10 +260,10 @@ func (s *ServiceCounter) CalculateDishesSummary(menu *model.Menu) (*model.Menu, 
 	sumFats = 0.0
 	if menu.Lunch.Dish != nil {
 		for _, ing := range menu.Lunch.Dish.Ingredients {
-			sumKcal += round2(ing.Ingredient.Kcal * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumProt += round2(ing.Ingredient.Protein * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumCarb += round2(ing.Ingredient.Carbs * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumFats += round2(ing.Ingredient.Fat * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumKcal += ing.Ingredient.Kcal
+			sumProt += ing.Ingredient.Protein
+			sumCarb += ing.Ingredient.Carbs
+			sumFats += ing.Ingredient.Fat
 		}
 		menu.Lunch.Dish.Kcal = round2(sumKcal)
 		menu.Lunch.Dish.Protein = round2(sumProt)
@@ -261,10 +276,10 @@ func (s *ServiceCounter) CalculateDishesSummary(menu *model.Menu) (*model.Menu, 
 	sumFats = 0.0
 	if menu.PreWorkout.Dish != nil {
 		for _, ing := range menu.PreWorkout.Dish.Ingredients {
-			sumKcal += round2(ing.Ingredient.Kcal * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumProt += round2(ing.Ingredient.Protein * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumCarb += round2(ing.Ingredient.Carbs * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumFats += round2(ing.Ingredient.Fat * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumKcal += ing.Ingredient.Kcal
+			sumProt += ing.Ingredient.Protein
+			sumCarb += ing.Ingredient.Carbs
+			sumFats += ing.Ingredient.Fat
 		}
 		menu.PreWorkout.Dish.Kcal = round2(sumKcal)
 		menu.PreWorkout.Dish.Protein = round2(sumProt)
@@ -277,10 +292,10 @@ func (s *ServiceCounter) CalculateDishesSummary(menu *model.Menu) (*model.Menu, 
 	sumFats = 0.0
 	if menu.PostWorkout.Dish != nil {
 		for _, ing := range menu.PostWorkout.Dish.Ingredients {
-			sumKcal += round2(ing.Ingredient.Kcal * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumProt += round2(ing.Ingredient.Protein * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumCarb += round2(ing.Ingredient.Carbs * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumFats += round2(ing.Ingredient.Fat * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumKcal += ing.Ingredient.Kcal
+			sumProt += ing.Ingredient.Protein
+			sumCarb += ing.Ingredient.Carbs
+			sumFats += ing.Ingredient.Fat
 		}
 		menu.PostWorkout.Dish.Kcal = round2(sumKcal)
 		menu.PostWorkout.Dish.Protein = round2(sumProt)
@@ -293,10 +308,10 @@ func (s *ServiceCounter) CalculateDishesSummary(menu *model.Menu) (*model.Menu, 
 	sumFats = 0.0
 	if menu.Supper.Dish != nil {
 		for _, ing := range menu.Supper.Dish.Ingredients {
-			sumKcal += round2(ing.Ingredient.Kcal * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumProt += round2(ing.Ingredient.Protein * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumCarb += round2(ing.Ingredient.Carbs * ing.Amount / ing.Ingredient.DefaultAmount)
-			sumFats += round2(ing.Ingredient.Fat * ing.Amount / ing.Ingredient.DefaultAmount)
+			sumKcal += ing.Ingredient.Kcal
+			sumProt += ing.Ingredient.Protein
+			sumCarb += ing.Ingredient.Carbs
+			sumFats += ing.Ingredient.Fat
 		}
 		menu.Supper.Dish.Kcal = round2(sumKcal)
 		menu.Supper.Dish.Protein = round2(sumProt)
