@@ -34,6 +34,22 @@ class MenuService {
     );
   }
 
+  Future<void> deleteIngredient({
+    required DateTime day,
+    required int ingredientId,
+    required String meal,
+  }) async {
+    await _api.send(
+      '/menu',
+      method: 'DELETE',
+      body: {
+        'day': day.toIso8601String(),
+        'ingredient_id': ingredientId,
+        'meal': meal,
+      },
+    );
+  }
+
 
 
 }

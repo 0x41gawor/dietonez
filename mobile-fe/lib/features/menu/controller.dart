@@ -86,4 +86,27 @@ class MenuViewController extends ChangeNotifier {
     }
   }
 
+
+  Future<void> deleteIngredientFromMenu({
+    required DateTime day,
+    required int ingredientId,
+    required String meal,
+  }) async {
+    try {
+      await _service.deleteIngredient(
+        day: day,
+        ingredientId: ingredientId,
+        meal: meal,
+      );
+      // Po usunięciu odśwież dane, żeby UI się zaktualizował
+      await fetch();
+    } catch (e) {
+      debugPrint("❌ Błąd usuwania składnika: $e");
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
+
+
 }

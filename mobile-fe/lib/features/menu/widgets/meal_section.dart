@@ -138,12 +138,36 @@ class _MealSectionState extends State<MealSection> {
           for (final it in widget.meal.dish.ingredients)
             IngredientRow(
               mi: it,
-              onDelete: () => _toast(context, 'Not implemented yet'),
+              onDelete: () async {
+                final c = context.read<MenuViewController>();
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: const Text("Usuń składnik"),
+                    content: Text("Czy na pewno chcesz usunąć '${it.ingredient.name}'?"),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Anuluj")),
+                      TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("Usuń")),
+                    ],
+                  ),
+                );
+
+                if (confirm == true) {
+                  await c.deleteIngredientFromMenu(
+                    day: c.selectedDate,
+                    ingredientId: it.ingredient.id,
+                    meal: widget.title,
+                  );
+                  _toast(context, "Składnik usunięty");
+                }
+              },
+              onEdit: () => _toast(context, "Edit not implemented yet"),
             ),
+
           const SizedBox(height: 2),
           Center(
             child: FloatingActionButton.small(
-              onPressed: () => _toast(context, 'Not implemented yet'),
+              onPressed: () => _toast(context, 'Add Not implemented yet'),
               backgroundColor: const Color(0xFF2E7D32),
               child: const Icon(Icons.add_circle_outline, color: Colors.white),
             ),
