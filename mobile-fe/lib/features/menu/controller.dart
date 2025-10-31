@@ -108,6 +108,7 @@ class MenuViewController extends ChangeNotifier {
   Future<void> upsertIngredientInMenu({
     required DateTime day,
     required int ingredientId,
+    int? oldIngredientId,
     required String meal,
     required num amount,
   }) async {
@@ -115,6 +116,7 @@ class MenuViewController extends ChangeNotifier {
       await _service.upsertIngredient(
         day: day,
         ingredientId: ingredientId,
+        oldIngredientId: oldIngredientId,
         meal: meal,
         amount: amount,
       );
