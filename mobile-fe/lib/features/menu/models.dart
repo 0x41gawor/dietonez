@@ -44,7 +44,23 @@ class IngredientFull {
     'shopStyle': shopStyle,
     'default_amount': defaultAmount,
   };
+}
 
+class IngredientMin {
+  final int id;
+  final String name;
+
+  IngredientMin({required this.id, required this.name});
+
+  factory IngredientMin.fromJson(Map<String, dynamic> j) => IngredientMin(
+    id: j['id'] as int,
+    name: j['name'] as String,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+  };
 }
 
 class MealIngredient {

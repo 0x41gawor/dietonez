@@ -14,7 +14,7 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
-  int _index = 3; // start on shopping list, like mock
+  int _index = 2; // start on shopping list, like mock
 
   Widget _tab(int i) {
     switch (i) {

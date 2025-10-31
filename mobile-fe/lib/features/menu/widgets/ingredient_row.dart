@@ -6,8 +6,9 @@ import 'macro_chip.dart';
 class IngredientRow extends StatelessWidget {
   final MealIngredient mi;
   final VoidCallback onDelete;
+  final VoidCallback onEdit;
 
-  const IngredientRow({super.key, required this.mi, required this.onDelete});
+  const IngredientRow({super.key, required this.mi, required this.onDelete, required this.onEdit});
 
   Map<Macro, double> _calc() {
     return {
@@ -75,6 +76,12 @@ class IngredientRow extends StatelessWidget {
           const SizedBox(height: 0),
           Row(
             children: [
+              const SizedBox(width: 2,),
+              InkWell(
+                onTap: onEdit,
+                child: const Icon(Icons.edit, size: 15),
+              ),
+              const SizedBox(width: 10,),
               Text(
                 '${mi.amount} ${mi.ingredient.unit}',
                 style: Theme.of(context).textTheme.bodyLarge,
