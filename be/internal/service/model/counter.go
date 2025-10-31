@@ -12,3 +12,11 @@ type CounterRecordIndex struct {
 	IngredientId int64  `json:"ingredient_id"`
 	Meal         string `json:"meal"`
 }
+
+type UpsertCounterRecord struct {
+	Day             string  `json:"day"`
+	IngredientId    int64   `json:"ingredient_id"`
+	OldIngredientId *int64  `json:"ingredient_id_old"`
+	Meal            string  `json:"meal"`
+	Amount          float64 `json:"amount"`
+}
