@@ -20,8 +20,8 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ShoppingListController()),
         ChangeNotifierProvider(create: (_) => MenuViewController()),
+        ChangeNotifierProvider(create: (_) => ShoppingListController()),
       ],
       child: const DietonezApp(),
     ),

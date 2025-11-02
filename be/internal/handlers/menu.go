@@ -1,18 +1,23 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/0x41gawor/dietonez/internal/service"
+	"github.com/0x41gawor/dietonez/internal/service/model"
 )
 
 type HandlerMenu struct {
-	s *service.ServiceMenu
+	sm *service.ServiceMenu
+	sc *service.ServiceCounter
 }
 
 func NewHandlerMenu() *HandlerMenu {
 	return &HandlerMenu{
-		s: service.NewServiceMenu(),
+		sm: service.NewServiceMenu(),
+		sc: service.NewServiceCounter(),
 	}
 }
 
@@ -25,7 +30,7 @@ func (h *HandlerMenu) handleGet(w http.ResponseWriter, r *http.Request) error {
 		return nil
 	}
 
-	dc, err := h.s.Get(ctx, date)
+	dc, err := h.sm.Get(ctx, date)
 	if err != nil {
 		return err
 	}
@@ -35,4 +40,31 @@ func (h *HandlerMenu) handleGet(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	return WriteJSON(w, http.StatusOK, dc)
+}
+
+func (h *HandlerMenu) handlePUT(w http.ResponseWriter, r *http.Request) error {
+	var record model.UpsertCounterRecord
+	if err := json.NewDecoder(r.Body).Decode(&record); err != nil {
+		return err
+	}
+
+	if err := h.sc.UpsertCounterRecord(r.Context(), record); err != nil {
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, map[string]string{"status": "success"})
+}
+
+func (h *HandlerMenu) handleDELETE(w http.ResponseWriter, r *http.Request) error {
+	var idx model.CounterRecordIndex
+	if err := json.NewDecoder(r.Body).Decode(&idx); err != nil {
+		return fmt.Errorf("invalid json: %w", err)
+	}
+
+	if err := h.sc.DeleteCounterRecord(r.Context(), idx); err != nil {
+		return fmt.Errorf("delete counter record: %w", err)
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	return nil
 }
