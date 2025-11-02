@@ -470,3 +470,139 @@ func (s *ServiceDishes) DeleteByID(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func (s *ServiceDishes) GetCounterByID(ctx context.Context, id int) (*model.DishGet, error) {
+	if id == 0 {
+		empty := s.GetEmptyDish()
+		return empty, nil
+	}
+
+	const dishQuery = `
+		SELECT id, name, meal, descr
+		FROM dishes
+		WHERE id = $1;
+	`
+
+	var dish model.DishGet
+	err := s.db.QueryRowContext(ctx, dishQuery, id).Scan(&dish.ID, &dish.Name, &dish.Meal, &dish.Descr)
+	if err == sql.ErrNoRows {
+		return nil, nil // 404 later
+	}
+	if err != nil {
+		return nil, fmt.Errorf("query dish: %w", err)
+	}
+
+	const ingredientsQuery = `
+		SELECT i.id, i.name, i.unit, i.default_amount, i.shop_style, i.kcal, i.proteins, i.fats, i.carbs, ia.amount
+		FROM ingredient_amounts ia
+		JOIN ingredients i ON i.id = ia.ingredient_id
+		WHERE ia.dish_id = $1;
+	`
+
+	rows, err := s.db.QueryContext(ctx, ingredientsQuery, id)
+	if err != nil {
+		return nil, fmt.Errorf("query ingredients for dish: %w", err)
+	}
+	defer rows.Close()
+
+	var (
+		totalKcal, totalProtein, totalFat, totalCarbs float64
+		ingredients                                   = make([]model.IngredientInDishGet, 0)
+	)
+
+	for rows.Next() {
+		var ing model.IngredientGetPut
+		var amount float64
+
+		err := rows.Scan(
+			&ing.ID,
+			&ing.Name,
+			&ing.Unit,
+			&ing.DefaultAmount,
+			&ing.ShopStyle,
+			&ing.Kcal,
+			&ing.Protein,
+			&ing.Fat,
+			&ing.Carbs,
+			&amount,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("scan ingredient in dish: %w", err)
+		}
+
+		totalKcal += ing.Kcal * amount / ing.DefaultAmount
+		totalProtein += ing.Protein * amount / ing.DefaultAmount
+		totalFat += ing.Fat * amount / ing.DefaultAmount
+		totalCarbs += ing.Carbs * amount / ing.DefaultAmount
+
+		ing.Kcal = round1(ing.Kcal * amount / ing.DefaultAmount)
+		ing.Protein = round1(ing.Protein * amount / ing.DefaultAmount)
+		ing.Fat = round1(ing.Fat * amount / ing.DefaultAmount)
+		ing.Carbs = round1(ing.Carbs * amount / ing.DefaultAmount)
+
+		ingredients = append(ingredients, model.IngredientInDishGet{
+			Ingredient: ing,
+			Amount:     amount,
+		})
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+	// Sorotwanie składników według wkładu w kaloryczność
+	sort.Slice(ingredients, func(i, j int) bool {
+		kcalI := ingredients[i].Amount * ingredients[i].Ingredient.Kcal / ingredients[i].Ingredient.DefaultAmount
+		kcalJ := ingredients[j].Amount * ingredients[j].Ingredient.Kcal / ingredients[j].Ingredient.DefaultAmount
+		return kcalI > kcalJ // malejąco
+	})
+
+	// 3. pobierz powiązany przepis ---------------------------------------------
+	const recipeQuery = `
+	SELECT time_total, what_before, when_start, preparation
+	FROM recipes
+	WHERE dish_id = $1;
+`
+
+	var recipe model.Recipe
+	err = s.db.QueryRowContext(ctx, recipeQuery, id).Scan(
+		&recipe.TotalTime,
+		&recipe.Before,
+		&recipe.WhenToStart,
+		&recipe.Preparation,
+	)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, fmt.Errorf("query recipe: %w", err)
+	}
+
+	// jeśli przepisu brak, zostaw puste pola (ErrNoRows to normalne)
+
+	// 4. wypełnij strukturę i zwróć ---------------------------------------------
+	dish.Kcal = 0
+	dish.Protein = 0
+	dish.Fat = 0
+	dish.Carbs = 0
+	dish.Ingredients = nil // <-- COUNTER SPECIFIC
+	dish.Recipe = recipe   // <-- NOWE
+
+	return &dish, nil
+}
+
+func (s *ServiceDishes) GetEmptyDish() *model.DishGet {
+	return &model.DishGet{
+		ID:          0,
+		Name:        "",
+		Meal:        "",
+		Descr:       "",
+		Kcal:        0,
+		Protein:     0,
+		Fat:         0,
+		Carbs:       0,
+		Ingredients: nil,
+		Recipe: model.Recipe{
+			TotalTime:   "",
+			Before:      "",
+			WhenToStart: "",
+			Preparation: "",
+		},
+		Labels: nil,
+	}
+}
