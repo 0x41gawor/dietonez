@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"math"
+	"sort"
 	"time"
 
 	"github.com/0x41gawor/dietonez/internal/repo"
@@ -31,7 +32,7 @@ func (s *ServiceCounter) Get(ctx context.Context, date time.Time, dishIDs []int,
 		// jeśli nie istnieje to wykonujemy operacje kopiowania skłądników na ten dzień według tabeli diet_slots i dishes
 		s.CopyToCounter(ctx, date, dishIDs)
 	}
-	// jeśli istnieje to pobieramy składniki z tabeli counter
+	// pobieramy składniki z tabeli counter (jeśli dania tam nie było to poprzedni if go dodał)
 	menu, err := s.GetMenuForDate(ctx, date, dishIDs, slotsRange, currentDietDay, currentWeight)
 	if err != nil {
 		return nil, err
@@ -203,6 +204,14 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 			dishTemp.Ingredients = mealMap["Post-Workout"]
 		case 4:
 			dishTemp.Ingredients = mealMap["Supper"]
+		}
+		// posotruj składaniaki według znaczenia kalorycznego
+		if len(dishTemp.Ingredients) > 1 {
+			sort.Slice(dishTemp.Ingredients, func(i, j int) bool {
+				iKcal := dishTemp.Ingredients[i].Ingredient.Kcal
+				jKcal := dishTemp.Ingredients[j].Ingredient.Kcal
+				return iKcal > jKcal
+			})
 		}
 		dishes[i] = dishTemp
 	}
