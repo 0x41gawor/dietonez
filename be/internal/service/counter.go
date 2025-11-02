@@ -188,10 +188,6 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 	}
 	dishes := make([]*model.DishGet, 5)
 	for i, dishID := range dishIDs {
-		if dishID == 0 {
-			dishes[i] = nil
-			continue
-		}
 		dishTemp, err := NewServiceDishes().GetCounterByID(ctx, dishID)
 		if err != nil {
 			return nil, fmt.Errorf("fetch dish %d: %w", dishID, err)

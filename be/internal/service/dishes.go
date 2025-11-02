@@ -472,6 +472,11 @@ func (s *ServiceDishes) DeleteByID(ctx context.Context, id int) error {
 }
 
 func (s *ServiceDishes) GetCounterByID(ctx context.Context, id int) (*model.DishGet, error) {
+	if id == 0 {
+		empty := s.GetEmptyDish()
+		return empty, nil
+	}
+
 	const dishQuery = `
 		SELECT id, name, meal, descr
 		FROM dishes
@@ -579,4 +584,25 @@ func (s *ServiceDishes) GetCounterByID(ctx context.Context, id int) (*model.Dish
 	dish.Recipe = recipe   // <-- NOWE
 
 	return &dish, nil
+}
+
+func (s *ServiceDishes) GetEmptyDish() *model.DishGet {
+	return &model.DishGet{
+		ID:          0,
+		Name:        "",
+		Meal:        "",
+		Descr:       "",
+		Kcal:        0,
+		Protein:     0,
+		Fat:         0,
+		Carbs:       0,
+		Ingredients: nil,
+		Recipe: model.Recipe{
+			TotalTime:   "",
+			Before:      "",
+			WhenToStart: "",
+			Preparation: "",
+		},
+		Labels: nil,
+	}
 }
