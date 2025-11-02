@@ -28,6 +28,8 @@ class _IngredientEditDialogState extends State<IngredientEditDialog> {
   List<IngredientMin> _results = [];
   Timer? _debounce;
   IngredientMin? _selected;
+  bool _clearedOnce = false;
+
 
   @override
   void initState() {
@@ -78,6 +80,15 @@ class _IngredientEditDialogState extends State<IngredientEditDialog> {
                 controller: _queryCtrl,
                 decoration: const InputDecoration(labelText: 'Ingredient name'),
                 onChanged: _onQueryChanged,
+                onTap: () {
+                  if (!_clearedOnce && widget.initialIngredient != null) {
+                    _queryCtrl.clear();
+                    setState(() {
+                      _selected = null;
+                      _clearedOnce = true;
+                    });
+                  }
+                },
               ),
               const SizedBox(height: 8),
 
