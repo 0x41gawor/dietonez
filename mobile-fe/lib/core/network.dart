@@ -32,6 +32,4 @@ class ApiClient {
       throw Exception('HTTP ${response.statusCode}: ${response.body}');
     }
   }
-
-
 }
