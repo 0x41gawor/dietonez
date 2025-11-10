@@ -14,6 +14,7 @@ export interface GetDishesParams {
 }
 
 export async function getDishes(params: GetDishesParams): Promise<DishGetShort[]> {
+  console.log('API Call: getDishes with params', params);
   const response = await client.get('/dishes', { params })
   return response.data
 }

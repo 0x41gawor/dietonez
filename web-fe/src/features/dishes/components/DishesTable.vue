@@ -213,7 +213,7 @@ td {
   font-size: 0.95rem;
   vertical-align: middle;
 }
-.tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.6rem; font-weight: 500; }
+.tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.95rem; font-weight: 400; }
 .action-button { background-color: var(--grey-100); border: none; color: var(--btn-delete); padding: 6px 9px; border-radius: 1px; cursor: pointer; display: inline-flex; transition: background-color 0.2s ease; }
 .action-button:hover { color: var(--btn-delete-hover); background-color: var(--grey-200); }
 td:last-child { text-align: center; }

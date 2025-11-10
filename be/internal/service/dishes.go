@@ -24,7 +24,7 @@ func (s *ServiceDishes) ListByMeal(
 	ctx context.Context,
 	meal string,
 ) ([]*model.DishGetShort, error) {
-
+	fmt.Print("Hi")
 	const q = `
 	SELECT
 		d.id,
@@ -60,6 +60,11 @@ func (s *ServiceDishes) ListByMeal(
 		); err != nil {
 			return nil, fmt.Errorf("scan dish: %w", err)
 		}
+		labels, err := repo.NewRepositoryDishLabels().GetByDishId(d.ID)
+		if err != nil {
+			return nil, fmt.Errorf("get labels for dish %d: %w", d.ID, err)
+		}
+		d.Labels = labels
 		out = append(out, d)
 	}
 	if err := rows.Err(); err != nil {
