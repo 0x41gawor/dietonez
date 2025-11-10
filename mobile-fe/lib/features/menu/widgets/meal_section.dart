@@ -110,6 +110,85 @@ class _MealSectionState extends State<MealSection> {
           const SizedBox(height: 4),
           Row(
             children: [
+              if (widget.meal.dish.name != "")
+                InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) {
+                        final recipe = widget.meal.dish.recipe;
+                        return AlertDialog(
+                          title: Text('Przepis: ${widget.meal.dish.name}'),
+                          content: SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // totalTime
+                                TextField(
+                                  controller: TextEditingController(text: recipe.totalTime ?? ''),
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Total time',
+                                    alignLabelWithHint: true,
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+
+                                // before
+                                TextField(
+                                  controller: TextEditingController(text: recipe.before ?? ''),
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Before',
+                                    alignLabelWithHint: true,
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+
+                                // whenToStart
+                                TextField(
+                                  controller: TextEditingController(text: recipe.whenToStart ?? ''),
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'When to start',
+                                    alignLabelWithHint: true,
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+
+                                // preparation (textarea)
+                                TextField(
+                                  controller: TextEditingController(text: recipe.preparation ?? ''),
+                                  readOnly: true,
+                                  maxLines: 6,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Preparation',
+                                    alignLabelWithHint: true,
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(0),
+                    child: Icon(Icons.menu_book_outlined, size: 18),
+                  ),
+                ),
               Spacer(),
               MacroChip(type: Macro.kcal, text: widget.meal.dish.kcal.round().toString()),
               const SizedBox(width: 8),
