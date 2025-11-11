@@ -11,8 +11,8 @@ class DbScreen extends StatelessWidget {
     return Scaffold(
       body: const Center(child: Text('Database')),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.black,
+        child: const Icon(Icons.add, color: Colors.white,),
         onPressed: () async {
           final result = await showDialog<IngredientPost>(
             context: context,

@@ -57,7 +57,7 @@ class DateHeader extends StatelessWidget {
   Widget _roundButton(IconData icon, VoidCallback onTap) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: pill(color: const Color(0xFFEDEDED)),
+      decoration: pill(color: Colors.white),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,

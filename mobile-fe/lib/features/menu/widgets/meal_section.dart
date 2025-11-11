@@ -288,8 +288,8 @@ class _MealSectionState extends State<MealSection> {
                   _toast(context, 'Składnik dodany');
                 }
               },
-              backgroundColor: const Color(0xFF2E7D32),
-              child: const Icon(Icons.add_circle_outline, color: Colors.white),
+              backgroundColor: Colors.black,
+              child: const Icon(Icons.add_outlined, color: Colors.white),
             ),
           ),
         ],

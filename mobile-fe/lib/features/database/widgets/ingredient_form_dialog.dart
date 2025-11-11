@@ -24,6 +24,7 @@ class _IngredientFormDialogState extends State<IngredientFormDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -60,7 +61,7 @@ class _IngredientFormDialogState extends State<IngredientFormDialog> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, foregroundColor: Colors.white),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.black, foregroundColor: Colors.white),
                         onPressed: () => Navigator.pop(context),
                         child: const Text("Anuluj"),
                       ),
@@ -68,7 +69,7 @@ class _IngredientFormDialogState extends State<IngredientFormDialog> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.black, foregroundColor: Colors.white),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             Navigator.pop(
