@@ -4,6 +4,12 @@ ThemeData buildAppTheme() {
   const base = Colors.black87;
   return ThemeData(
     useMaterial3: true,
+    colorScheme: const ColorScheme.light(
+      primary: base,
+      secondary: Colors.black54,
+      surface: Colors.white,
+      onSurface: base,
+    ),
     scaffoldBackgroundColor: Colors.white,
     dialogTheme: DialogThemeData(
       backgroundColor: Colors.white,
