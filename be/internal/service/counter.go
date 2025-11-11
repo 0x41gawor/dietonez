@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"math"
 	"sort"
 	"time"
 
@@ -205,7 +204,7 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 		case 4:
 			dishTemp.Ingredients = mealMap["Supper"]
 		}
-		// posotruj składaniaki według znaczenia kalorycznego
+		// posotruj składaniki według znaczenia kalorycznego
 		if len(dishTemp.Ingredients) > 1 {
 			sort.Slice(dishTemp.Ingredients, func(i, j int) bool {
 				iKcal := dishTemp.Ingredients[i].Ingredient.Kcal
@@ -224,9 +223,6 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 		Supper:      model.DishInMenu{Dish: dishes[4], SlotNum: slotsRange[4]},
 		Summary:     model.MenuSummary{}, // Możesz dodać podsumowanie, jeśli potrzebne
 	}
-
-	fmt.Println("--fsfds--")
-	fmt.Println(dishes[0])
 
 	//Policz Summary z ingredients
 	menu, err = s.CalculateDishesSummary(menu)
@@ -247,12 +243,10 @@ func (s *ServiceCounter) CalculateDishesSummary(menu *model.Menu) (*model.Menu, 
 	sumFats := 0.0
 	if menu.Breakfast.Dish != nil {
 		for _, ing := range menu.Breakfast.Dish.Ingredients {
-			fmt.Println("PODCZAS LICZENIA DANIA: ", ing.Ingredient.Name, ing.Amount, ing.Ingredient.Kcal, ing.Ingredient.DefaultAmount)
 			sumKcal += ing.Ingredient.Kcal
 			sumProt += ing.Ingredient.Protein
 			sumCarb += ing.Ingredient.Carbs
 			sumFats += ing.Ingredient.Fat
-			fmt.Println("SUMY: ", sumKcal, sumProt, sumCarb, sumFats)
 		}
 		menu.Breakfast.Dish.Kcal = round2(sumKcal)
 		menu.Breakfast.Dish.Protein = round2(sumProt)
@@ -342,21 +336,18 @@ func (s *ServiceCounter) CalculateMenuSummary(ctx context.Context, menu *model.M
 			totalCarbs += meal.Dish.Carbs
 		}
 	}
-
 	menu.Summary.Kcal = round2(totalKcal)
 	menu.Summary.Proteins = round2(totalProteins)
 	menu.Summary.Fats = round2(totalFats)
 	menu.Summary.Carbs = round2(totalCarbs)
 	// fetch kcal goal
-	currentDietDayInDayKcal := currentDietDay - int(math.Floor(float64(currentDietDay)/7))
-	var dayKcalGoal float64
-	err := s.db.QueryRowContext(ctx, `
-		SELECT kcal
-		FROM day_kcals
-		WHERE day_num = $1
-	`, currentDietDayInDayKcal).Scan(&dayKcalGoal)
+	dietContext, err := repo.NewRepositoryDietContext().Get()
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch max dayGoal: %w", err)
+		return nil, fmt.Errorf("get active diet id: %w", err)
+	}
+	dayKcalGoal, err := repo.NewRepositoryDayKcals().GetKcalByDietIdAndDayNum(dietContext.ActiveDietID, currentDietDay)
+	if err != nil {
+		return nil, fmt.Errorf("get day kcal goal: %w", err)
 	}
 	menu.Summary.KcalGoal = round2(dayKcalGoal)
 	menu.Summary.ProteinPerKg = round2(totalProteins / float64(currentWeight))

@@ -23,62 +23,26 @@ func NewServiceMenu() *ServiceMenu {
 }
 
 func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, error) {
-	var activeDietID int
-	var startDate time.Time
-	var currentWeight float64
-
-	err := s.db.QueryRowContext(ctx, `
-		SELECT active_diet, start_date, current_weight
-		FROM diet_context
-		LIMIT 1
-	`).Scan(&activeDietID, &startDate, &currentWeight)
-
-	// Walidacja: startDate musi być poniedziałkiem
-	if startDate.Weekday() != time.Monday {
-		return nil, fmt.Errorf("invalid start_date: expected Monday, got %s", startDate.Weekday().String())
-	}
-
+	dietContext, err := repo.NewRepositoryDietContext().Get()
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no active diet set in context")
-		}
-		return nil, fmt.Errorf("failed to fetch active diet: %w", err)
+		return nil, fmt.Errorf("get diet context: %w", err)
 	}
-	var maxSlotNum int
-	err = s.db.QueryRowContext(ctx, `
-		SELECT MAX(slot_num)
-		FROM diet_slots
-		WHERE diet_id = $1
-	`, activeDietID).Scan(&maxSlotNum)
 
+	currentDietDay, err := NewServiceDietContext().GetCurrentDietDay(ctx, date)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch max slot_num: %w", err)
+		return nil, fmt.Errorf("get current diet day: %w", err)
 	}
-
-	print("maxSlotNum:", maxSlotNum, "\n")
-
-	// Obliczenie różnicy dni (startDate → date) +1
-	daysBetween := int(date.Sub(startDate).Hours() / 24)
-	print("daysBetween:", daysBetween, "\n")
-	if daysBetween < 0 {
-		return nil, fmt.Errorf("current date is before start date")
-	}
-
-	maxDietDay := (maxSlotNum + 1) / 5
-	print("maxDietDay:", maxDietDay, "\n")
-	currentDietDay := daysBetween % maxDietDay
-	print("currentDietDay:", currentDietDay, "\n")
 
 	slotsRange := getMenuSlotsRange(currentDietDay)
 	fmt.Println(slotsRange)
 
-	dishIDs, err := s.getDishIDsForSlots(ctx, activeDietID, slotsRange)
+	dishIDs, err := s.getDishIDsForSlots(ctx, dietContext.ActiveDietID, slotsRange)
 	if err != nil {
 		return nil, err
 	}
 
 	if s.IsInTwoWeeksWindow(date) {
-		return NewServiceCounter().Get(ctx, date, dishIDs, slotsRange, currentDietDay, float32(currentWeight))
+		return NewServiceCounter().Get(ctx, date, dishIDs, slotsRange, currentDietDay, float32(dietContext.CurrentWeight))
 	}
 
 	var dishes [5]*model.DishGet
@@ -111,16 +75,10 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		sumCarbs += round2(dish.Carbs)
 		sumFat += round2(dish.Fat)
 	}
-	currentDietDayInDayKcal := currentDietDay - int(math.Floor(float64(currentDietDay)/7))
 	// fetch kcal goal
-	var dayKcalGoal float64
-	err = s.db.QueryRowContext(ctx, `
-		SELECT kcal
-		FROM day_kcals
-		WHERE day_num = $1
-	`, currentDietDayInDayKcal).Scan(&dayKcalGoal)
+	dayKcalGoal, err := repo.NewRepositoryDayKcals().GetKcalByDietIdAndDayNum(dietContext.ActiveDietID, currentDietDay)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch max dayGoal: %w", err)
+		return nil, fmt.Errorf("get day kcal goal: %w", err)
 	}
 	// prepare summary
 	fatsPerc := 0.0
@@ -133,9 +91,9 @@ func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, err
 		Fats:         round2(sumFat),
 		Carbs:        round2(sumCarbs),
 		KcalGoal:     round2(dayKcalGoal),
-		ProteinPerKg: round2(sumProtein / currentWeight),
+		ProteinPerKg: round2(sumProtein / dietContext.CurrentWeight),
 		FatsPerc:     fatsPerc,
-		CarbsPerKg:   round2(sumCarbs / currentWeight),
+		CarbsPerKg:   round2(sumCarbs / dietContext.CurrentWeight),
 	}
 
 	menu := &model.Menu{
@@ -189,11 +147,6 @@ func (s *ServiceMenu) getDishIDsForSlots(ctx context.Context, dietID int, slots 
 			dishIDs = append(dishIDs, 0) // lub panic/fallback
 		}
 	}
-	print("dishIDs: ")
-	for _, id := range dishIDs {
-		print(id, " ")
-	}
-	print("\n")
 	return dishIDs, nil
 }
 

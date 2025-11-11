@@ -19,6 +19,35 @@ func NewServiceDietContext() *ServiceDietContext {
 	return &ServiceDietContext{db: db}
 }
 
+func (s *ServiceDietContext) GetCurrentDietDay(ctx context.Context, date time.Time) (int, error) {
+	dietContext, err := repo.NewRepositoryDietContext().Get()
+	if err != nil {
+		return 0, fmt.Errorf("get diet context: %w", err)
+	}
+	startDate := dietContext.StartDate.Truncate(24 * time.Hour)
+	if startDate.Weekday() != time.Monday {
+		return 0, fmt.Errorf("invalid start_date in diet context: expected Monday, got %s", startDate.Weekday().String())
+	}
+
+	maxSlotNum, err := repo.NewRepositoryDietSlots().GetMaxSlotNumByDietId(dietContext.ActiveDietID)
+	if err != nil {
+		return 0, fmt.Errorf("get max slot num: %w", err)
+	}
+
+	// obliczenie różnicy dni (startDate → date)
+	daysBetween := int(date.Sub(startDate).Hours() / 24)
+	print("daysBetween:", daysBetween, "\n")
+	if daysBetween < 0 {
+		return 0, fmt.Errorf("current date is before start date")
+	}
+
+	maxDietDay := (maxSlotNum + 1) / 5
+	print("maxDietDay:", maxDietDay, "\n")
+	currentDietDay := daysBetween % maxDietDay
+	print("currentDietDay:", currentDietDay, "\n")
+	return currentDietDay, nil
+}
+
 func (s *ServiceDietContext) Get(ctx context.Context) (*model.DietContextGet, error) {
 	const q = `
 		SELECT dc.active_diet, dc.start_date, dc.current_weight,

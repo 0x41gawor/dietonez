@@ -262,3 +262,9 @@ type DietSlotPut struct {
 	SlotNum int `json:"slot_num"`
 	DishId  int `json:"dish_id"`
 }
+
+type DietContext struct {
+	ActiveDietID  int
+	StartDate     time.Time
+	CurrentWeight float64
+}
