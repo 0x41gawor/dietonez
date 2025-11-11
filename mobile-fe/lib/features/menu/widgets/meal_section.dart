@@ -29,6 +29,12 @@ class MealSection extends StatefulWidget {
 class _MealSectionState extends State<MealSection> {
   bool _expanded = false;
 
+  String trimTo36Chars(String text) {
+    if (text.length <= 36) return text;
+    return text.substring(0, 33) + '...';
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final header = Container(
@@ -97,7 +103,7 @@ class _MealSectionState extends State<MealSection> {
                       }
                     }
                   },
-                  child: Text(widget.meal.dish.name, style: Theme.of(context).textTheme.titleLarge),
+                  child: Text(trimTo36Chars(widget.meal.dish.name), maxLines: 1,style: Theme.of(context).textTheme.titleLarge),
                 ),
               ),
               AnimatedRotation(
