@@ -5,6 +5,19 @@ ThemeData buildAppTheme() {
   return ThemeData(
     useMaterial3: true,
     scaffoldBackgroundColor: Colors.white,
+    dialogTheme: DialogThemeData(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      titleTextStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
+      contentTextStyle: TextStyle(
+        fontSize: 16,
+        color: Colors.black,
+      )
+    ),
     textTheme: const TextTheme(
       headlineSmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w600, color: base),
       titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: base),
@@ -15,6 +28,17 @@ ThemeData buildAppTheme() {
     ),
     dividerColor: Colors.white,
     splashFactory: InkRipple.splashFactory,
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: base,
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: base,
+        foregroundColor: Colors.white,
+      ),
+    ),
   );
 }
 

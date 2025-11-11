@@ -60,8 +60,7 @@ class _IngredientFormDialogState extends State<IngredientFormDialog> {
                 Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.black, foregroundColor: Colors.white),
+                      child: TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: const Text("Anuluj"),
                       ),

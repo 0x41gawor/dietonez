@@ -93,7 +93,7 @@ class _MealSectionState extends State<MealSection> {
                           content: Text("Czy chcesz podmienić na '${selected.name}'?"),
                           actions: [
                             TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Anuluj")),
-                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("OK")),
+                            ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("OK")),
                           ],
                         ),
                       );
