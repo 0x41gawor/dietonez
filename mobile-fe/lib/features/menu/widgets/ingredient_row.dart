@@ -19,6 +19,34 @@ class IngredientRow extends StatelessWidget {
     };
   }
 
+  String getUnitTextString(num amount, String unit) {
+    // units = ["g", "porcja", "sztuka", "kromka", "łyżeczka", "łyżka", "opakowanie", "szczypta"]
+
+    if (amount <= 1) return unit;
+
+    switch (unit) {
+      case "porcja":
+        return "porcje";
+      case "sztuka":
+        return "sztuki";
+      case "kromka":
+        return "kromki";
+      case "łyżeczka":
+        return "łyżeczki";
+      case "łyżka":
+        return "łyżki";
+      case "opakowanie":
+        return "opakowania";
+      case "szczypta":
+        return "szczypty";
+      case "g":
+        return "g"; // gramów nie odmieniamy
+      default:
+        return unit;
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final m = _calc();
@@ -82,9 +110,21 @@ class IngredientRow extends StatelessWidget {
                 child: const Icon(Icons.edit, size: 15),
               ),
               const SizedBox(width: 10,),
-              Text(
-                '${mi.amount} ${mi.ingredient.unit}',
-                style: Theme.of(context).textTheme.bodyLarge,
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '${mi.amount} ',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    TextSpan(
+                      text: getUnitTextString(mi.amount, mi.ingredient.unit),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Colors.black54, // 🔹 tu zmień np. na Colors.black87 / black45 / itp.
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const Spacer(),
               // Text(m[Macro.kcal]!.round().toString()),

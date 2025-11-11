@@ -13,7 +13,7 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
-  int _index = 2; // start on shopping list, like mock
+  int _index = 2; // start na Menu
 
   Widget _tab(int i) {
     switch (i) {
@@ -27,14 +27,14 @@ class _AppShellState extends State<AppShell> {
   }
 
   Widget _navIcon(String name, {bool active = false}) {
-    final imgPath = 'assets/icons/$name-${active ? 'full' : 'empty'}.png';
+    final imgPath = 'assets/icons/$name-${active ? 'empty-filled' : 'empty'}.png';
 
     return Container(
-      width: 48,                 // stały rozmiar = brak skoków
+      width: 48,
       height: 48,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: active ? const Color(0xFF4CAF50) : Colors.transparent,
+        color: active ? const Color(0xFF000000) : Colors.transparent,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Image.asset(imgPath, width: 28, height: 28),
@@ -55,35 +55,35 @@ class _AppShellState extends State<AppShell> {
               IconButton(
                 onPressed: () => setState(() => _index = 0),
                 icon: _navIcon('home', active: _index == 0),
-                padding: EdgeInsets.zero,                              // <-- ważne
+                padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 splashRadius: 28,
               ),
               IconButton(
                 onPressed: () => setState(() => _index = 1),
                 icon: _navIcon('database', active: _index == 1),
-                padding: EdgeInsets.zero,                              // <-- ważne
+                padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 splashRadius: 28,
               ),
               IconButton(
                 onPressed: () => setState(() => _index = 2),
                 icon: _navIcon('menu', active: _index == 2),
-                padding: EdgeInsets.zero,                              // <-- ważne
+                padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 splashRadius: 28,
               ),
               IconButton(
                 onPressed: () => setState(() => _index = 3),
                 icon: _navIcon('shop-list', active: _index == 3),
-                padding: EdgeInsets.zero,                              // <-- ważne
+                padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 splashRadius: 28,
               ),
               IconButton(
                 onPressed: () => setState(() => _index = 4),
                 icon: _navIcon('user', active: _index == 4),
-                padding: EdgeInsets.zero,                              // <-- ważne
+                padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 splashRadius: 28,
               ),

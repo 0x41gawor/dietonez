@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/date_symbol_data_local.dart';   // <-- NEW
-import 'package:intl/intl.dart';                    // <-- optional (for defaultLocale)
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'features/menu/controller.dart';
-import 'features/menu/controller.dart'; // <-- nowy import
 
 import 'core/theme.dart';
 import 'app_shell.dart';

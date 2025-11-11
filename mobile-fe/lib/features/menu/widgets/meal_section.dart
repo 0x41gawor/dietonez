@@ -29,6 +29,12 @@ class MealSection extends StatefulWidget {
 class _MealSectionState extends State<MealSection> {
   bool _expanded = false;
 
+  String trimTo36Chars(String text) {
+    if (text.length <= 36) return text;
+    return text.substring(0, 33) + '...';
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final header = Container(
@@ -87,7 +93,7 @@ class _MealSectionState extends State<MealSection> {
                           content: Text("Czy chcesz podmienić na '${selected.name}'?"),
                           actions: [
                             TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Anuluj")),
-                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("OK")),
+                            ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("OK")),
                           ],
                         ),
                       );
@@ -97,7 +103,7 @@ class _MealSectionState extends State<MealSection> {
                       }
                     }
                   },
-                  child: Text(widget.meal.dish.name, style: Theme.of(context).textTheme.titleLarge),
+                  child: Text(trimTo36Chars(widget.meal.dish.name), maxLines: 1,style: Theme.of(context).textTheme.titleLarge),
                 ),
               ),
               AnimatedRotation(
@@ -288,8 +294,8 @@ class _MealSectionState extends State<MealSection> {
                   _toast(context, 'Składnik dodany');
                 }
               },
-              backgroundColor: const Color(0xFF2E7D32),
-              child: const Icon(Icons.add_circle_outline, color: Colors.white),
+              backgroundColor: Colors.black,
+              child: const Icon(Icons.add_outlined, color: Colors.white),
             ),
           ),
         ],

@@ -11,7 +11,7 @@ class CountBadge extends StatelessWidget {
         : Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF4CAF50),
+        color: Colors.black,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
