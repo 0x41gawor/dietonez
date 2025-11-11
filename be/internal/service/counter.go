@@ -179,6 +179,7 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 				Carbs:         ingredient.Carbs * amount / ingredient.DefaultAmount,
 				Fat:           ingredient.Fat * amount / ingredient.DefaultAmount,
 				DefaultAmount: ingredient.DefaultAmount,
+				Unit:          ingredient.Unit,
 				Labels:        ingredient.Labels,
 				Path:          ingredient.Path,
 			},
