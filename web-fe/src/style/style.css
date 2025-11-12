@@ -43,17 +43,17 @@
   --meal-preworkout: var(--color-brand-shakespeare);
   --meal-supper: var(--color-brand-fruit-salad);
 
-  --btn-update: var(--color-brand-ebony);
-  --btn-delete: var(--color-brand-flamingo);
-  --btn-delete-hover: var(--color-grey-1200);
-  --btn-add: var(--color-brand-sea-green);
-  --btn-revert: var(--color-brand-kashmir-blue);
-
+  --btn-update: var(--color-grey-black);
+  --btn-delete: var(--color-grey-black);
+  --btn-hover: var(--color-grey-1200);
+  --btn-add: var(--color-grey-black);
+  --btn-revert: var(--color-grey-black);
+  --btn-disabled: var(--color-grey-950);
   --radius: 8px;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 
 :root.dark {
-  --bg: var(--color-grey-1200);
+  --bg: var(--color-grey-white);
   --bg-alt: var(--color-grey-950);
   --text: var(--color-grey-white);
   --text-muted: var(--color-grey-600);
@@ -142,4 +142,22 @@ hr {
 .grid {
   display: grid;
   gap: 1rem;
+}
+
+/* Czarny motyw dla toastów */
+.Vue-Toastification__toast {
+  background-color: #000 !important;  /* czarne tło */
+  color: #fff !important;              /* biały tekst */
+  border-radius: 8px;                  /* lekko zaokrąglone */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Przycisk zamykania (X) */
+.Vue-Toastification__close-button {
+  color: #fff !important;
+}
+
+/* Pasek postępu (opcjonalnie biały lub przezroczysty) */
+.Vue-Toastification__progress-bar {
+  background-color: #fff !important;
 }

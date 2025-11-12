@@ -37,6 +37,6 @@ defineEmits(['click']);
 }
 
 .delete-week-button:hover {
-  background-color: var(--btn-delete-hover);
+  background-color: var(--btn-hover);
 }
 </style>

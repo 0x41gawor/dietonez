@@ -35,6 +35,12 @@ defineEmits(['click']);
 }
 
 .add-button:hover {
-  background-color: #184916; 
+  background-color: var(--btn-hover);
+}
+
+.add-button:disabled {
+  background-color: var(--btn-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 </style>

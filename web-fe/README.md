@@ -28,7 +28,7 @@ src/
 ├── types/                  # wspólne typy DTO z backendu (z OpenAPI)
 ├── utils/                  # funkcje pomocnicze, np. formatowanie
 ├── style/
-│   ├── style.css           # globalny CSS (ten co już mamy)
+│   ├── style.css           # globalny CSS
 │   └── variables.css       # opcjonalnie podział zmiennych
 ├── App.vue
 ├── main.ts

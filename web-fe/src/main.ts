@@ -33,4 +33,3 @@ app.use(Toast, toastOptions)
 
 // Montujemy aplikację
 app.mount('#app')
-

@@ -25,13 +25,12 @@
 
         
         <div class="delete-button-wrapper">
-
             <div class="right-buttons">
                 <DeleteButton @click="handleDeleteButtonClick" :disabled="false" />
             </div>
             <div class="left-buttons">
-                <AddWeekButton @click="handleAddWeekButtonClick" :disabled="false" />
                 <DeleteWeekButton @click="handleDeleteWeekButtonClick" :disabled="false" />
+                <AddWeekButton @click="handleAddWeekButtonClick" :disabled="false" />
             </div>
 
             

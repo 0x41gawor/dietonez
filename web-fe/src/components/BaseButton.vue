@@ -62,7 +62,7 @@ defineEmits(['click']);
 
 /* Add a style for the disabled state */
 .base-button:disabled {
-  background-color: #a0aec0; /* A grey color */
+  background-color: var(--btn-disabled); /* A grey color */
   cursor: not-allowed;
   opacity: 0.7;
   transform: none; /* remove hover effect */

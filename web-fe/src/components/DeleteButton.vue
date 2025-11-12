@@ -24,6 +24,6 @@ defineEmits(['click']);
 }
 
 .delete-button:hover {
-  background-color: #2d3748; /* A slightly lighter dark color on hover */
+  background-color: var(--btn-hover);
 }
 </style>

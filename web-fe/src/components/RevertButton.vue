@@ -28,17 +28,8 @@ defineEmits(['click']);
 </script>
 
 <style scoped>
-/*
-  We use a class on the root of our component.
-  Because the styles are scoped, Vue will add a unique data-attribute,
-  ensuring these styles only apply to this component's BaseButton instance.
-*/
 .revert-button {
   background-color: var(--btn-revert);
   color: white;
-}
-
-.revert-button:hover {
-  background-color: #4a627a;
 }
 </style>

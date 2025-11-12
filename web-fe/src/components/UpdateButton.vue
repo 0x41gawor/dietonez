@@ -32,8 +32,4 @@ defineEmits(['click']);
   background-color: var(--btn-update); /* A dark blue/charcoal color */
   color: white;
 }
-
-.update-button:hover {
-  background-color: #2d3748; /* A slightly lighter dark color on hover */
-}
 </style>
