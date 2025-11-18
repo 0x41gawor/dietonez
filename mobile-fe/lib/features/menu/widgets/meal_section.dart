@@ -253,7 +253,7 @@ class _MealSectionState extends State<MealSection> {
                   builder: (ctx) => IngredientEditDialog(
                     meal: widget.title,
                     day: context.read<MenuViewController>().selectedDate,
-                    initialIngredient: IngredientMin(id: it.ingredient.id, name: it.ingredient.name),
+                    initialIngredient: IngredientMinUnit(id: it.ingredient.id, name: it.ingredient.name, unit: it.ingredient.unit),
                     initialAmount: it.amount,
                   ),
                 );

@@ -46,20 +46,23 @@ class IngredientFull {
   };
 }
 
-class IngredientMin {
+class IngredientMinUnit {
   final int id;
   final String name;
+  final String unit;
 
-  IngredientMin({required this.id, required this.name});
+  IngredientMinUnit({required this.id, required this.name, this.unit= 'g'});
 
-  factory IngredientMin.fromJson(Map<String, dynamic> j) => IngredientMin(
+  factory IngredientMinUnit.fromJson(Map<String, dynamic> j) => IngredientMinUnit(
     id: j['id'] as int,
     name: j['name'] as String,
+    unit: j['unit'] as String,
   );
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
+    'unit': unit,
   };
 }
 

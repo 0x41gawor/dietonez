@@ -71,7 +71,7 @@ class MenuService {
   }
 
 
-  Future<List<IngredientMin>> searchIngredients({
+  Future<List<IngredientMinUnit>> searchIngredients({
     required String query,
     int reslen = 10,
     bool short = true,
@@ -86,7 +86,7 @@ class MenuService {
     );
 
     final list = data['ingredients'] as List<dynamic>;
-    return list.map((e) => IngredientMin.fromJson(e)).toList();
+    return list.map((e) => IngredientMinUnit.fromJson(e)).toList();
   }
 
 
