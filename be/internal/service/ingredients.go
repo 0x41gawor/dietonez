@@ -378,16 +378,17 @@ func (s *ServiceIngredients) Search(ctx context.Context, query string, responseC
 	}
 
 	if short {
-		ingredients := make([]*model.IngredientMin, len(scoredItems))
+		ingredients := make([]*model.IngredientMinUnit, len(scoredItems))
 		for i, item := range scoredItems {
 			ing, err := s.GetByID(ctx, item.Id)
 			if err != nil {
 				return nil, 0, fmt.Errorf("get by id %d: %w", item.Id, err)
 			}
 			if ing != nil {
-				ingredients[i] = &model.IngredientMin{
+				ingredients[i] = &model.IngredientMinUnit{
 					ID:   ing.ID,
 					Name: ing.Name,
+					Unit: ing.Unit,
 				}
 			}
 		}
