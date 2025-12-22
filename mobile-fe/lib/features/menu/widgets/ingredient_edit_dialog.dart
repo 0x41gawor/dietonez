@@ -4,7 +4,7 @@ import '../models.dart';
 import '../service.dart';
 
 class IngredientEditDialog extends StatefulWidget {
-  final IngredientMin? initialIngredient; // null → tryb Add
+  final IngredientMinUnit? initialIngredient; // null → tryb Add
   final num? initialAmount;
   final String meal;
   final DateTime day;
@@ -25,9 +25,9 @@ class _IngredientEditDialogState extends State<IngredientEditDialog> {
   final _service = MenuService();
   final _queryCtrl = TextEditingController();
   final _amountCtrl = TextEditingController();
-  List<IngredientMin> _results = [];
+  List<IngredientMinUnit> _results = [];
   Timer? _debounce;
-  IngredientMin? _selected;
+  IngredientMinUnit? _selected;
   bool _clearedOnce = false;
 
 
@@ -78,7 +78,7 @@ class _IngredientEditDialogState extends State<IngredientEditDialog> {
             children: [
               TextField(
                 controller: _queryCtrl,
-                decoration: const InputDecoration(labelText: 'Ingredient name'),
+                decoration: const InputDecoration(labelText: 'Nazwa'),
                 onChanged: _onQueryChanged,
                 onTap: () {
                   if (!_clearedOnce && widget.initialIngredient != null) {
@@ -119,7 +119,11 @@ class _IngredientEditDialogState extends State<IngredientEditDialog> {
 
               TextField(
                 controller: _amountCtrl,
-                decoration: const InputDecoration(labelText: 'Amount'),
+                decoration: InputDecoration(
+                  labelText: (_selected?.unit == null)
+                      ? 'Ilość'
+                      : 'Ilość [${_selected!.unit}]',
+                ),
                 keyboardType: TextInputType.number,
               ),
             ],
