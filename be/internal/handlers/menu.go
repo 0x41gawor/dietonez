@@ -68,3 +68,15 @@ func (h *HandlerMenu) handleDELETE(w http.ResponseWriter, r *http.Request) error
 	w.WriteHeader(http.StatusNoContent)
 	return nil
 }
+
+func (h *HandlerMenu) handleSlotPUT(w http.ResponseWriter, r *http.Request) error {
+	var record model.UpsertDietSlotsCounterRecord
+	if err := json.NewDecoder(r.Body).Decode(&record); err != nil {
+		return err
+	}
+	if err := h.sc.UpsertDietSlotsCounterRecord(r.Context(), record); err != nil {
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, map[string]string{"status": "success"})
+}

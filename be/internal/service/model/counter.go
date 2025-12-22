@@ -20,3 +20,10 @@ type UpsertCounterRecord struct {
 	Meal            string  `json:"meal"`
 	Amount          float64 `json:"amount"`
 }
+
+type UpsertDietSlotsCounterRecord struct {
+	Day    string `json:"day"`
+	Meal   string `json:"meal"`
+	Name   string `json:"name"`
+	DishID *int64 `json:"dishId"`
+}
