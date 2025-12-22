@@ -7,7 +7,6 @@ import 'ingredient_edit_dialog.dart';
 import 'package:provider/provider.dart';
 import '../controller.dart';
 
-
 class MealSection extends StatefulWidget {
   final String title;
   final Color accent;
@@ -26,6 +25,13 @@ class MealSection extends StatefulWidget {
   State<MealSection> createState() => _MealSectionState();
 }
 
+class DishSelectionResult {
+  final int dishId;
+  final String name;
+
+  DishSelectionResult({required this.dishId, required this.name});
+}
+
 class _MealSectionState extends State<MealSection> {
   bool _expanded = false;
 
@@ -34,7 +40,6 @@ class _MealSectionState extends State<MealSection> {
     return text.substring(0, 33) + '...';
   }
 
-
   @override
   Widget build(BuildContext context) {
     final header = Container(
@@ -42,12 +47,20 @@ class _MealSectionState extends State<MealSection> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: cardRadius,
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.title, style: Theme.of(context).textTheme.titleSmall!.copyWith(color: widget.accent, fontWeight: FontWeight.w600)),
+          Text(
+            widget.title,
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall!
+                .copyWith(color: widget.accent, fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 4),
           Row(
             children: [
@@ -55,61 +68,130 @@ class _MealSectionState extends State<MealSection> {
                 child: InkWell(
                   onTap: () async {
                     final c = context.read<MenuViewController>();
-                    final options = await c.getDishOptions(widget.meal.dish.meal);
+                    final options =
+                    await c.getDishOptions(widget.meal.dish.meal);
                     if (!mounted) return;
                     if (options.isEmpty) {
                       _toast(context, 'Brak dostępnych dań');
                       return;
                     }
 
-                    final selected = await showDialog<DishOption>(
+                    final result =
+                    await showDialog<DishSelectionResult>(
                       context: context,
                       builder: (ctx) {
-                        return AlertDialog(
-                          title: Text("Wybierz danie"),
-                          content: SizedBox(
-                            width: double.maxFinite,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: options.length,
-                              itemBuilder: (ctx, i) {
-                                final d = options[i];
-                                return ListTile(
-                                  title: Text(d.name),
-                                  onTap: () => Navigator.of(ctx).pop(d),
-                                );
-                              },
-                            ),
-                          ),
+                        DishOption? selectedDish;
+                        final initialName = widget.meal.dish.name;
+                        final nameController =
+                        TextEditingController(text: initialName);
+                        bool nameChanged = false;
+
+                        return StatefulBuilder(
+                          builder: (ctx, setState) {
+                            final canSubmit =
+                                nameChanged || selectedDish != null;
+
+                            return AlertDialog(
+                              title: const Text("Wybierz danie"),
+                              content: SizedBox(
+                                width: double.maxFinite,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // 🔹 LISTA DAŃ
+                                    Expanded(
+                                      child: ListView.builder(
+                                        itemCount: options.length,
+                                        itemBuilder: (ctx, i) {
+                                          final d = options[i];
+                                          final selected =
+                                              selectedDish?.id == d.id;
+
+                                          return ListTile(
+                                            title: Text(d.name),
+                                            trailing: selected
+                                                ? const Icon(Icons.check)
+                                                : null,
+                                            selected: selected,
+                                            onTap: () {
+                                              setState(() {
+                                                selectedDish = d;
+                                                nameController.text = d.name;
+                                                nameChanged =
+                                                    d.name != initialName;
+                                              });
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+
+                                    // 🔹 NAZWA W MENU
+                                    TextField(
+                                      controller: nameController,
+                                      decoration: const InputDecoration(
+                                        labelText: "Nazwa w menu",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (v) {
+                                        setState(() {
+                                          nameChanged =
+                                              v.trim() != initialName;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: const Text("Anuluj"),
+                                ),
+                                ElevatedButton(
+                                  onPressed: canSubmit
+                                      ? () {
+                                    Navigator.pop(
+                                      ctx,
+                                      DishSelectionResult(
+                                        dishId: selectedDish?.id ??
+                                            widget.meal.dish.id,
+                                        name: nameController.text.trim(),
+                                      ),
+                                    );
+                                  }
+                                      : null,
+                                  child: const Text("OK"),
+                                ),
+                              ],
+                            );
+                          },
                         );
                       },
                     );
 
-                    if (selected != null) {
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text("Potwierdź zmianę"),
-                          content: Text("Czy chcesz podmienić na '${selected.name}'?"),
-                          actions: [
-                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Anuluj")),
-                            ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("OK")),
-                          ],
-                        ),
+                    if (result != null) {
+                      await c.replaceDish(
+                        day: c.selectedDate,
+                        meal: widget.title,
+                        dishId: result.dishId,
+                        name: result.name,
                       );
-                      if (confirm == true) {
-                        final c = context.read<MenuViewController>();
-                        await c.replaceDish(widget.meal.slotNum, selected.id);
-                      }
                     }
                   },
-                  child: Text(trimTo36Chars(widget.meal.dish.name), maxLines: 1,style: Theme.of(context).textTheme.titleLarge),
+                  child: Text(
+                    trimTo36Chars(widget.meal.dish.name),
+                    maxLines: 1,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                 ),
               ),
               AnimatedRotation(
                 turns: _expanded ? 0.5 : 0,
                 duration: const Duration(milliseconds: 180),
-                child: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.black45),
+                child: const Icon(Icons.keyboard_arrow_down_rounded,
+                    color: Colors.black45),
               ),
             ],
           ),
@@ -124,56 +206,49 @@ class _MealSectionState extends State<MealSection> {
                       builder: (ctx) {
                         final recipe = widget.meal.dish.recipe;
                         return AlertDialog(
-                          title: Text('Przepis: ${widget.meal.dish.name}'),
+                          title:
+                          Text('Przepis: ${widget.meal.dish.name}'),
                           content: SingleChildScrollView(
                             child: Column(
-                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // totalTime
                                 TextField(
-                                  controller: TextEditingController(text: recipe.totalTime ?? ''),
+                                  controller: TextEditingController(
+                                      text: recipe.totalTime ?? ''),
                                   readOnly: true,
                                   decoration: const InputDecoration(
                                     labelText: 'Total time',
-                                    alignLabelWithHint: true,
                                     border: OutlineInputBorder(),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-
-                                // before
                                 TextField(
-                                  controller: TextEditingController(text: recipe.before ?? ''),
+                                  controller: TextEditingController(
+                                      text: recipe.before ?? ''),
                                   readOnly: true,
                                   decoration: const InputDecoration(
                                     labelText: 'Before',
-                                    alignLabelWithHint: true,
                                     border: OutlineInputBorder(),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-
-                                // whenToStart
                                 TextField(
-                                  controller: TextEditingController(text: recipe.whenToStart ?? ''),
+                                  controller: TextEditingController(
+                                      text: recipe.whenToStart ?? ''),
                                   readOnly: true,
                                   decoration: const InputDecoration(
                                     labelText: 'When to start',
-                                    alignLabelWithHint: true,
                                     border: OutlineInputBorder(),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-
-                                // preparation (textarea)
                                 TextField(
-                                  controller: TextEditingController(text: recipe.preparation ?? ''),
+                                  controller: TextEditingController(
+                                      text: recipe.preparation ?? ''),
                                   readOnly: true,
                                   maxLines: 6,
                                   decoration: const InputDecoration(
                                     labelText: 'Preparation',
-                                    alignLabelWithHint: true,
                                     border: OutlineInputBorder(),
                                   ),
                                 ),
@@ -190,19 +265,24 @@ class _MealSectionState extends State<MealSection> {
                       },
                     );
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.all(0),
-                    child: Icon(Icons.menu_book_outlined, size: 18),
-                  ),
+                  child: const Icon(Icons.menu_book_outlined, size: 18),
                 ),
-              Spacer(),
-              MacroChip(type: Macro.kcal, text: widget.meal.dish.kcal.round().toString()),
+              const Spacer(),
+              MacroChip(
+                  type: Macro.kcal,
+                  text: widget.meal.dish.kcal.round().toString()),
               const SizedBox(width: 8),
-              MacroChip(type: Macro.protein, text: widget.meal.dish.protein.round().toString()),
+              MacroChip(
+                  type: Macro.protein,
+                  text: widget.meal.dish.protein.round().toString()),
               const SizedBox(width: 8),
-              MacroChip(type: Macro.fat, text: widget.meal.dish.fat.round().toString()),
+              MacroChip(
+                  type: Macro.fat,
+                  text: widget.meal.dish.fat.round().toString()),
               const SizedBox(width: 8),
-              MacroChip(type: Macro.carbs, text: widget.meal.dish.carbs.round().toString()),
+              MacroChip(
+                  type: Macro.carbs,
+                  text: widget.meal.dish.carbs.round().toString()),
             ],
           ),
         ],
@@ -217,7 +297,12 @@ class _MealSectionState extends State<MealSection> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: cardRadius,
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              offset: Offset(0, 2))
+        ],
       ),
       child: Column(
         children: [
@@ -230,14 +315,20 @@ class _MealSectionState extends State<MealSection> {
                   context: context,
                   builder: (ctx) => AlertDialog(
                     title: const Text("Usuń składnik"),
-                    content: Text("Czy na pewno chcesz usunąć '${it.ingredient.name}'?"),
+                    content: Text(
+                        "Czy na pewno chcesz usunąć '${it.ingredient.name}'?"),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Anuluj")),
-                      TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("Usuń")),
+                      TextButton(
+                          onPressed: () =>
+                              Navigator.pop(ctx, false),
+                          child: const Text("Anuluj")),
+                      TextButton(
+                          onPressed: () =>
+                              Navigator.pop(ctx, true),
+                          child: const Text("Usuń")),
                     ],
                   ),
                 );
-
                 if (confirm == true) {
                   await c.deleteIngredientFromMenu(
                     day: c.selectedDate,
@@ -248,17 +339,25 @@ class _MealSectionState extends State<MealSection> {
                 }
               },
               onEdit: () async {
-                final result = await showDialog<Map<String, dynamic>>(
+                final result =
+                await showDialog<Map<String, dynamic>>(
                   context: context,
                   builder: (ctx) => IngredientEditDialog(
                     meal: widget.title,
-                    day: context.read<MenuViewController>().selectedDate,
-                    initialIngredient: IngredientMinUnit(id: it.ingredient.id, name: it.ingredient.name, unit: it.ingredient.unit),
+                    day: context
+                        .read<MenuViewController>()
+                        .selectedDate,
+                    initialIngredient: IngredientMinUnit(
+                      id: it.ingredient.id,
+                      name: it.ingredient.name,
+                      unit: it.ingredient.unit,
+                    ),
                     initialAmount: it.amount,
                   ),
                 );
                 if (result != null) {
-                  final c = context.read<MenuViewController>();
+                  final c =
+                  context.read<MenuViewController>();
                   await c.upsertIngredientInMenu(
                     day: c.selectedDate,
                     ingredientId: result['ingredient'].id,
@@ -269,35 +368,7 @@ class _MealSectionState extends State<MealSection> {
                   _toast(context, 'Składnik zaktualizowany');
                 }
               },
-
             ),
-
-          const SizedBox(height: 2),
-          Center(
-            child: FloatingActionButton.small(
-              onPressed: () async {
-                final result = await showDialog<Map<String, dynamic>>(
-                  context: context,
-                  builder: (ctx) => IngredientEditDialog(
-                    meal: widget.title,
-                    day: context.read<MenuViewController>().selectedDate,
-                  ),
-                );
-                if (result != null) {
-                  final c = context.read<MenuViewController>();
-                  await c.upsertIngredientInMenu(
-                    day: c.selectedDate,
-                    ingredientId: result['ingredient'].id,
-                    meal: widget.title,
-                    amount: result['amount'],
-                  );
-                  _toast(context, 'Składnik dodany');
-                }
-              },
-              backgroundColor: Colors.black,
-              child: const Icon(Icons.add_outlined, color: Colors.white),
-            ),
-          ),
         ],
       ),
     );
@@ -318,6 +389,7 @@ class _MealSectionState extends State<MealSection> {
   }
 
   void _toast(BuildContext ctx, String msg) {
-    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(ctx)
+        .showSnackBar(SnackBar(content: Text(msg)));
   }
 }

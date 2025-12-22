@@ -20,16 +20,19 @@ class MenuService {
   }
 
   Future<void> replaceDishInSlot({
-    required int dietId,
-    required int slotNum,
+    required DateTime day,
+    required String meal,
     required int dishId,
+    required String name,
   }) async {
     await _api.send(
-      '/diets/$dietId/slot',
-      method: 'PATCH',
+      '/menu/slot',
+      method: 'PUT',
       body: {
-        'slot_num': slotNum,
-        'dish_id': dishId,
+        'day': yyyyMmDd(day),
+        'meal': meal,
+        'name': name,
+        'dishId': dishId,
       },
     );
   }
