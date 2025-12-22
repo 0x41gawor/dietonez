@@ -23,26 +23,28 @@ func NewServiceMenu() *ServiceMenu {
 }
 
 func (s *ServiceMenu) Get(ctx context.Context, date time.Time) (*model.Menu, error) {
+	// Pobieramy DietContext czyli {ActiveDietID, ActiveDietStartDate, CurrentWeight}
 	dietContext, err := repo.NewRepositoryDietContext().Get()
+	fmt.Println("ActiveDietId: ", dietContext.ActiveDietID)
 	if err != nil {
 		return nil, fmt.Errorf("get diet context: %w", err)
 	}
-
+	// Obliczamy aktualny dzień diety na podstawie ActiveDietStartDate i date zapytania
 	currentDietDay, err := NewServiceDietContext().GetCurrentDietDay(ctx, date)
 	if err != nil {
 		return nil, fmt.Errorf("get current diet day: %w", err)
 	}
-
+	// Obliczamy slotsRange dla danego dnia (np. dzień 0 to sloty 0-4, dzień 1 to sloty 5-9, itd.)
 	slotsRange := getMenuSlotsRange(currentDietDay)
-	fmt.Println(slotsRange)
-
+	fmt.Println("SlotsRange: ", slotsRange)
+	// Pobieramy dishIDs dla slotów z diet_slots
 	dishIDs, err := s.getDishIDsForSlots(ctx, dietContext.ActiveDietID, slotsRange)
 	if err != nil {
 		return nil, err
 	}
-
+	// Jeśli data jest w oknie 2 tygodni od dzisiaj, pobieramy menu z ServiceCounter
 	if s.IsInTwoWeeksWindow(date) {
-		return NewServiceCounter().Get(ctx, date, dishIDs, slotsRange, currentDietDay, float32(dietContext.CurrentWeight))
+		return NewServiceCounter().Get(ctx, dietContext, date, dishIDs, slotsRange, currentDietDay)
 	}
 
 	var dishes [5]*model.DishGet

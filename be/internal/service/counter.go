@@ -9,6 +9,7 @@ import (
 
 	"github.com/0x41gawor/dietonez/internal/repo"
 	"github.com/0x41gawor/dietonez/internal/service/model"
+	"github.com/lib/pq"
 )
 
 type ServiceCounter struct {
@@ -21,7 +22,7 @@ func NewServiceCounter() *ServiceCounter {
 	return &ServiceCounter{db: db, dishes: NewServiceDishes()}
 }
 
-func (s *ServiceCounter) Get(ctx context.Context, date time.Time, dishIDs []int, slotsRange []int, currentDietDay int, currentWeight float32) (*model.Menu, error) {
+func (s *ServiceCounter) Get(ctx context.Context, dietContext *model.DietContext, date time.Time, dishIDs []int, slotsRange []int, currentDietDay int) (*model.Menu, error) {
 	// sprawdzamy, czy data istnieje w tabeli counter
 	exists, err := s.IsDateInTable(ctx, date)
 	if err != nil {
@@ -30,9 +31,10 @@ func (s *ServiceCounter) Get(ctx context.Context, date time.Time, dishIDs []int,
 	if !exists {
 		// jeśli nie istnieje to wykonujemy operacje kopiowania skłądników na ten dzień według tabeli diet_slots i dishes
 		s.CopyToCounter(ctx, date, dishIDs)
+		s.CopyToDietSlotsCounter(ctx, dietContext, date, slotsRange)
 	}
 	// pobieramy składniki z tabeli counter (jeśli dania tam nie było to poprzedni if go dodał)
-	menu, err := s.GetMenuForDate(ctx, date, dishIDs, slotsRange, currentDietDay, currentWeight)
+	menu, err := s.GetMenuForDate(ctx, date, dishIDs, slotsRange, currentDietDay, float32(dietContext.CurrentWeight))
 	if err != nil {
 		return nil, err
 	}
@@ -411,4 +413,106 @@ func (s *ServiceCounter) DeleteOldCounterRecords(ctx context.Context, deltaDays 
 
 	rows, _ := result.RowsAffected()
 	return rows, nil
+}
+
+var slotToMeal = []string{
+	"Breakfast",
+	"Lunch",
+	"Pre-Workout",
+	"Post-Workout",
+	"Supper",
+}
+
+func (s *ServiceCounter) CopyToDietSlotsCounter(
+	ctx context.Context,
+	dietContext *model.DietContext,
+	date time.Time,
+	slotsRange []int,
+) error {
+
+	// -----------------------------
+	// 1. Pobierz sloty
+	// -----------------------------
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT diet_id, slot_num, dish_id
+		FROM diet_slots
+		WHERE diet_id = $1
+		  AND slot_num = ANY($2)
+		  AND dish_id IS NOT NULL
+	`, dietContext.ActiveDietID, pq.Array(slotsRange))
+	if err != nil {
+		return fmt.Errorf("query diet_slots: %w", err)
+	}
+	defer rows.Close()
+
+	type slotRow struct {
+		SlotNum int
+		DishID  int
+	}
+
+	var slots []slotRow
+
+	for rows.Next() {
+		var r slotRow
+		if err := rows.Scan(new(int), &r.SlotNum, &r.DishID); err != nil {
+			return fmt.Errorf("scan slot: %w", err)
+		}
+		slots = append(slots, r)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	if len(slots) != 5 {
+		return fmt.Errorf("expected 5 slots, got %d", len(slots))
+	}
+
+	// -----------------------------
+	// 2. Przygotuj dane do INSERT
+	// -----------------------------
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	stmt, err := tx.PrepareContext(ctx, `
+		INSERT INTO diet_slots_counter (
+			diet_id, day, meal, name, dish_id
+		) VALUES ($1, $2, $3, $4, $5)
+		ON CONFLICT (diet_id, day, meal) DO UPDATE
+		SET name = EXCLUDED.name,
+		    dish_id = EXCLUDED.dish_id
+	`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	dishesSvc := NewServiceDishes()
+
+	for _, s := range slots {
+		meal := slotToMeal[s.SlotNum%5]
+
+		name, err := dishesSvc.GetNameById(ctx, s.DishID)
+		if err != nil {
+			return fmt.Errorf("dish %d: %w", s.DishID, err)
+		}
+
+		if _, err := stmt.ExecContext(
+			ctx,
+			dietContext.ActiveDietID,
+			date,
+			meal,
+			name,
+			s.DishID,
+		); err != nil {
+			return fmt.Errorf("insert meal %s: %w", meal, err)
+		}
+	}
+
+	// -----------------------------
+	// 3. Commit
+	// -----------------------------
+	return tx.Commit()
 }

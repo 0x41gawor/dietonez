@@ -611,3 +611,22 @@ func (s *ServiceDishes) GetEmptyDish() *model.DishGet {
 		Labels: nil,
 	}
 }
+
+func (s *ServiceDishes) GetNameById(ctx context.Context, id int) (string, error) {
+	const q = `
+		SELECT name
+		FROM dishes
+		WHERE id = $1;
+	`
+
+	var name string
+	err := s.db.QueryRowContext(ctx, q, id).Scan(&name)
+	if err == sql.ErrNoRows {
+		return "", nil // 404 later
+	}
+	if err != nil {
+		return "", fmt.Errorf("query dish name: %w", err)
+	}
+
+	return name, nil
+}
