@@ -476,8 +476,8 @@ func (s *ServiceDishes) DeleteByID(ctx context.Context, id int) error {
 	return nil
 }
 
-func (s *ServiceDishes) GetCounterByID(ctx context.Context, id int) (*model.DishGet, error) {
-	if id == 0 {
+func (s *ServiceDishes) GetCounterByID(ctx context.Context, id *int) (*model.DishGet, error) {
+	if id == nil || *id == 0 {
 		empty := s.GetEmptyDish()
 		return empty, nil
 	}
