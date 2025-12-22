@@ -99,7 +99,7 @@ class _MealSectionState extends State<MealSection> {
                       );
                       if (confirm == true) {
                         final c = context.read<MenuViewController>();
-                        await c.replaceDish(widget.meal.slotNum, selected.id);
+                        await c.replaceDish(day: c.selectedDate, meal: widget.title, dishId: selected.id, name: selected.name);
                       }
                     }
                   },

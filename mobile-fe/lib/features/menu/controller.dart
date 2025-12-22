@@ -70,12 +70,13 @@ class MenuViewController extends ChangeNotifier {
     }
   }
 
-  Future<void> replaceDish(int slotNum, int dishId) async {
+  Future<void> replaceDish({required DateTime day, required String meal, required int dishId, required String name}) async {
     try {
       await _service.replaceDishInSlot(
-        dietId: 1, // tu wstaw swój kontekst (np. aktywna dieta)
-        slotNum: slotNum,
+        day: day,
+        meal: meal,
         dishId: dishId,
+        name: name,
       );
       // po udanej podmianie możesz odświeżyć menu
       await fetch();
@@ -85,6 +86,7 @@ class MenuViewController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   Future<void> deleteIngredientFromMenu({
     required DateTime day,
     required int ingredientId,
