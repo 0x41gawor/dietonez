@@ -316,19 +316,21 @@ class _MealSectionState extends State<MealSection> {
                   builder: (ctx) => AlertDialog(
                     title: const Text("Usuń składnik"),
                     content: Text(
-                        "Czy na pewno chcesz usunąć '${it.ingredient.name}'?"),
+                      "Czy na pewno chcesz usunąć '${it.ingredient.name}'?",
+                    ),
                     actions: [
                       TextButton(
-                          onPressed: () =>
-                              Navigator.pop(ctx, false),
-                          child: const Text("Anuluj")),
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: const Text("Anuluj"),
+                      ),
                       TextButton(
-                          onPressed: () =>
-                              Navigator.pop(ctx, true),
-                          child: const Text("Usuń")),
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: const Text("Usuń"),
+                      ),
                     ],
                   ),
                 );
+
                 if (confirm == true) {
                   await c.deleteIngredientFromMenu(
                     day: c.selectedDate,
@@ -339,14 +341,11 @@ class _MealSectionState extends State<MealSection> {
                 }
               },
               onEdit: () async {
-                final result =
-                await showDialog<Map<String, dynamic>>(
+                final result = await showDialog<Map<String, dynamic>>(
                   context: context,
                   builder: (ctx) => IngredientEditDialog(
                     meal: widget.title,
-                    day: context
-                        .read<MenuViewController>()
-                        .selectedDate,
+                    day: context.read<MenuViewController>().selectedDate,
                     initialIngredient: IngredientMinUnit(
                       id: it.ingredient.id,
                       name: it.ingredient.name,
@@ -355,22 +354,52 @@ class _MealSectionState extends State<MealSection> {
                     initialAmount: it.amount,
                   ),
                 );
+
                 if (result != null) {
-                  final c =
-                  context.read<MenuViewController>();
+                  final c = context.read<MenuViewController>();
                   await c.upsertIngredientInMenu(
                     day: c.selectedDate,
                     ingredientId: result['ingredient'].id,
-                    oldIngredientId: it.ingredient.id,
+                    oldIngredientId: it.ingredient.id, // ⭐ KLUCZOWE
                     meal: widget.title,
                     amount: result['amount'],
                   );
                   _toast(context, 'Składnik zaktualizowany');
                 }
               },
+
             ),
+
+          // 🔽🔽🔽 TEN FRAGMENT WRACA 🔽🔽🔽
+          const SizedBox(height: 2),
+          Center(
+            child: FloatingActionButton.small(
+              onPressed: () async {
+                final result = await showDialog<Map<String, dynamic>>(
+                  context: context,
+                  builder: (ctx) => IngredientEditDialog(
+                    meal: widget.title,
+                    day: context.read<MenuViewController>().selectedDate,
+                  ),
+                );
+                if (result != null) {
+                  final c = context.read<MenuViewController>();
+                  await c.upsertIngredientInMenu(
+                    day: c.selectedDate,
+                    ingredientId: result['ingredient'].id,
+                    meal: widget.title,
+                    amount: result['amount'],
+                  );
+                  _toast(context, 'Składnik dodany');
+                }
+              },
+              backgroundColor: Colors.black,
+              child: const Icon(Icons.add_outlined, color: Colors.white),
+            ),
+          ),
         ],
       ),
+
     );
 
     return Padding(
