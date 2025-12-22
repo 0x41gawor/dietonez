@@ -87,6 +87,17 @@ class MenuViewController extends ChangeNotifier {
     }
   }
 
+  Future<void> clearDish({required DateTime day, required String meal}) async {
+    try {
+      await _service.clearDishInSlot(day: day, meal: meal);
+      await fetch();
+    } catch (e) {
+      debugPrint("❌ Błąd wyczyszczenia dania: $e");
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
   Future<void> deleteIngredientFromMenu({
     required DateTime day,
     required int ingredientId,

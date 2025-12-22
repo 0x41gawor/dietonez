@@ -267,6 +267,32 @@ class _MealSectionState extends State<MealSection> {
                   },
                   child: const Icon(Icons.menu_book_outlined, size: 18),
                 ),
+              const SizedBox(width: 8),
+              if (widget.meal.dish.name != "")
+                InkWell(
+                  onTap: () async {
+                    final c = context.read<MenuViewController>();
+                    final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) {
+                        return AlertDialog(
+                          title: const Text("Wyczyść danie"),
+                          content: Text("Czy na pewno chcesz usunąć wszystkie składniki tego dania?"),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Anuluj")),
+                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("OK")),
+                          ],
+                        );
+                    });
+
+                    if (confirm == true) {
+                      await c.clearDish(day: c.selectedDate, meal: widget.title);
+                      _toast(context, "Danie wyczyszczone");
+                    }
+
+                  },
+                  child: const Icon(Icons.delete_outline, size: 18),
+                ),
               const Spacer(),
               MacroChip(
                   type: Macro.kcal,
@@ -370,7 +396,6 @@ class _MealSectionState extends State<MealSection> {
 
             ),
 
-          // 🔽🔽🔽 TEN FRAGMENT WRACA 🔽🔽🔽
           const SizedBox(height: 2),
           Center(
             child: FloatingActionButton.small(

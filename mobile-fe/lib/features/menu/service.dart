@@ -37,6 +37,20 @@ class MenuService {
     );
   }
 
+  Future<void> clearDishInSlot({
+    required DateTime day,
+    required String meal,
+  }) async {
+    await _api.send(
+      '/menu/slot',
+      method: 'DELETE',
+      body: {
+        'day': yyyyMmDd(day),
+        'meal': meal,
+      },
+    );
+  }
+
   Future<void> deleteIngredient({
     required DateTime day,
     required int ingredientId,
