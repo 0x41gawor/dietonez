@@ -27,3 +27,8 @@ type UpsertDietSlotsCounterRecord struct {
 	Name   string `json:"name"`
 	DishID *int64 `json:"dishId"`
 }
+
+type DietSlotsCounterRecordIndex struct {
+	Day  string `json:"day"`
+	Meal string `json:"meal"`
+}

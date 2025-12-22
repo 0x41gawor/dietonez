@@ -34,14 +34,13 @@ func (s *ServiceCounter) Get(ctx context.Context, dietContext *model.DietContext
 		s.CopyToDietSlotsCounter(ctx, dietContext, date, slotsRange)
 	}
 	// dishIds trzeba podmienić teraz na te z tabeli diet_slots_counter
-
-	dishIDs, err = s.GetDishIDsFromDietSlotsCounter(ctx, date)
+	newDishIDs, err := s.GetDishIDsFromDietSlotsCounter(ctx, date)
 	if err != nil {
 		return nil, err
 	}
 
 	// pobieramy składniki z tabeli counter (jeśli dania tam nie było to poprzedni if go dodał)
-	menu, err := s.GetMenuForDate(ctx, date, dishIDs, slotsRange, currentDietDay, *dietContext)
+	menu, err := s.GetMenuForDate(ctx, date, newDishIDs, slotsRange, currentDietDay, *dietContext)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +154,7 @@ func (s *ServiceCounter) AddIngredientsToCounter(ctx context.Context, date time.
 	return nil
 }
 
-func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dishIDs []int, slotsRange []int, currentDietDay int, dietContext model.DietContext) (*model.Menu, error) {
+func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dishIDs []*int, slotsRange []int, currentDietDay int, dietContext model.DietContext) (*model.Menu, error) {
 	// Pobierz składniki z tabeli counter dla danego dnia
 	rows, err := s.db.QueryContext(ctx, `
 		SELECT meal, ingredient_id, amount
@@ -210,6 +209,7 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 				return nil, fmt.Errorf("fetch record name: %w", err)
 			}
 			dishTemp.Name = name
+			dishTemp.Meal = "Breakfast"
 		case 1:
 			dishTemp.Ingredients = mealMap["Lunch"]
 			name, err := s.GetRecordNameFromDietSlotsCounter(ctx, dietContext.ActiveDietID, date.Format("2006-01-02"), "Lunch")
@@ -217,6 +217,7 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 				return nil, fmt.Errorf("fetch record name: %w", err)
 			}
 			dishTemp.Name = name
+			dishTemp.Meal = "MainMeal"
 		case 2:
 			dishTemp.Ingredients = mealMap["Pre-Workout"]
 			name, err := s.GetRecordNameFromDietSlotsCounter(ctx, dietContext.ActiveDietID, date.Format("2006-01-02"), "Pre-Workout")
@@ -224,6 +225,7 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 				return nil, fmt.Errorf("fetch record name: %w", err)
 			}
 			dishTemp.Name = name
+			dishTemp.Meal = "Pre-Workout"
 		case 3:
 			dishTemp.Ingredients = mealMap["Post-Workout"]
 			name, err := s.GetRecordNameFromDietSlotsCounter(ctx, dietContext.ActiveDietID, date.Format("2006-01-02"), "Post-Workout")
@@ -231,6 +233,7 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 				return nil, fmt.Errorf("fetch record name: %w", err)
 			}
 			dishTemp.Name = name
+			dishTemp.Meal = "MainMeal"
 		case 4:
 			dishTemp.Ingredients = mealMap["Supper"]
 			name, err := s.GetRecordNameFromDietSlotsCounter(ctx, dietContext.ActiveDietID, date.Format("2006-01-02"), "Supper")
@@ -238,6 +241,7 @@ func (s *ServiceCounter) GetMenuForDate(ctx context.Context, date time.Time, dis
 				return nil, fmt.Errorf("fetch record name: %w", err)
 			}
 			dishTemp.Name = name
+			dishTemp.Meal = "Supper"
 		}
 		// posotruj składaniki według znaczenia kalorycznego
 		if len(dishTemp.Ingredients) > 1 {
@@ -684,7 +688,7 @@ func (s *ServiceCounter) ReplaceIngredientsForSlotWithDish(
 	return nil
 }
 
-func (s *ServiceCounter) GetDishIDsFromDietSlotsCounter(ctx context.Context, date time.Time) ([]int, error) {
+func (s *ServiceCounter) GetDishIDsFromDietSlotsCounter(ctx context.Context, date time.Time) ([]*int, error) {
 	// Pobierz dish_id z tabeli diet_slots_counter dla danego dnia
 	rows, err := s.db.QueryContext(ctx, `
 		SELECT meal, dish_id
@@ -696,11 +700,11 @@ func (s *ServiceCounter) GetDishIDsFromDietSlotsCounter(ctx context.Context, dat
 	}
 	defer rows.Close()
 
-	dishIDs := make([]int, 5) // Zakładamy 5 slotów
+	dishIDs := make([]*int, 5) // Zakładamy 5 slotów
 
 	for rows.Next() {
 		var meal string
-		var dishID int
+		var dishID *int
 		if err := rows.Scan(&meal, &dishID); err != nil {
 			return nil, fmt.Errorf("scan row: %w", err)
 		}
@@ -729,7 +733,7 @@ func (s *ServiceCounter) GetRecordNameFromDietSlotsCounter(
 	day string,
 	meal string,
 ) (string, error) {
-	var name string
+	var name *string
 	err := s.db.QueryRowContext(ctx, `
 		SELECT name
 		FROM diet_slots_counter
@@ -738,5 +742,28 @@ func (s *ServiceCounter) GetRecordNameFromDietSlotsCounter(
 	if err != nil {
 		return "", fmt.Errorf("query record name: %w", err)
 	}
-	return name, nil
+	// if name is nil, return empty string
+	if name == nil {
+		return "", nil
+	}
+	return *name, nil
+}
+
+func (s *ServiceCounter) DeleteDietSlotsCounterRecord(
+	ctx context.Context,
+	record model.DietSlotsCounterRecordIndex,
+) error {
+	// set dish_id and name to NULL
+	_, err := s.db.ExecContext(ctx, `
+		UPDATE diet_slots_counter
+		SET dish_id = NULL,
+		    name = NULL
+		WHERE day = $1 AND meal = $2
+	`, record.Day, record.Meal)
+	// delete all records from counter table for that day and meal
+	_, err = s.db.ExecContext(ctx, `
+		DELETE FROM counter
+		WHERE day = $1 AND meal = $2
+	`, record.Day, record.Meal)
+	return err
 }
