@@ -22,7 +22,7 @@ class MenuService {
   Future<void> replaceDishInSlot({
     required DateTime day,
     required String meal,
-    required int dishId,
+    required int? dishId,
     required String name,
   }) async {
     await _api.send(
@@ -33,6 +33,20 @@ class MenuService {
         'meal': meal,
         'name': name,
         'dishId': dishId,
+      },
+    );
+  }
+
+  Future<void> clearDishInSlot({
+    required DateTime day,
+    required String meal,
+  }) async {
+    await _api.send(
+      '/menu/slot',
+      method: 'DELETE',
+      body: {
+        'day': yyyyMmDd(day),
+        'meal': meal,
       },
     );
   }

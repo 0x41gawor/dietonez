@@ -26,7 +26,7 @@ class MealSection extends StatefulWidget {
 }
 
 class DishSelectionResult {
-  final int dishId;
+  final int? dishId;
   final String name;
 
   DishSelectionResult({required this.dishId, required this.name});
@@ -152,11 +152,11 @@ class _MealSectionState extends State<MealSection> {
                                 ElevatedButton(
                                   onPressed: canSubmit
                                       ? () {
+                                    final currentDishIdOrNull = (widget.meal.dish.id == 0) ? null : widget.meal.dish.id;
                                     Navigator.pop(
                                       ctx,
                                       DishSelectionResult(
-                                        dishId: selectedDish?.id ??
-                                            widget.meal.dish.id,
+                                        dishId: selectedDish?.id ?? currentDishIdOrNull,
                                         name: nameController.text.trim(),
                                       ),
                                     );
@@ -267,6 +267,32 @@ class _MealSectionState extends State<MealSection> {
                   },
                   child: const Icon(Icons.menu_book_outlined, size: 18),
                 ),
+              const SizedBox(width: 8),
+              if (widget.meal.dish.name != "")
+                InkWell(
+                  onTap: () async {
+                    final c = context.read<MenuViewController>();
+                    final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) {
+                        return AlertDialog(
+                          title: const Text("Wyczyść danie"),
+                          content: Text("Czy na pewno chcesz usunąć wszystkie składniki tego dania?"),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Anuluj")),
+                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("OK")),
+                          ],
+                        );
+                    });
+
+                    if (confirm == true) {
+                      await c.clearDish(day: c.selectedDate, meal: widget.title);
+                      _toast(context, "Danie wyczyszczone");
+                    }
+
+                  },
+                  child: const Icon(Icons.delete_outline, size: 18),
+                ),
               const Spacer(),
               MacroChip(
                   type: Macro.kcal,
@@ -370,7 +396,6 @@ class _MealSectionState extends State<MealSection> {
 
             ),
 
-          // 🔽🔽🔽 TEN FRAGMENT WRACA 🔽🔽🔽
           const SizedBox(height: 2),
           Center(
             child: FloatingActionButton.small(

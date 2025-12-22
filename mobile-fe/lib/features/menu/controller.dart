@@ -70,7 +70,7 @@ class MenuViewController extends ChangeNotifier {
     }
   }
 
-  Future<void> replaceDish({required DateTime day, required String meal, required int dishId, required String name}) async {
+  Future<void> replaceDish({required DateTime day, required String meal, required int? dishId, required String name}) async {
     try {
       await _service.replaceDishInSlot(
         day: day,
@@ -82,6 +82,17 @@ class MenuViewController extends ChangeNotifier {
       await fetch();
     } catch (e) {
       debugPrint("❌ Błąd podmiany dania: $e");
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  Future<void> clearDish({required DateTime day, required String meal}) async {
+    try {
+      await _service.clearDishInSlot(day: day, meal: meal);
+      await fetch();
+    } catch (e) {
+      debugPrint("❌ Błąd wyczyszczenia dania: $e");
       error = e.toString();
       notifyListeners();
     }
