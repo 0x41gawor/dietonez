@@ -22,7 +22,7 @@ class MenuService {
   Future<void> replaceDishInSlot({
     required DateTime day,
     required String meal,
-    required int dishId,
+    required int? dishId,
     required String name,
   }) async {
     await _api.send(

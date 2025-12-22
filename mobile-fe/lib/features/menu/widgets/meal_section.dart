@@ -26,7 +26,7 @@ class MealSection extends StatefulWidget {
 }
 
 class DishSelectionResult {
-  final int dishId;
+  final int? dishId;
   final String name;
 
   DishSelectionResult({required this.dishId, required this.name});
@@ -152,11 +152,11 @@ class _MealSectionState extends State<MealSection> {
                                 ElevatedButton(
                                   onPressed: canSubmit
                                       ? () {
+                                    final currentDishIdOrNull = (widget.meal.dish.id == 0) ? null : widget.meal.dish.id;
                                     Navigator.pop(
                                       ctx,
                                       DishSelectionResult(
-                                        dishId: selectedDish?.id ??
-                                            widget.meal.dish.id,
+                                        dishId: selectedDish?.id ?? currentDishIdOrNull,
                                         name: nameController.text.trim(),
                                       ),
                                     );

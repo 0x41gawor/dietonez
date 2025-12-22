@@ -70,7 +70,7 @@ class MenuViewController extends ChangeNotifier {
     }
   }
 
-  Future<void> replaceDish({required DateTime day, required String meal, required int dishId, required String name}) async {
+  Future<void> replaceDish({required DateTime day, required String meal, required int? dishId, required String name}) async {
     try {
       await _service.replaceDishInSlot(
         day: day,
