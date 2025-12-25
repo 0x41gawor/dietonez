@@ -772,6 +772,15 @@ func (s *ServiceCounter) CopyDietSlotsCounterRecords(
 	ctx context.Context,
 	record model.CopyDietSlotsCounterRecords,
 ) error {
+	fmt.Println(record)
+	// --- anti self-copy guard ---
+	if record.From.Day == record.To.Day && record.From.Meal == record.To.Meal {
+		return fmt.Errorf(
+			"copy rejected: source and destination slot are identical (day=%s, meal=%s)",
+			record.From.Day,
+			record.From.Meal,
+		)
+	}
 
 	// Fetch diet context
 	dietContext, err := NewServiceDietContext().Get(ctx)
