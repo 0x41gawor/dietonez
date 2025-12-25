@@ -51,6 +51,25 @@ class MenuService {
     );
   }
 
+  Future<void> copyDishToSlot({
+    required fromDay, required fromMeal, required toDay, required toMeal,
+}) async {
+    await _api.send(
+      '/menu/slot/copy',
+      method: 'POST',
+      body: {
+        'from': {
+          'day': yyyyMmDd(fromDay),
+          'meal': fromMeal,
+        },
+        'to': {
+          'day': yyyyMmDd(toDay),
+          'meal': toMeal
+        },
+      }
+    );
+  }
+
   Future<void> deleteIngredient({
     required DateTime day,
     required int ingredientId,
