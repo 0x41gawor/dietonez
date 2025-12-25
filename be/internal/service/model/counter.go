@@ -32,3 +32,8 @@ type DietSlotsCounterRecordIndex struct {
 	Day  string `json:"day"`
 	Meal string `json:"meal"`
 }
+
+type CopyDietSlotsCounterRecords struct {
+	From DietSlotsCounterRecordIndex `json:"from"`
+	To   DietSlotsCounterRecordIndex `json:"to"`
+}

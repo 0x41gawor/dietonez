@@ -92,3 +92,14 @@ func (h *HandlerMenu) handleSlotDELETE(w http.ResponseWriter, r *http.Request) e
 	return WriteJSON(w, http.StatusOK, map[string]string{"status": "success"})
 
 }
+
+func (h *HandlerMenu) handleSlotCopyPOST(w http.ResponseWriter, r *http.Request) error {
+	var record model.CopyDietSlotsCounterRecords
+	if err := json.NewDecoder(r.Body).Decode(&record); err != nil {
+		return err
+	}
+	if err := h.sc.CopyDietSlotsCounterRecords(r.Context(), record); err != nil {
+		return err
+	}
+	return WriteJSON(w, http.StatusOK, map[string]string{"status": "success"})
+}

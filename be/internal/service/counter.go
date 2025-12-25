@@ -767,3 +767,81 @@ func (s *ServiceCounter) DeleteDietSlotsCounterRecord(
 	`, record.Day, record.Meal)
 	return err
 }
+
+func (s *ServiceCounter) CopyDietSlotsCounterRecords(
+	ctx context.Context,
+	record model.CopyDietSlotsCounterRecords,
+) error {
+
+	// Fetch diet context
+	dietContext, err := NewServiceDietContext().Get(ctx)
+	if err != nil {
+		return fmt.Errorf("get diet context: %w", err)
+	}
+	dietID := dietContext.ActiveDiet.ID
+
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin tx: %w", err)
+	}
+
+	// Safety rollback (no-op if committed)
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	// --- diet_slots_counter ---
+	_, err = tx.ExecContext(ctx, `
+		INSERT INTO diet_slots_counter (diet_id, day, meal, name, dish_id)
+		SELECT diet_id, $1, $2, name, dish_id
+		FROM diet_slots_counter
+		WHERE diet_id = $3 AND day = $4 AND meal = $5
+		ON CONFLICT (diet_id, day, meal) DO UPDATE
+		SET name = EXCLUDED.name,
+		    dish_id = EXCLUDED.dish_id
+	`,
+		record.To.Day,
+		record.To.Meal,
+		dietID,
+		record.From.Day,
+		record.From.Meal,
+	)
+	if err != nil {
+		return fmt.Errorf("copy diet_slots_counter: %w", err)
+	}
+
+	// --- counter: delete target ---
+	_, err = tx.ExecContext(ctx, `
+		DELETE FROM counter
+		WHERE day = $1 AND meal = $2
+	`,
+		record.To.Day,
+		record.To.Meal,
+	)
+	if err != nil {
+		return fmt.Errorf("delete counter records: %w", err)
+	}
+
+	// --- counter: insert copy ---
+	_, err = tx.ExecContext(ctx, `
+		INSERT INTO counter (day, ingredient_id, meal, amount)
+		SELECT $1, ingredient_id, $2, amount
+		FROM counter
+		WHERE day = $3 AND meal = $4
+	`,
+		record.To.Day,
+		record.To.Meal,
+		record.From.Day,
+		record.From.Meal,
+	)
+	if err != nil {
+		return fmt.Errorf("copy counter records: %w", err)
+	}
+
+	// --- commit ---
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit tx: %w", err)
+	}
+
+	return nil
+}
