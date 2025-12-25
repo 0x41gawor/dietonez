@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme.dart';
 import '../models.dart';
+import 'copy_dish_dialog.dart';
 import 'macro_chip.dart';
 import 'ingredient_row.dart';
 import 'ingredient_edit_dialog.dart';
@@ -293,6 +294,33 @@ class _MealSectionState extends State<MealSection> {
                   },
                   child: const Icon(Icons.delete_outline, size: 18),
                 ),
+              const SizedBox(width: 8),
+              if (widget.meal.dish.name != "")
+                InkWell(
+                  onTap: () async {
+                    final c = context.read<MenuViewController>();
+
+                    final result = await showDialog<CopyDishDialogResult>(
+                      context: context,
+                      builder: (_) => CopyDishDialog(
+                        fromDay: c.selectedDate,
+                        fromMeal: widget.title,
+                      ),
+                    );
+
+                    if (result != null) {
+                      await c.copyDish(
+                        fromDay: c.selectedDate,
+                        fromMeal: widget.title,
+                        toDay: result.toDay,
+                        toMeal: result.toMeal,
+                      );
+                      _toast(context, "Danie skopiowane");
+                    }
+                  },
+                  child: const Icon(Icons.copy_all_outlined, size: 18),
+                ),
+
               const Spacer(),
               MacroChip(
                   type: Macro.kcal,

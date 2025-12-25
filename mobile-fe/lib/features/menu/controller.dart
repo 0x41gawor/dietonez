@@ -98,6 +98,17 @@ class MenuViewController extends ChangeNotifier {
     }
   }
 
+  Future<void> copyDish({required DateTime fromDay, required String fromMeal, required DateTime toDay, required String toMeal}) async {
+    try {
+      await _service.copyDishToSlot(fromDay: fromDay, fromMeal: fromMeal, toDay: toDay, toMeal: toMeal);
+      await fetch();
+    } catch (e) {
+      debugPrint("❌ Błąd kopiowania dania: $e");
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
   Future<void> deleteIngredientFromMenu({
     required DateTime day,
     required int ingredientId,
