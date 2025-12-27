@@ -12,13 +12,14 @@ class ShoppingListController extends ChangeNotifier {
   String? error;
 
   // checked state per category -> set of item keys
-  final Map<String, Set<String>> _checked = {
-    'lidl': <String>{},
-    'fresh': <String>{},
-    'stock': <String>{},
-    'live': <String>{},
-    'gs': <String>{},
+  final Map<ShoppingSection, Set<String>> _checked = {
+    ShoppingSection.lidl: <String>{},
+    ShoppingSection.fresh: <String>{},
+    ShoppingSection.stock: <String>{},
+    ShoppingSection.live: <String>{},
+    ShoppingSection.gs: <String>{},
   };
+
 
   Future<void> initIfNeeded() async {
     if (data == null && !loading) {
@@ -60,19 +61,32 @@ class ShoppingListController extends ChangeNotifier {
     }
   }
 
-  bool isChecked(String category, ShoppingListItem it) =>
-      _checked[category]!.contains(it.key());
+  bool isChecked(ShoppingSection section, ShoppingListItem it) =>
+      _checked[section]!.contains(it.key());
 
-  void toggle(String category, ShoppingListItem it) {
-    final set = _checked[category]!;
+  void toggle(ShoppingSection section, ShoppingListItem it) {
+    final set = _checked[section]!;
     final k = it.key();
-    if (set.contains(k)) {
-      set.remove(k);
-    } else {
-      set.add(k);
-    }
+    set.contains(k) ? set.remove(k) : set.add(k);
     notifyListeners();
   }
+
+  Future<void> toggleStock(ShoppingStockItem it, bool value) async {
+    final prev = it.isPresent;
+    it.isPresent = value;
+    notifyListeners();
+
+    try {
+      await _service.setStockPresence(it.ingredient.id, value);
+    } catch (e) {
+      // rollback
+      it.isPresent = prev;
+      notifyListeners();
+    }
+  }
+
+
+
 
   String dateText() => yyyyMmDd(selectedDate);
   String weekdayText() => weekdayPl(selectedDate);

@@ -7,9 +7,14 @@ import 'count_badge.dart';
 import 'item_tile.dart';
 
 class CategorySection extends StatefulWidget {
-  final String categoryKey; // lidl | fresh | stock | live | gs
+  final ShoppingSection section; // fresh | lidl | stock | live | gs
   final String title;
-  const CategorySection({super.key, required this.categoryKey, required this.title});
+
+  const CategorySection({
+    super.key,
+    required this.section,
+    required this.title,
+  });
 
   @override
   State<CategorySection> createState() => _CategorySectionState();
@@ -21,7 +26,10 @@ class _CategorySectionState extends State<CategorySection> {
   @override
   Widget build(BuildContext context) {
     final c = context.watch<ShoppingListController>();
-    final List<ShoppingListItem> items = c.data?.listFor(widget.categoryKey) ?? [];
+
+    final List<ShoppingListItem> items =
+        c.data?.listFor(widget.section) ?? const [];
+
     final count = items.length;
 
     final header = Container(
@@ -29,12 +37,21 @@ class _CategorySectionState extends State<CategorySection> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: cardRadius,
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          )
+        ],
       ),
       child: Row(
         children: [
           Expanded(
-            child: Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
+            child: Text(
+              widget.title,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
           if (count > 0) ...[
             CountBadge(count: count),
@@ -43,7 +60,10 @@ class _CategorySectionState extends State<CategorySection> {
           AnimatedRotation(
             turns: _expanded ? 0.5 : 0,
             duration: const Duration(milliseconds: 180),
-            child: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.black45),
+            child: const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: Colors.black45,
+            ),
           ),
         ],
       ),
@@ -57,16 +77,35 @@ class _CategorySectionState extends State<CategorySection> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: cardRadius,
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          )
+        ],
       ),
       child: Column(
         children: [
           for (final it in items)
             ItemTile(
               item: it,
-              checked: c.isChecked(widget.categoryKey, it),
-              onTap: () => c.toggle(widget.categoryKey, it),
+
+              // case 1: zwykłe zakupy
+              checked: it is ShoppingAmountItem
+                  ? c.isChecked(widget.section, it)
+                  : null,
+
+              onCheckTap: it is ShoppingAmountItem
+                  ? () => c.toggle(widget.section, it)
+                  : null,
+
+              // case 2: zapasy
+              onToggleStock: it is ShoppingStockItem
+                  ? (v) => c.toggleStock(it, v)
+                  : null,
             ),
+
         ],
       ),
     );
