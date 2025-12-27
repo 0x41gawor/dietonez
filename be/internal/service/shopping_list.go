@@ -75,7 +75,7 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 	freshSlotsRange := getFreshSlotsRange(currentDietDay, maxDietDay)
 	lidlAndStockSlotsRange := getLidlAndStockSlotsRange(currentDietDay, maxDietDay)
 
-	freshIngredients, err := s.getFreshIngredients(ctx, activeDietID, freshSlotsRange)
+	freshIngredients, err := s.getFreshIngredients(ctx, activeDietID, freshSlotsRange, startDate)
 	if err != nil {
 		return nil, fmt.Errorf("getFreshIngredients: %w", err)
 	}
@@ -83,15 +83,15 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 	if err != nil {
 		return nil, fmt.Errorf("getStockIngredients: %w", err)
 	}
-	lidlIngredients, err := s.getLidlIngredients(ctx, activeDietID, lidlAndStockSlotsRange)
+	lidlIngredients, err := s.getLidlIngredients(ctx, activeDietID, lidlAndStockSlotsRange, startDate)
 	if err != nil {
 		return nil, fmt.Errorf("getLidlIngredients: %w", err)
 	}
-	liveIngredients, err := s.getLiveIngredients(ctx, activeDietID, freshSlotsRange)
+	liveIngredients, err := s.getLiveIngredients(ctx, activeDietID, freshSlotsRange, startDate)
 	if err != nil {
 		return nil, fmt.Errorf("getLiveIngredients: %w", err)
 	}
-	gsIngredients, err := s.getGSIngredients(ctx, activeDietID, freshSlotsRange)
+	gsIngredients, err := s.getGSIngredients(ctx, activeDietID, freshSlotsRange, startDate)
 	if err != nil {
 		return nil, fmt.Errorf("getGSIngredients: %w", err)
 	}
@@ -228,6 +228,7 @@ func (s *ServiceShoppingList) getIngredientsByConfig(
 	ctx context.Context,
 	dietID int,
 	slotNums []int,
+	startDate time.Time,
 	cfg ingredientQueryConfig,
 ) ([]model.IngredientInShoppingList, error) {
 
@@ -236,7 +237,6 @@ func (s *ServiceShoppingList) getIngredientsByConfig(
 	}
 
 	selectPath := ""
-
 	if cfg.withPath {
 		selectPath = ", i.path"
 	}
@@ -254,14 +254,50 @@ func (s *ServiceShoppingList) getIngredientsByConfig(
 		  %s,
 		  SUM(ia.amount) AS total_amount
 		FROM diet_slots ds
-		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
+
+		LEFT JOIN LATERAL (
+			SELECT dsc.dish_id
+			FROM diet_slots_counter dsc
+			WHERE dsc.diet_id = ds.diet_id
+			AND dsc.day = ($4::date + (ds.slot_num / 5) * interval '1 day')::date
+			AND dsc.meal = (
+				CASE (ds.slot_num %% 5)
+				WHEN 0 THEN 'Breakfast'
+				WHEN 1 THEN 'Lunch'
+				WHEN 2 THEN 'Pre-Workout'
+				WHEN 3 THEN 'Post-Workout'
+				WHEN 4 THEN 'Supper'
+				END
+			)::meal_slot
+			LIMIT 1
+		) dsc ON true
+
+
+		JOIN ingredient_amounts ia
+		  ON ia.dish_id = COALESCE(dsc.dish_id, ds.dish_id)
+
 		JOIN ingredients i ON i.id = ia.ingredient_id
+
 		WHERE ds.diet_id = $1
 		  AND ds.slot_num = ANY($2)
 		  AND i.shop_style = ANY($3)
-		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
+
+		GROUP BY
+		  i.id, i.name, i.unit, i.default_amount,
+		  i.kcal, i.proteins, i.fats, i.carbs
+		  %s
+
 		ORDER BY %s;
-	`, selectPath, cfg.orderBy)
+	`,
+		selectPath,
+		func() string {
+			if cfg.withPath {
+				return ", i.path"
+			}
+			return ""
+		}(),
+		cfg.orderBy,
+	)
 
 	rows, err := s.db.QueryContext(
 		ctx,
@@ -269,6 +305,7 @@ func (s *ServiceShoppingList) getIngredientsByConfig(
 		dietID,
 		pq.Array(slotNums),
 		pq.Array(cfg.shopStyles),
+		startDate,
 	)
 	if err != nil {
 		return nil, err
@@ -327,29 +364,30 @@ func (s *ServiceShoppingList) getIngredientsByConfig(
 	return result, nil
 }
 
-func (s *ServiceShoppingList) getFreshIngredients(ctx context.Context, dietID int, slots []int) ([]model.IngredientInShoppingList, error) {
-	return s.getIngredientsByConfig(ctx, dietID, slots, ingredientQueryConfig{
+func (s *ServiceShoppingList) getFreshIngredients(ctx context.Context, dietID int, slots []int, startDate time.Time) ([]model.IngredientInShoppingList, error) {
+	return s.getIngredientsByConfig(ctx, dietID, slots, startDate, ingredientQueryConfig{
 		shopStyles: []string{"Świeże"},
 		orderBy:    "i.name",
 	})
 }
 
-func (s *ServiceShoppingList) getLiveIngredients(ctx context.Context, dietID int, slots []int) ([]model.IngredientInShoppingList, error) {
-	return s.getIngredientsByConfig(ctx, dietID, slots, ingredientQueryConfig{
+func (s *ServiceShoppingList) getLiveIngredients(ctx context.Context, dietID int, slots []int, startDate time.Time) ([]model.IngredientInShoppingList, error) {
+	return s.getIngredientsByConfig(ctx, dietID, slots, startDate, ingredientQueryConfig{
 		shopStyles: []string{"Na żywo"},
 		orderBy:    "i.name",
-	})
+	},
+	)
 }
 
-func (s *ServiceShoppingList) getGSIngredients(ctx context.Context, dietID int, slots []int) ([]model.IngredientInShoppingList, error) {
-	return s.getIngredientsByConfig(ctx, dietID, slots, ingredientQueryConfig{
+func (s *ServiceShoppingList) getGSIngredients(ctx context.Context, dietID int, slots []int, startDate time.Time) ([]model.IngredientInShoppingList, error) {
+	return s.getIngredientsByConfig(ctx, dietID, slots, startDate, ingredientQueryConfig{
 		shopStyles: []string{"G.S"},
 		orderBy:    "i.name",
 	})
 }
 
-func (s *ServiceShoppingList) getLidlIngredients(ctx context.Context, dietID int, slots []int) ([]model.IngredientInShoppingList, error) {
-	return s.getIngredientsByConfig(ctx, dietID, slots, ingredientQueryConfig{
+func (s *ServiceShoppingList) getLidlIngredients(ctx context.Context, dietID int, slots []int, startDate time.Time) ([]model.IngredientInShoppingList, error) {
+	return s.getIngredientsByConfig(ctx, dietID, slots, startDate, ingredientQueryConfig{
 		shopStyles: []string{"Lidl"},
 		withPath:   true,
 		orderBy:    "i.path ASC, i.name ASC",

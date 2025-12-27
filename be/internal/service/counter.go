@@ -740,7 +740,7 @@ func (s *ServiceCounter) GetRecordNameFromDietSlotsCounter(
 		WHERE diet_id = $1 AND day = $2 AND meal = $3
 	`, dietID, day, meal).Scan(&name)
 	if err != nil {
-		return "", fmt.Errorf("query record name: %w", err)
+		return "", nil
 	}
 	// if name is nil, return empty string
 	if name == nil {
