@@ -11,6 +11,12 @@ import (
 	"github.com/lib/pq"
 )
 
+type ingredientQueryConfig struct {
+	shopStyles []string
+	withPath   bool
+	orderBy    string
+}
+
 type ServiceShoppingList struct {
 	db *sql.DB
 }
@@ -61,7 +67,7 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 	maxDietDay := (maxSlotNum+1)/5 - 1 // ostatni dzień diety (0‑based)
 	currentDietDay := daysBetween % (maxDietDay + 1)
 	print("Shopping List - startDate:", startDate.String()[:11], "\n")
-	print("Shopping List - date:", date.String()[:11], "\n")
+	print("Shopping List - currentDate:", date.String()[:11], "\n")
 	print("Shopping List - daysBetween:", daysBetween, "\n")
 	print("Shopping List - currentDietDay:", currentDietDay, "\n")
 	print("Shopping List - maxDietDay:", maxDietDay, "\n")
@@ -104,15 +110,19 @@ func getFreshSlotsRange(currentDietDay, maxDietDay int) []int {
 
 	// Specjalny przypadek: dzień przed ostatnim
 	if currentDietDay == maxDietDay {
-		print("Fresh: return [0..4]\n")
+		print("Fresh slot-range: [0..4]\n")
 		return []int{0, 1, 2, 3, 4}
 	}
 
 	start := (currentDietDay + 1) * 5
 
-	print("Fresh: return [", start, "..", start+4, "]\n")
+	result := make([]int, 5)
+	for i := range 5 {
+		result[i] = start + i
+	}
+	fmt.Println("Fresh slot-range:", result)
 
-	return []int{start, start + 1, start + 2, start + 3, start + 4}
+	return result
 }
 
 // Lidl & Zapasy: zwraca ciąg 15‑slotowy lub pusty slice
@@ -141,8 +151,6 @@ func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
 	}
 
 	weekNum := (currentDietDay - 1) / 7 // ile pełnych tygodni minęło
-	print("weekNum:", weekNum, "\n")
-	print("posInWeek:", posInWeek, "\n")
 	result := make([]int, 0, 20)
 	if posInWeek == 2 { // środa
 		// czyli zakupy na czwartek-sobota (włącznie)
@@ -157,131 +165,8 @@ func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
 			result = append(result, i)
 		}
 	}
-	for _, v := range result {
-		print(v, " ")
-	}
-	fmt.Println(result)
+	fmt.Println("Lidl slot-range:", result)
 	return result
-}
-
-func (s *ServiceShoppingList) getFreshIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.IngredientInShoppingList, error) {
-	const q = `
-		SELECT
-		  i.id,
-		  i.name,
-		  i.unit,
-		  i.default_amount,
-		  i.kcal,
-		  i.proteins,
-		  i.fats,
-		  i.carbs,
-		  SUM(ia.amount) AS total_amount
-		FROM diet_slots ds
-		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
-		JOIN ingredients i ON i.id = ia.ingredient_id
-		WHERE ds.diet_id = $1
-		  AND ds.slot_num = ANY($2)
-		  AND i.shop_style = 'Świeże'
-		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
-		ORDER BY i.name;
-	`
-
-	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var result []model.IngredientInShoppingList
-	for rows.Next() {
-		var ing model.IngredientGetPut
-		var amount float64
-
-		err := rows.Scan(
-			&ing.ID,
-			&ing.Name,
-			&ing.Unit,
-			&ing.DefaultAmount,
-			&ing.Kcal,
-			&ing.Protein,
-			&ing.Fat,
-			&ing.Carbs,
-			&amount,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		ingMin := model.IngredientIdNameUnit{ID: ing.ID, Name: ing.Name, Unit: ing.Unit}
-
-		result = append(result, model.IngredientInShoppingList{
-			Ingredient: ingMin,
-			Amount:     amount,
-		})
-	}
-
-	return result, nil
-}
-
-func (s *ServiceShoppingList) getLidlIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.IngredientInShoppingList, error) {
-	const q = `
-		SELECT
-		  i.id,
-		  i.name,
-		  i.unit,
-		  i.default_amount,
-		  i.kcal,
-		  i.proteins,
-		  i.fats,
-		  i.carbs,
-		  i.path,
-		  SUM(ia.amount) AS total_amount
-		FROM diet_slots ds
-		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
-		JOIN ingredients i ON i.id = ia.ingredient_id
-		WHERE ds.diet_id = $1
-		  AND ds.slot_num = ANY($2)
-		  AND i.shop_style IN ('Lidl')
-		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
-		ORDER BY i.path ASC, i.name ASC;
-	`
-
-	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var result []model.IngredientInShoppingList
-	for rows.Next() {
-		var ing model.IngredientGetPut
-		var amount float64
-
-		err := rows.Scan(
-			&ing.ID,
-			&ing.Name,
-			&ing.Unit,
-			&ing.DefaultAmount,
-			&ing.Kcal,
-			&ing.Protein,
-			&ing.Fat,
-			&ing.Carbs,
-			&ing.Path,
-			&amount,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		ingMin := model.IngredientIdNameUnit{ID: ing.ID, Name: ing.Name, Unit: ing.Unit}
-
-		result = append(result, model.IngredientInShoppingList{
-			Ingredient: ingMin,
-			Amount:     amount,
-		})
-	}
-
-	return result, nil
 }
 
 func (s *ServiceShoppingList) getStockIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.StockIngredientInShoppingList, error) {
@@ -339,8 +224,24 @@ func (s *ServiceShoppingList) getStockIngredients(ctx context.Context, dietID in
 	return result, nil
 }
 
-func (s *ServiceShoppingList) getLiveIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.IngredientInShoppingList, error) {
-	const q = `
+func (s *ServiceShoppingList) getIngredientsByConfig(
+	ctx context.Context,
+	dietID int,
+	slotNums []int,
+	cfg ingredientQueryConfig,
+) ([]model.IngredientInShoppingList, error) {
+
+	if len(slotNums) == 0 {
+		return []model.IngredientInShoppingList{}, nil
+	}
+
+	selectPath := ""
+
+	if cfg.withPath {
+		selectPath = ", i.path"
+	}
+
+	q := fmt.Sprintf(`
 		SELECT
 		  i.id,
 		  i.name,
@@ -349,110 +250,108 @@ func (s *ServiceShoppingList) getLiveIngredients(ctx context.Context, dietID int
 		  i.kcal,
 		  i.proteins,
 		  i.fats,
-		  i.carbs,
+		  i.carbs
+		  %s,
 		  SUM(ia.amount) AS total_amount
 		FROM diet_slots ds
 		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
 		JOIN ingredients i ON i.id = ia.ingredient_id
 		WHERE ds.diet_id = $1
 		  AND ds.slot_num = ANY($2)
-		  AND i.shop_style IN ('Na żywo')
+		  AND i.shop_style = ANY($3)
 		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
-		ORDER BY i.name;
-	`
+		ORDER BY %s;
+	`, selectPath, cfg.orderBy)
 
-	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
+	rows, err := s.db.QueryContext(
+		ctx,
+		q,
+		dietID,
+		pq.Array(slotNums),
+		pq.Array(cfg.shopStyles),
+	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	var result []model.IngredientInShoppingList
+
 	for rows.Next() {
 		var ing model.IngredientGetPut
 		var amount float64
 
-		err := rows.Scan(
-			&ing.ID,
-			&ing.Name,
-			&ing.Unit,
-			&ing.DefaultAmount,
-			&ing.Kcal,
-			&ing.Protein,
-			&ing.Fat,
-			&ing.Carbs,
-			&amount,
-		)
-		if err != nil {
-			return nil, err
+		if cfg.withPath {
+			err := rows.Scan(
+				&ing.ID,
+				&ing.Name,
+				&ing.Unit,
+				&ing.DefaultAmount,
+				&ing.Kcal,
+				&ing.Protein,
+				&ing.Fat,
+				&ing.Carbs,
+				&ing.Path,
+				&amount,
+			)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			err := rows.Scan(
+				&ing.ID,
+				&ing.Name,
+				&ing.Unit,
+				&ing.DefaultAmount,
+				&ing.Kcal,
+				&ing.Protein,
+				&ing.Fat,
+				&ing.Carbs,
+				&amount,
+			)
+			if err != nil {
+				return nil, err
+			}
 		}
 
-		ingMin := model.IngredientIdNameUnit{ID: ing.ID, Name: ing.Name, Unit: ing.Unit}
-
 		result = append(result, model.IngredientInShoppingList{
-			Ingredient: ingMin,
-			Amount:     amount,
+			Ingredient: model.IngredientIdNameUnit{
+				ID:   ing.ID,
+				Name: ing.Name,
+				Unit: ing.Unit,
+			},
+			Amount: amount,
 		})
 	}
 
 	return result, nil
 }
 
-func (s *ServiceShoppingList) getGSIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.IngredientInShoppingList, error) {
-	const q = `
-		SELECT
-		  i.id,
-		  i.name,
-		  i.unit,
-		  i.default_amount,
-		  i.kcal,
-		  i.proteins,
-		  i.fats,
-		  i.carbs,
-		  SUM(ia.amount) AS total_amount
-		FROM diet_slots ds
-		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
-		JOIN ingredients i ON i.id = ia.ingredient_id
-		WHERE ds.diet_id = $1
-		  AND ds.slot_num = ANY($2)
-		  AND i.shop_style IN ('G.S')
-		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
-		ORDER BY i.name;
-	`
+func (s *ServiceShoppingList) getFreshIngredients(ctx context.Context, dietID int, slots []int) ([]model.IngredientInShoppingList, error) {
+	return s.getIngredientsByConfig(ctx, dietID, slots, ingredientQueryConfig{
+		shopStyles: []string{"Świeże"},
+		orderBy:    "i.name",
+	})
+}
 
-	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+func (s *ServiceShoppingList) getLiveIngredients(ctx context.Context, dietID int, slots []int) ([]model.IngredientInShoppingList, error) {
+	return s.getIngredientsByConfig(ctx, dietID, slots, ingredientQueryConfig{
+		shopStyles: []string{"Na żywo"},
+		orderBy:    "i.name",
+	})
+}
 
-	var result []model.IngredientInShoppingList
-	for rows.Next() {
-		var ing model.IngredientGetPut
-		var amount float64
+func (s *ServiceShoppingList) getGSIngredients(ctx context.Context, dietID int, slots []int) ([]model.IngredientInShoppingList, error) {
+	return s.getIngredientsByConfig(ctx, dietID, slots, ingredientQueryConfig{
+		shopStyles: []string{"G.S"},
+		orderBy:    "i.name",
+	})
+}
 
-		err := rows.Scan(
-			&ing.ID,
-			&ing.Name,
-			&ing.Unit,
-			&ing.DefaultAmount,
-			&ing.Kcal,
-			&ing.Protein,
-			&ing.Fat,
-			&ing.Carbs,
-			&amount,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		ingMin := model.IngredientIdNameUnit{ID: ing.ID, Name: ing.Name, Unit: ing.Unit}
-
-		result = append(result, model.IngredientInShoppingList{
-			Ingredient: ingMin,
-			Amount:     amount,
-		})
-	}
-
-	return result, nil
+func (s *ServiceShoppingList) getLidlIngredients(ctx context.Context, dietID int, slots []int) ([]model.IngredientInShoppingList, error) {
+	return s.getIngredientsByConfig(ctx, dietID, slots, ingredientQueryConfig{
+		shopStyles: []string{"Lidl"},
+		withPath:   true,
+		orderBy:    "i.path ASC, i.name ASC",
+	})
 }
