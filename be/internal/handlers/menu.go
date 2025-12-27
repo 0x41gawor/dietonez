@@ -103,3 +103,24 @@ func (h *HandlerMenu) handleSlotCopyPOST(w http.ResponseWriter, r *http.Request)
 	}
 	return WriteJSON(w, http.StatusOK, map[string]string{"status": "success"})
 }
+
+func (h *HandlerMenu) handleSummaryGET(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
+
+	date, err := ParseDateFromQuery(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return nil
+	}
+
+	summary, err := h.sm.GetSummary(ctx, date)
+	if err != nil {
+		return err
+	}
+	if summary == nil {
+		http.Error(w, "no context set", http.StatusNotFound)
+		return nil
+	}
+
+	return WriteJSON(w, http.StatusOK, summary)
+}

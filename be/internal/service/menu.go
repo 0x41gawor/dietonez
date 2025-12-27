@@ -163,3 +163,11 @@ func (s *ServiceMenu) IsInTwoWeeksWindow(date time.Time) bool {
 	}
 	return false
 }
+
+func (s *ServiceMenu) GetSummary(ctx context.Context, date time.Time) (*model.MenuSummary, error) {
+	menu, err := s.Get(ctx, date)
+	if err != nil {
+		return nil, fmt.Errorf("get menu for summary: %w", err)
+	}
+	return &menu.Summary, nil
+}
