@@ -411,3 +411,23 @@ func (s *ServiceIngredients) Search(ctx context.Context, query string, responseC
 		return ingredients, len(ingredients), nil
 	}
 }
+
+func (s *ServiceIngredients) UpdateStockStatus(ctx context.Context, id int, isPresent bool) error {
+	const q = `
+		UPDATE ingredients
+		SET is_present = $2
+		WHERE id = $1;
+	`
+
+	res, err := s.db.ExecContext(ctx, q, id, isPresent)
+	if err != nil {
+		return fmt.Errorf("update stock status: %w", err)
+	}
+
+	rows, _ := res.RowsAffected()
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}

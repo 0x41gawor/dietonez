@@ -222,3 +222,36 @@ func (h *HandlerIngredients) handleSearchGET(w http.ResponseWriter, r *http.Requ
 
 	return WriteJSON(w, http.StatusOK, resp)
 }
+
+func (h *HandlerIngredients) handleStockPUT(w http.ResponseWriter, r *http.Request) error {
+	slog.Debug("handleStockPUT",
+		slog.String("method", r.Method),
+		slog.String("url", r.URL.String()),
+		slog.String("remote_addr", r.RemoteAddr),
+		slog.String("user_agent", r.UserAgent()),
+	)
+
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id <= 0 {
+		return WriteJSON(w, http.StatusBadRequest, "invalid id")
+	}
+
+	var payload model.UpdateIngredientStockRequest
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		return WriteJSON(w, http.StatusBadRequest, "invalid JSON body")
+	}
+	defer r.Body.Close()
+
+	err = h.s.UpdateStockStatus(r.Context(), id, payload.IsPresent)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return WriteJSON(w, http.StatusNotFound, "ingredient not found")
+		}
+		slog.Error("failed to update stock status", "err", err)
+		return err
+	}
+
+	return WriteJSON(w, http.StatusOK, nil)
+}

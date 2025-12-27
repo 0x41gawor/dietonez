@@ -295,19 +295,13 @@ func (s *ServiceShoppingList) getStockIngredients(ctx context.Context, dietID in
 		  i.proteins,
 		  i.fats,
 		  i.carbs,
-		  i.is_present,
-		  SUM(ia.amount) AS total_amount
-		FROM diet_slots ds
-		JOIN ingredient_amounts ia ON ia.dish_id = ds.dish_id
-		JOIN ingredients i ON i.id = ia.ingredient_id
-		WHERE ds.diet_id = $1
-		  AND ds.slot_num = ANY($2)
-		  AND i.shop_style IN ('Zapasy')
-		GROUP BY i.id, i.name, i.unit, i.default_amount, i.kcal, i.proteins, i.fats, i.carbs
-		ORDER BY i.name;
+		  i.is_present
+		FROM ingredients i
+		WHERE  i.shop_style IN ('Zapasy')
+		ORDER BY i.is_present, i.name;
 	`
 
-	rows, err := s.db.QueryContext(ctx, q, dietID, pq.Array(slotNums))
+	rows, err := s.db.QueryContext(ctx, q)
 	if err != nil {
 		return nil, err
 	}
@@ -316,7 +310,6 @@ func (s *ServiceShoppingList) getStockIngredients(ctx context.Context, dietID in
 	var result []model.StockIngredientInShoppingList
 	for rows.Next() {
 		var ing model.IngredientGetPut
-		var amount float64
 		var isPresent bool
 
 		err := rows.Scan(
@@ -329,7 +322,6 @@ func (s *ServiceShoppingList) getStockIngredients(ctx context.Context, dietID in
 			&ing.Fat,
 			&ing.Carbs,
 			&isPresent,
-			&amount,
 		)
 		if err != nil {
 			return nil, err
@@ -339,6 +331,7 @@ func (s *ServiceShoppingList) getStockIngredients(ctx context.Context, dietID in
 
 		result = append(result, model.StockIngredientInShoppingList{
 			Ingredient: ingMin,
+			Amount:     0,
 			IsPresent:  isPresent,
 		})
 	}

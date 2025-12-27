@@ -30,6 +30,7 @@ func (s *Server) Run() {
 	router.HandleFunc("/api/v1/ingredients/search", makeHTTPHandleFunc(apiIngredients.handleSearchGET)).Methods("GET")
 	router.HandleFunc("/api/v1/ingredients/{id}", makeHTTPHandleFunc(apiIngredients.handleGetByID)).Methods("GET")
 	router.HandleFunc("/api/v1/ingredients/{id}", makeHTTPHandleFunc(apiIngredients.handleDeleteByID)).Methods("DELETE")
+	router.HandleFunc("/api/v1/ingredients/{id}/stock", makeHTTPHandleFunc(apiIngredients.handleStockPUT)).Methods("PUT")
 	apiDishes := NewHandlerDishes()
 	router.HandleFunc("/api/v1/dishes", makeHTTPHandleFunc(apiDishes.handleBaseGET)).Methods("GET")
 	router.HandleFunc("/api/v1/dishes/{id}", makeHTTPHandleFunc(apiDishes.handleGetByID)).Methods("GET")
