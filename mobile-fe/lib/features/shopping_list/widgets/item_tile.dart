@@ -46,7 +46,10 @@ class ItemTile extends StatelessWidget {
       ShoppingStockItem it => Switch(
         value: it.isPresent,
         onChanged: onToggleStock, // 👈 miejsce na API
-        activeColor: Colors.black,
+        activeColor: Colors.white,
+        activeTrackColor: Colors.black,
+        inactiveThumbColor: Colors.black,
+        inactiveTrackColor: Colors.white,
       ),
     };
 
