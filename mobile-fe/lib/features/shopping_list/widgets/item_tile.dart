@@ -4,15 +4,22 @@ import '../models.dart';
 
 class ItemTile extends StatelessWidget {
   final ShoppingListItem item;
-  final bool checked;
-  final VoidCallback onTap;
+
+  // dla ShoppingAmountItem
+  final bool? checked;
+  final VoidCallback? onCheckTap;
+
+  // dla ShoppingStockItem
+  final ValueChanged<bool>? onToggleStock;
 
   const ItemTile({
     super.key,
     required this.item,
-    required this.checked,
-    required this.onTap,
+    this.checked,
+    this.onCheckTap,
+    this.onToggleStock,
   });
+
 
   @override
   Widget build(BuildContext context) {
@@ -20,21 +27,31 @@ class ItemTile extends StatelessWidget {
       item.ingredient.name,
       overflow: TextOverflow.ellipsis,
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-        decoration: checked ? TextDecoration.lineThrough : TextDecoration.none,
-        color: checked ? Colors.black38 : null,
+        decoration: checked == true
+            ? TextDecoration.lineThrough
+            : TextDecoration.none,
+        color: checked == true ? Colors.black38 : null,
       ),
     );
 
-    final amount = Text(
-      '${item.amount} x ${item.ingredient.unit}',
-      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-        color: checked ? Colors.black38 : Colors.black87,
-        fontWeight: FontWeight.w600,
+    final trailing = switch (item) {
+      ShoppingAmountItem it => Text(
+        '${it.amount} ${it.ingredient.unit}',
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: checked == true ? Colors.white : Colors.black87,
+          fontWeight: FontWeight.w600,
+        ),
       ),
-    );
+
+      ShoppingStockItem it => Switch(
+        value: it.isPresent,
+        onChanged: onToggleStock, // 👈 miejsce na API
+        activeColor: Colors.black,
+      ),
+    };
 
     return InkWell(
-      onTap: onTap,
+      onTap: onCheckTap, // 👈 tylko dla amount
       borderRadius: cardRadius,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 6),
@@ -48,10 +65,11 @@ class ItemTile extends StatelessWidget {
           children: [
             Expanded(child: text),
             const SizedBox(width: 12),
-            amount,
+            trailing,
           ],
         ),
       ),
     );
   }
+
 }

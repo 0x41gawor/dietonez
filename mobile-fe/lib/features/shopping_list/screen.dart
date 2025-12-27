@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'controller.dart';
 import '../common/date_header.dart';
 import 'widgets/category_section.dart';
+import 'models.dart';
 
 class ShoppingListScreen extends StatefulWidget {
   const ShoppingListScreen({super.key});
@@ -12,13 +13,15 @@ class ShoppingListScreen extends StatefulWidget {
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
+
   @override
   void initState() {
     super.initState();
-    // initial load
-    final c = context.read<ShoppingListController>();
-    c.initIfNeeded();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ShoppingListController>().initIfNeeded();
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,20 +55,36 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                 ),
               ),
             const SliverToBoxAdapter(
-              child: CategorySection(categoryKey: 'lidl', title: 'Lidl'),
+              child: CategorySection(
+                section: ShoppingSection.lidl,
+                title: 'Lidl',
+              ),
             ),
             const SliverToBoxAdapter(
-              child: CategorySection(categoryKey: 'fresh', title: 'Świeże'),
+              child: CategorySection(
+                section: ShoppingSection.fresh,
+                title: 'Świeże',
+              ),
             ),
             const SliverToBoxAdapter(
-              child: CategorySection(categoryKey: 'stock', title: 'Zapasy'),
+              child: CategorySection(
+                section: ShoppingSection.stock,
+                title: 'Zapasy',
+              ),
             ),
             const SliverToBoxAdapter(
-              child: CategorySection(categoryKey: 'live', title: 'Na żywo'),
+              child: CategorySection(
+                section: ShoppingSection.live,
+                title: 'Na żywo',
+              ),
             ),
             const SliverToBoxAdapter(
-              child: CategorySection(categoryKey: 'gs', title: 'G.S.'),
+              child: CategorySection(
+                section: ShoppingSection.gs,
+                title: 'G.S.',
+              ),
             ),
+
             const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
           ],
         ),

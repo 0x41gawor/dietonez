@@ -11,53 +11,97 @@ class Ingredient {
   );
 }
 
-class ShoppingListItem {
-  final Ingredient ingredient;
-  final num amount;
-  ShoppingListItem({required this.ingredient, required this.amount});
-
-  factory ShoppingListItem.fromJson(Map<String, dynamic> j) => ShoppingListItem(
-    ingredient: Ingredient.fromJson(j['ingredient']),
-    amount: j['amount'],
-  );
-
-  // unique key for local check state
-  String key() => '${ingredient.id}:${amount}:${ingredient.unit}';
+enum ShoppingSection {
+  fresh,
+  lidl,
+  stock,
+  live,
+  gs,
 }
 
+
+sealed class ShoppingListItem {
+  Ingredient get ingredient;
+  String key();
+}
+
+class ShoppingAmountItem implements ShoppingListItem {
+  @override
+  final Ingredient ingredient;
+  final num amount;
+
+  ShoppingAmountItem({
+    required this.ingredient,
+    required this.amount,
+  });
+
+  factory ShoppingAmountItem.fromJson(Map<String, dynamic> j) =>
+      ShoppingAmountItem(
+        ingredient: Ingredient.fromJson(j['ingredient']),
+        amount: j['amount'],
+      );
+
+  @override
+  String key() => '${ingredient.id}:$amount:${ingredient.unit}';
+}
+
+class ShoppingStockItem implements ShoppingListItem {
+  @override
+  final Ingredient ingredient;
+  bool isPresent;
+
+  ShoppingStockItem({
+    required this.ingredient,
+    required this.isPresent,
+  });
+
+  factory ShoppingStockItem.fromJson(Map<String, dynamic> j) => ShoppingStockItem(
+    ingredient: Ingredient.fromJson(j['ingredient']),
+    isPresent: j['is_present'] as bool,
+  );
+
+  @override
+  String key() => '${ingredient.id}';
+}
+
+
 class ShoppingListResponse {
-  final List<ShoppingListItem>? fresh;
-  final List<ShoppingListItem>? lidl;
-  final List<ShoppingListItem>? stock;
-  final List<ShoppingListItem>? live;
-  final List<ShoppingListItem>? gs;
+  final List<ShoppingAmountItem>? fresh;
+  final List<ShoppingAmountItem>? lidl;
+  final List<ShoppingStockItem>? stock;
+  final List<ShoppingAmountItem>? live;
+  final List<ShoppingAmountItem>? gs;
 
   ShoppingListResponse({this.fresh, this.lidl, this.stock, this.live, this.gs});
 
   factory ShoppingListResponse.fromJson(Map<String, dynamic> j) {
-    List<ShoppingListItem>? mapList(dynamic v) {
+    List<T>? mapList<T>(
+        dynamic v,
+        T Function(Map<String, dynamic>) fromJson,
+        ) {
       if (v == null) return null;
-      final list = v as List<dynamic>;
-      return list.map((e) => ShoppingListItem.fromJson(e)).toList();
+      return (v as List)
+          .map((e) => fromJson(e as Map<String, dynamic>))
+          .toList();
     }
 
     return ShoppingListResponse(
-      fresh: mapList(j['fresh']),
-      lidl: mapList(j['lidl']),
-      stock: mapList(j['stock']),
-      live: mapList(j['live']),
-      gs: mapList(j['gs']),
+      fresh: mapList(j['fresh'], ShoppingAmountItem.fromJson),
+      lidl: mapList(j['lidl'], ShoppingAmountItem.fromJson),
+      stock: mapList(j['stock'], ShoppingStockItem.fromJson),
+      live: mapList(j['live'], ShoppingAmountItem.fromJson),
+      gs: mapList(j['gs'], ShoppingAmountItem.fromJson),
     );
   }
 
-  List<ShoppingListItem> listFor(String key) {
-    switch (key) {
-      case 'lidl': return lidl ?? [];
-      case 'fresh': return fresh ?? [];
-      case 'stock': return stock ?? [];
-      case 'live': return live ?? [];
-      case 'gs': return gs ?? [];
-      default: return const [];
+  List<ShoppingListItem> listFor(ShoppingSection section) {
+    switch (section) {
+      case ShoppingSection.lidl: return lidl ?? const [];
+      case ShoppingSection.fresh: return fresh ?? const [];
+      case ShoppingSection.stock: return stock ?? const [];
+      case ShoppingSection.live: return live ?? const [];
+      case ShoppingSection.gs: return gs ?? const [];
     }
   }
+
 }
