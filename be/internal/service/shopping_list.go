@@ -79,7 +79,7 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 	if err != nil {
 		return nil, fmt.Errorf("getFreshIngredients: %w", err)
 	}
-	stockIngredients, err := s.getStockIngredients(ctx, activeDietID, lidlAndStockSlotsRange)
+	stockIngredients, err := s.getStockIngredients(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getStockIngredients: %w", err)
 	}
@@ -169,7 +169,7 @@ func getLidlAndStockSlotsRange(currentDietDay, maxDietDay int) []int {
 	return result
 }
 
-func (s *ServiceShoppingList) getStockIngredients(ctx context.Context, dietID int, slotNums []int) ([]model.StockIngredientInShoppingList, error) {
+func (s *ServiceShoppingList) getStockIngredients(ctx context.Context) ([]model.StockIngredientInShoppingList, error) {
 	const q = `
 		SELECT
 		  i.id,
