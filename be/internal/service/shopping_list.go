@@ -71,11 +71,14 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 	print("Shopping List - daysBetween:", daysBetween, "\n")
 	print("Shopping List - currentDietDay:", currentDietDay, "\n")
 	print("Shopping List - maxDietDay:", maxDietDay, "\n")
+	print("Shopping List - currentCycleStartDate:", date.AddDate(0, 0, -currentDietDay).String()[:11], "\n")
+
+	currentCycleStartDate := date.AddDate(0, 0, -currentDietDay)
 
 	freshSlotsRange := getFreshSlotsRange(currentDietDay, maxDietDay)
 	lidlAndStockSlotsRange := getLidlAndStockSlotsRange(currentDietDay, maxDietDay)
 
-	freshIngredients, err := s.getFreshIngredients(ctx, activeDietID, freshSlotsRange, startDate)
+	freshIngredients, err := s.getFreshIngredients(ctx, activeDietID, freshSlotsRange, currentCycleStartDate)
 	if err != nil {
 		return nil, fmt.Errorf("getFreshIngredients: %w", err)
 	}
@@ -83,15 +86,15 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 	if err != nil {
 		return nil, fmt.Errorf("getStockIngredients: %w", err)
 	}
-	lidlIngredients, err := s.getLidlIngredients(ctx, activeDietID, lidlAndStockSlotsRange, startDate)
+	lidlIngredients, err := s.getLidlIngredients(ctx, activeDietID, lidlAndStockSlotsRange, currentCycleStartDate)
 	if err != nil {
 		return nil, fmt.Errorf("getLidlIngredients: %w", err)
 	}
-	liveIngredients, err := s.getLiveIngredients(ctx, activeDietID, freshSlotsRange, startDate)
+	liveIngredients, err := s.getLiveIngredients(ctx, activeDietID, freshSlotsRange, currentCycleStartDate)
 	if err != nil {
 		return nil, fmt.Errorf("getLiveIngredients: %w", err)
 	}
-	gsIngredients, err := s.getGSIngredients(ctx, activeDietID, freshSlotsRange, startDate)
+	gsIngredients, err := s.getGSIngredients(ctx, activeDietID, freshSlotsRange, currentCycleStartDate)
 	if err != nil {
 		return nil, fmt.Errorf("getGSIngredients: %w", err)
 	}
@@ -232,6 +235,13 @@ func (s *ServiceShoppingList) getIngredientsByConfig(
 	cfg ingredientQueryConfig,
 ) ([]model.IngredientInShoppingList, error) {
 
+	fmt.Println("DietID:", dietID)
+	fmt.Println("SlotNums:", slotNums)
+	fmt.Println("StartDate:", startDate.String()[:11])
+	fmt.Println("ShopStyles:", cfg.shopStyles)
+	fmt.Println("WithPath:", cfg.withPath)
+	fmt.Println("OrderBy:", cfg.orderBy)
+
 	if len(slotNums) == 0 {
 		return []model.IngredientInShoppingList{}, nil
 	}
@@ -258,8 +268,7 @@ func (s *ServiceShoppingList) getIngredientsByConfig(
 		LEFT JOIN LATERAL (
 			SELECT dsc.dish_id
 			FROM diet_slots_counter dsc
-			WHERE dsc.diet_id = ds.diet_id
-			AND dsc.day = ($4::date + (ds.slot_num / 5) * interval '1 day')::date
+			WHERE dsc.day = ($4::date + (ds.slot_num / 5) * interval '1 day')::date
 			AND dsc.meal = (
 				CASE (ds.slot_num %% 5)
 				WHEN 0 THEN 'Breakfast'
