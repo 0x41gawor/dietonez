@@ -183,6 +183,21 @@ CREATE TABLE public.diet_slots (
 ALTER TABLE public.diet_slots OWNER TO kartezjusz;
 
 --
+-- Name: diet_slots_counter; Type: TABLE; Schema: public; Owner: kartezjusz
+--
+
+CREATE TABLE public.diet_slots_counter (
+    diet_id integer NOT NULL,
+    day date NOT NULL,
+    meal public.meal_slot NOT NULL,
+    name text,
+    dish_id integer
+);
+
+
+ALTER TABLE public.diet_slots_counter OWNER TO kartezjusz;
+
+--
 -- Name: diets; Type: TABLE; Schema: public; Owner: kartezjusz
 --
 
@@ -374,7 +389,8 @@ CREATE TABLE public.ingredients (
     proteins double precision,
     fats double precision,
     carbs double precision,
-    path numeric DEFAULT 2000 NOT NULL
+    path numeric DEFAULT 2000 NOT NULL,
+    is_present boolean DEFAULT false NOT NULL
 );
 
 
@@ -464,314 +480,311 @@ ALTER TABLE ONLY public.ingredients ALTER COLUMN id SET DEFAULT nextval('public.
 --
 
 COPY public.counter (day, ingredient_id, meal, amount) FROM stdin;
-2025-11-09	26	Breakfast	100
-2025-11-07	42	Lunch	150
-2025-11-07	4	Lunch	1
-2025-11-07	52	Lunch	8
-2025-11-07	62	Lunch	40
-2025-11-07	73	Lunch	40
-2025-11-07	25	Lunch	10
-2025-11-07	56	Lunch	10
-2025-11-09	187	Breakfast	100
-2025-11-07	129	Lunch	15
-2025-11-07	69	Lunch	10
-2025-11-07	55	Lunch	10
-2025-11-11	4	Breakfast	4
-2025-11-11	149	Breakfast	1
-2025-11-07	1	Pre-Workout	300
-2025-11-11	27	Breakfast	100
-2025-11-11	148	Breakfast	50
-2025-11-11	96	Lunch	100
-2025-11-11	94	Lunch	150
-2025-11-11	91	Lunch	150
-2025-11-11	162	Lunch	50
-2025-11-11	88	Lunch	10
-2025-11-11	30	Lunch	50
-2025-11-11	97	Lunch	1
-2025-11-11	62	Lunch	30
-2025-11-11	71	Lunch	1
-2025-11-11	72	Lunch	1
-2025-11-11	1	Pre-Workout	300
-2025-11-11	26	Pre-Workout	80
-2025-11-11	25	Pre-Workout	40
-2025-11-11	16	Pre-Workout	20
-2025-11-11	43	Post-Workout	200
-2025-11-11	51	Post-Workout	200
-2025-11-11	18	Post-Workout	100
-2025-11-11	73	Post-Workout	50
-2025-11-11	19	Post-Workout	50
-2025-11-11	126	Post-Workout	50
-2025-11-11	52	Post-Workout	5
-2025-11-11	55	Post-Workout	20
-2025-11-11	71	Post-Workout	1
-2025-11-11	72	Post-Workout	1
-2025-11-11	107	Supper	150
-2025-11-07	26	Pre-Workout	160
-2025-11-07	15	Pre-Workout	10
-2025-11-12	26	Pre-Workout	80
-2025-11-12	25	Pre-Workout	40
-2025-11-12	44	Post-Workout	100
-2025-11-12	42	Post-Workout	150
-2025-11-12	22	Post-Workout	75
-2025-11-07	127	Lunch	20
-2025-11-09	23	Breakfast	100
-2025-11-08	83	Lunch	250
-2025-11-10	3	Breakfast	138
-2025-11-10	27	Breakfast	100
-2025-11-10	2	Breakfast	100
-2025-11-10	14	Breakfast	100
-2025-11-10	102	Breakfast	50
-2025-11-10	16	Breakfast	18
-2025-11-13	4	Breakfast	4
-2025-11-13	149	Breakfast	1
-2025-11-13	148	Breakfast	100
-2025-11-13	27	Breakfast	100
-2025-11-13	12	Breakfast	15
-2025-11-13	44	Lunch	100
-2025-11-13	42	Lunch	150
-2025-11-08	8	Breakfast	2
-2025-11-13	22	Lunch	75
-2025-11-13	46	Lunch	100
-2025-11-13	70	Lunch	20
-2025-11-13	52	Lunch	8
-2025-11-13	67	Lunch	1
-2025-11-13	68	Lunch	10
-2025-11-08	23	Breakfast	200
-2025-11-13	69	Lunch	10
-2025-11-13	1	Pre-Workout	300
-2025-11-13	26	Pre-Workout	110
-2025-11-08	56	Lunch	10
-2025-11-08	102	Supper	40
-2025-11-09	8	Breakfast	2
-2025-11-13	14	Pre-Workout	150
-2025-11-19	5	Breakfast	5
-2025-11-13	11	Pre-Workout	10
-2025-11-13	44	Post-Workout	100
-2025-11-13	42	Post-Workout	150
-2025-11-05	91	Breakfast	140
-2025-11-12	46	Post-Workout	100
-2025-11-05	183	Breakfast	42
-2025-11-13	38	Post-Workout	100
-2025-11-13	62	Post-Workout	60
-2025-11-05	9	Breakfast	41
-2025-11-05	184	Breakfast	20
-2025-11-05	24	Pre-Workout	120
-2025-11-05	16	Pre-Workout	10
-2025-11-13	60	Post-Workout	20
-2025-11-09	85	Lunch	150
-2025-11-09	47	Lunch	150
-2025-11-09	52	Lunch	8
-2025-11-09	28	Lunch	30
-2025-11-09	73	Lunch	30
-2025-11-09	54	Lunch	10
-2025-11-09	55	Lunch	10
-2025-11-09	71	Lunch	1
-2025-11-09	72	Lunch	1
-2025-11-09	1	Pre-Workout	300
-2025-11-09	26	Pre-Workout	110
-2025-11-09	14	Pre-Workout	150
-2025-11-09	11	Pre-Workout	10
-2025-11-09	87	Post-Workout	100
-2025-11-09	127	Post-Workout	20
-2025-11-09	102	Supper	40
-2025-11-05	185	Supper	74
-2025-11-05	3	Supper	95
-2025-11-12	70	Post-Workout	20
-2025-11-12	52	Post-Workout	8
-2025-11-12	67	Post-Workout	1
-2025-11-12	68	Post-Workout	10
-2025-11-12	69	Post-Workout	10
-2025-11-12	107	Supper	150
-2025-11-13	25	Post-Workout	10
-2025-11-13	52	Post-Workout	6
-2025-11-08	26	Pre-Workout	100
-2025-11-13	17	Post-Workout	30
-2025-11-13	73	Post-Workout	20
-2025-11-13	129	Post-Workout	10
-2025-11-13	102	Supper	40
-2025-11-09	86	Post-Workout	300
-2025-11-14	4	Breakfast	4
-2025-11-14	58	Breakfast	1
-2025-11-14	53	Breakfast	150
-2025-11-14	27	Breakfast	100
-2025-11-14	105	Breakfast	100
-2025-11-14	166	Breakfast	20
-2025-11-14	15	Breakfast	10
-2025-11-14	44	Lunch	100
-2025-11-14	42	Lunch	150
-2025-11-14	38	Lunch	100
-2025-11-14	62	Lunch	60
-2025-11-14	60	Lunch	20
-2025-11-14	25	Lunch	10
-2025-11-14	52	Lunch	6
-2025-11-14	17	Lunch	30
-2025-11-14	73	Lunch	20
-2025-11-14	129	Lunch	10
-2025-11-14	1	Pre-Workout	300
-2025-11-14	26	Pre-Workout	110
-2025-11-14	14	Pre-Workout	150
-2025-11-14	11	Pre-Workout	10
-2025-11-14	118	Post-Workout	1
-2025-11-14	102	Supper	40
-2025-11-15	4	Breakfast	4
-2025-11-15	58	Breakfast	1
-2025-11-15	53	Breakfast	150
-2025-11-15	27	Breakfast	100
-2025-11-15	105	Breakfast	100
-2025-11-15	31	Breakfast	10
-2025-11-15	51	Lunch	200
-2025-11-15	83	Lunch	150
-2025-11-15	22	Lunch	60
-2025-11-15	133	Lunch	100
-2025-11-15	12	Lunch	10
-2025-11-15	30	Lunch	30
-2025-11-15	19	Lunch	30
-2025-11-15	56	Lunch	10
-2025-11-15	55	Lunch	5
-2025-11-15	1	Pre-Workout	300
-2025-11-15	26	Pre-Workout	110
-2025-11-15	14	Pre-Workout	150
-2025-11-15	11	Pre-Workout	10
-2025-11-15	51	Post-Workout	200
-2025-11-15	83	Post-Workout	150
-2025-11-15	22	Post-Workout	60
-2025-11-15	133	Post-Workout	100
-2025-11-15	12	Post-Workout	10
-2025-11-15	30	Post-Workout	30
-2025-11-15	19	Post-Workout	30
-2025-11-15	56	Post-Workout	10
-2025-11-15	55	Post-Workout	5
-2025-11-15	102	Supper	40
-2025-11-16	102	Supper	40
-2025-11-17	151	Breakfast	1
-2025-11-17	134	Breakfast	1
-2025-11-17	27	Breakfast	100
-2025-11-17	111	Lunch	1
-2025-11-17	150	Lunch	1
-2025-11-17	1	Pre-Workout	300
-2025-11-17	27	Pre-Workout	200
-2025-11-17	26	Pre-Workout	100
-2025-11-17	31	Pre-Workout	10
-2025-11-17	122	Post-Workout	120
-2025-11-17	89	Post-Workout	150
-2025-11-17	53	Post-Workout	100
-2025-11-17	52	Post-Workout	8
-2025-11-17	56	Post-Workout	10
-2025-11-17	78	Post-Workout	20
-2025-11-12	1	Lunch	50
-2025-11-07	87	Lunch	112
-2025-11-12	186	Lunch	20
-2025-11-05	167	Breakfast	100
-2025-11-05	58	Lunch	1
-2025-11-05	60	Lunch	30
-2025-11-05	51	Lunch	166
-2025-11-05	25	Pre-Workout	35
-2025-11-05	42	Post-Workout	140
-2025-11-06	39	Breakfast	40
-2025-11-06	25	Lunch	30
-2025-11-06	26	Pre-Workout	178
-2025-11-06	185	Post-Workout	125
-2025-11-06	3	Post-Workout	158
-2025-11-07	177	Post-Workout	28
-2025-11-07	178	Post-Workout	24.64
-2025-11-07	179	Post-Workout	47.6
-2025-11-08	39	Breakfast	64
-2025-11-08	91	Breakfast	112
-2025-11-09	52	Post-Workout	8
-2025-11-10	125	Lunch	300
-2025-11-10	87	Lunch	100
-2025-11-10	52	Lunch	8
-2025-11-08	51	Lunch	400
-2025-11-08	186	Lunch	40
-2025-11-08	1	Lunch	90
-2025-11-10	163	Lunch	40
-2025-11-10	177	Pre-Workout	4.5
-2025-11-10	178	Pre-Workout	21.6
-2025-11-10	179	Pre-Workout	44.3
-2025-11-17	71	Post-Workout	1
-2025-11-17	79	Post-Workout	1
-2025-11-17	72	Post-Workout	1
-2025-11-17	107	Supper	150
-2025-11-18	5	Breakfast	6
-2025-11-18	6	Breakfast	3
-2025-11-18	146	Breakfast	50
-2025-11-18	23	Breakfast	100
-2025-11-05	8	Breakfast	2
-2025-11-18	167	Breakfast	100
-2025-11-18	30	Breakfast	50
-2025-11-18	122	Lunch	120
-2025-11-05	128	Lunch	1
-2025-11-18	89	Lunch	150
-2025-11-18	53	Lunch	100
-2025-11-18	52	Lunch	8
-2025-11-18	56	Lunch	10
-2025-11-05	19	Lunch	20
-2025-11-05	21	Lunch	20
-2025-11-05	62	Lunch	10
-2025-11-05	1	Pre-Workout	300
-2025-11-18	78	Lunch	20
-2025-11-18	71	Lunch	1
-2025-11-05	87	Post-Workout	100
-2025-11-05	139	Post-Workout	150
-2025-11-05	137	Post-Workout	15
-2025-11-05	52	Post-Workout	8
-2025-11-05	25	Post-Workout	10
-2025-11-05	74	Post-Workout	30
-2025-11-05	56	Post-Workout	10
-2025-11-05	129	Post-Workout	15
-2025-11-05	68	Post-Workout	3
-2025-11-05	71	Post-Workout	1
-2025-11-05	72	Post-Workout	1
-2025-11-18	79	Lunch	1
-2025-11-18	72	Lunch	1
-2025-11-18	1	Pre-Workout	300
-2025-11-18	27	Pre-Workout	200
-2025-11-18	26	Pre-Workout	100
-2025-11-18	31	Pre-Workout	10
-2025-11-18	58	Post-Workout	2
-2025-11-18	128	Post-Workout	1
-2025-11-06	8	Breakfast	2
-2025-11-18	51	Post-Workout	100
-2025-11-18	126	Post-Workout	50
-2025-11-06	27	Breakfast	100
-2025-11-06	73	Breakfast	70
-2025-11-18	20	Post-Workout	50
-2025-11-06	87	Lunch	100
-2025-11-06	42	Lunch	150
-2025-11-06	139	Lunch	150
-2025-11-06	137	Lunch	15
-2025-11-06	52	Lunch	8
-2025-11-06	74	Lunch	30
-2025-11-06	56	Lunch	10
-2025-11-06	129	Lunch	15
-2025-11-06	68	Lunch	3
-2025-11-06	71	Lunch	1
-2025-11-06	72	Lunch	1
-2025-11-06	1	Pre-Workout	300
-2025-11-06	15	Pre-Workout	10
-2025-11-18	22	Post-Workout	10
-2025-11-18	59	Post-Workout	10
-2025-11-18	19	Post-Workout	20
-2025-11-18	21	Post-Workout	20
-2025-11-18	60	Post-Workout	5
-2025-11-18	62	Post-Workout	10
-2025-11-18	107	Supper	150
-2025-11-12	2	Breakfast	100
-2025-11-12	3	Breakfast	150
-2025-11-12	101	Breakfast	40
-2025-11-12	26	Breakfast	100
-2025-11-12	94	Lunch	200
-2025-11-06	102	Supper	40
-2025-11-07	8	Breakfast	2
-2025-11-07	34	Breakfast	100
-2025-11-07	153	Breakfast	100
-2025-11-07	91	Breakfast	100
-2025-11-07	19	Breakfast	80
-2025-11-07	18	Breakfast	30
-2025-11-07	52	Breakfast	5
-2025-11-07	55	Breakfast	30
-2025-11-12	44	Lunch	100
-2025-11-12	52	Lunch	8
+2025-12-26	130	Lunch	150
+2025-12-26	42	Lunch	150
+2025-12-26	80	Lunch	40
+2025-12-26	30	Lunch	100
+2025-12-26	10	Lunch	10
+2025-12-26	56	Lunch	20
+2025-12-26	52	Lunch	8
+2025-12-26	71	Lunch	1
+2025-12-26	79	Lunch	2
+2025-12-26	72	Lunch	1
+2025-12-26	1	Pre-Workout	300
+2025-12-26	143	Pre-Workout	150
+2025-12-26	25	Pre-Workout	30
+2025-12-26	10	Pre-Workout	10
+2025-12-26	118	Post-Workout	1
+2025-12-26	102	Supper	40
+2025-12-27	2	Breakfast	100
+2025-12-27	3	Breakfast	200
+2025-12-23	145	Breakfast	100
+2025-12-23	4	Breakfast	1
+2025-12-23	165	Breakfast	40
+2025-12-23	3	Breakfast	100
+2025-12-23	11	Breakfast	10
+2025-12-23	25	Breakfast	10
+2025-12-27	39	Breakfast	40
+2025-12-27	4	Breakfast	1
+2025-12-27	106	Breakfast	100
+2025-12-27	132	Lunch	350
+2025-12-27	83	Lunch	150
+2025-12-27	53	Lunch	50
+2025-12-27	154	Lunch	30
+2025-12-27	56	Lunch	5
+2025-12-27	78	Lunch	10
+2025-12-27	55	Lunch	5
+2025-12-27	1	Pre-Workout	300
+2025-12-27	143	Pre-Workout	150
+2025-12-27	25	Pre-Workout	30
+2025-12-23	1	Pre-Workout	300
+2025-12-23	26	Pre-Workout	160
+2025-12-23	91	Pre-Workout	150
+2025-12-23	43	Post-Workout	200
+2025-12-23	51	Post-Workout	200
+2025-12-23	18	Post-Workout	100
+2025-12-23	73	Post-Workout	50
+2025-12-23	19	Post-Workout	50
+2025-12-23	126	Post-Workout	50
+2025-12-23	52	Post-Workout	5
+2025-12-23	55	Post-Workout	20
+2025-12-23	71	Post-Workout	1
+2025-12-23	72	Post-Workout	1
+2025-12-23	107	Supper	150
+2025-12-27	10	Pre-Workout	10
+2025-12-27	132	Post-Workout	350
+2025-12-27	53	Post-Workout	50
+2025-12-22	84	Lunch	100
+2025-12-22	89	Lunch	150
+2025-12-22	52	Lunch	20
+2025-12-22	73	Lunch	100
+2025-12-22	30	Lunch	50
+2025-12-22	67	Lunch	1
+2025-12-22	92	Lunch	1
+2025-12-22	17	Lunch	30
+2025-12-22	56	Lunch	10
+2025-12-22	93	Lunch	20
+2025-12-22	71	Lunch	1
+2025-12-22	72	Lunch	1
+2025-12-22	145	Breakfast	100
+2025-12-22	4	Breakfast	1
+2025-12-22	26	Breakfast	90
+2025-12-22	3	Breakfast	100
+2025-12-22	166	Breakfast	20
+2025-12-22	43	Post-Workout	200
+2025-12-22	51	Post-Workout	200
+2025-12-22	18	Post-Workout	100
+2025-12-22	73	Post-Workout	50
+2025-12-22	19	Post-Workout	50
+2025-12-22	126	Post-Workout	50
+2025-12-22	52	Post-Workout	5
+2025-12-22	55	Post-Workout	20
+2025-12-22	71	Post-Workout	1
+2025-12-22	72	Post-Workout	1
+2025-12-27	154	Post-Workout	30
+2025-12-27	56	Post-Workout	5
+2025-12-27	78	Post-Workout	10
+2025-12-27	55	Post-Workout	5
+2025-12-27	102	Supper	40
+2025-12-25	43	Lunch	200
+2025-12-25	51	Lunch	200
+2025-12-25	18	Lunch	100
+2025-12-25	73	Lunch	50
+2025-12-25	19	Lunch	50
+2025-12-25	126	Lunch	50
+2025-12-25	52	Lunch	5
+2025-12-25	55	Lunch	20
+2025-12-25	71	Lunch	1
+2025-12-25	72	Lunch	1
+2025-12-24	96	Post-Workout	100
+2025-12-24	94	Post-Workout	150
+2025-12-24	91	Post-Workout	150
+2025-12-24	162	Post-Workout	50
+2025-12-24	88	Post-Workout	10
+2025-12-24	30	Post-Workout	50
+2025-12-24	97	Post-Workout	1
+2025-12-22	1	Pre-Workout	300
+2025-12-22	26	Pre-Workout	110
+2025-12-22	39	Pre-Workout	40
+2025-12-22	172	Supper	100
+2025-12-25	130	Post-Workout	150
+2025-12-25	42	Post-Workout	150
+2025-12-25	80	Post-Workout	40
+2025-12-24	62	Post-Workout	30
+2025-12-24	71	Post-Workout	1
+2025-12-24	72	Post-Workout	1
+2025-12-27	83	Post-Workout	200
+2026-01-01	8	Breakfast	2
+2026-01-01	26	Breakfast	90
+2026-01-01	27	Breakfast	100
+2026-01-01	39	Breakfast	30
+2026-01-01	73	Breakfast	70
+2026-01-01	13	Breakfast	1
+2026-01-01	87	Lunch	100
+2026-01-01	42	Lunch	150
+2026-01-01	139	Lunch	150
+2026-01-01	137	Lunch	15
+2026-01-01	52	Lunch	8
+2026-01-01	25	Lunch	10
+2026-01-01	74	Lunch	30
+2026-01-01	56	Lunch	10
+2026-01-01	129	Lunch	15
+2026-01-01	68	Lunch	3
+2026-01-01	71	Lunch	1
+2026-01-01	72	Lunch	1
+2026-01-01	1	Pre-Workout	300
+2025-12-25	30	Post-Workout	100
+2025-12-25	10	Post-Workout	10
+2025-12-25	56	Post-Workout	20
+2025-12-25	52	Post-Workout	8
+2025-12-25	71	Post-Workout	1
+2025-12-25	79	Post-Workout	2
+2025-12-25	72	Post-Workout	1
+2025-12-25	102	Supper	40
+2025-12-24	145	Breakfast	100
+2025-12-24	4	Breakfast	1
+2025-12-24	26	Breakfast	90
+2025-12-24	3	Breakfast	100
+2025-12-24	166	Breakfast	20
+2025-12-24	43	Lunch	200
+2025-12-24	51	Lunch	200
+2025-12-24	18	Lunch	100
+2025-12-24	73	Lunch	50
+2025-12-24	19	Lunch	50
+2025-12-24	126	Lunch	50
+2025-12-24	52	Lunch	5
+2025-12-24	55	Lunch	20
+2025-12-24	71	Lunch	1
+2025-12-24	72	Lunch	1
+2025-12-24	107	Supper	150
+2025-12-23	43	Lunch	200
+2025-12-23	51	Lunch	200
+2025-12-23	18	Lunch	100
+2025-12-23	73	Lunch	50
+2025-12-23	19	Lunch	50
+2025-12-23	126	Lunch	50
+2025-12-23	52	Lunch	5
+2025-12-23	55	Lunch	20
+2025-12-23	71	Lunch	1
+2025-12-23	72	Lunch	1
+2025-12-25	145	Breakfast	100
+2025-12-25	4	Breakfast	1
+2025-12-25	26	Breakfast	90
+2025-12-25	3	Breakfast	100
+2025-12-25	166	Breakfast	20
+2025-12-26	4	Breakfast	1
+2025-12-26	26	Breakfast	90
+2025-12-26	3	Breakfast	100
+2025-12-26	166	Breakfast	20
+2025-12-24	1	Pre-Workout	300
+2025-12-24	26	Pre-Workout	160
+2025-12-24	91	Pre-Workout	150
+2025-12-29	151	Breakfast	1
+2025-12-29	134	Breakfast	1
+2025-12-29	27	Breakfast	100
+2025-12-29	173	Lunch	1
+2025-12-29	150	Lunch	1
+2025-12-29	1	Pre-Workout	300
+2025-12-29	26	Pre-Workout	160
+2025-12-29	91	Pre-Workout	150
+2025-12-29	25	Pre-Workout	20
+2025-12-29	84	Post-Workout	100
+2025-12-29	89	Post-Workout	150
+2025-12-29	52	Post-Workout	20
+2025-12-29	73	Post-Workout	100
+2025-12-29	30	Post-Workout	50
+2025-12-29	67	Post-Workout	1
+2025-12-29	92	Post-Workout	1
+2025-12-29	17	Post-Workout	30
+2025-12-29	56	Post-Workout	10
+2025-12-29	93	Post-Workout	20
+2025-12-29	71	Post-Workout	1
+2025-12-29	72	Post-Workout	1
+2025-12-29	107	Supper	150
+2025-12-30	8	Breakfast	2
+2025-12-30	167	Breakfast	200
+2025-12-30	24	Breakfast	100
+2025-12-30	148	Breakfast	60
+2025-12-30	166	Breakfast	20
+2025-12-30	84	Lunch	100
+2025-12-30	89	Lunch	150
+2025-12-30	52	Lunch	20
+2025-12-30	73	Lunch	100
+2025-12-30	30	Lunch	50
+2025-12-30	67	Lunch	1
+2025-12-30	92	Lunch	1
+2025-12-30	17	Lunch	30
+2025-12-30	56	Lunch	10
+2025-12-30	93	Lunch	20
+2025-12-30	71	Lunch	1
+2025-12-30	72	Lunch	1
+2025-12-30	1	Pre-Workout	300
+2025-12-30	26	Pre-Workout	160
+2025-12-30	91	Pre-Workout	150
+2025-12-30	25	Pre-Workout	20
+2025-12-30	107	Supper	150
+2025-12-31	8	Breakfast	2
+2025-12-31	167	Breakfast	200
+2025-12-31	24	Breakfast	100
+2025-12-31	148	Breakfast	60
+2025-12-31	166	Breakfast	20
+2025-12-31	1	Pre-Workout	300
+2025-12-31	26	Pre-Workout	160
+2025-12-31	91	Pre-Workout	150
+2025-12-31	25	Pre-Workout	20
+2025-12-31	87	Post-Workout	100
+2025-12-31	42	Post-Workout	150
+2025-12-31	139	Post-Workout	150
+2025-12-31	137	Post-Workout	15
+2025-12-31	52	Post-Workout	8
+2025-12-31	25	Post-Workout	10
+2025-12-31	74	Post-Workout	30
+2025-12-31	56	Post-Workout	10
+2025-12-31	129	Post-Workout	15
+2025-12-31	68	Post-Workout	3
+2025-12-31	71	Post-Workout	1
+2025-12-31	72	Post-Workout	1
+2025-12-31	107	Supper	150
+2026-01-01	26	Pre-Workout	160
+2026-01-01	15	Pre-Workout	10
+2026-01-01	87	Post-Workout	100
+2026-01-01	42	Post-Workout	150
+2026-01-01	4	Post-Workout	1
+2026-01-01	127	Post-Workout	10
+2026-01-01	52	Post-Workout	8
+2026-01-01	73	Post-Workout	40
+2026-01-01	62	Post-Workout	40
+2026-01-01	25	Post-Workout	10
+2026-01-01	56	Post-Workout	10
+2026-01-01	74	Post-Workout	20
+2026-01-01	129	Post-Workout	15
+2026-01-01	69	Post-Workout	10
+2026-01-01	55	Post-Workout	10
+2026-01-01	102	Supper	40
+2026-01-02	8	Breakfast	2
+2026-01-02	34	Breakfast	100
+2026-01-02	153	Breakfast	100
+2026-01-02	91	Breakfast	100
+2026-01-02	19	Breakfast	80
+2026-01-02	18	Breakfast	30
+2026-01-02	52	Breakfast	5
+2026-01-02	55	Breakfast	30
+2026-01-02	87	Lunch	100
+2026-01-02	42	Lunch	150
+2026-01-02	4	Lunch	1
+2026-01-02	127	Lunch	10
+2026-01-02	52	Lunch	8
+2026-01-02	73	Lunch	40
+2026-01-02	62	Lunch	40
+2026-01-02	25	Lunch	10
+2026-01-02	56	Lunch	10
+2026-01-02	74	Lunch	20
+2026-01-02	129	Lunch	15
+2026-01-02	69	Lunch	10
+2026-01-02	55	Lunch	10
+2026-01-02	1	Pre-Workout	300
+2026-01-02	26	Pre-Workout	160
+2026-01-02	15	Pre-Workout	10
+2026-01-02	117	Post-Workout	1
+2026-01-02	102	Supper	40
+2025-12-28	2	Breakfast	100
+2025-12-28	39	Breakfast	40
+2025-12-28	4	Breakfast	1
+2025-12-28	106	Breakfast	100
+2025-12-30	87	Post-Workout	100
+2025-12-30	86	Post-Workout	200
+2025-12-30	127	Post-Workout	20
+2025-12-30	88	Post-Workout	15
+2025-12-30	56	Post-Workout	20
+2025-12-30	28	Post-Workout	20
+2025-12-30	55	Post-Workout	10
+2025-12-31	87	Lunch	100
+2025-12-31	86	Lunch	200
+2025-12-31	127	Lunch	20
+2025-12-31	88	Lunch	15
+2025-12-31	56	Lunch	20
+2025-12-31	28	Lunch	20
+2025-12-31	55	Lunch	10
 \.
 
 
@@ -923,6 +936,7 @@ COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
 1	109	\N
 1	111	\N
 1	112	\N
+1	18	63
 1	2	5
 1	113	\N
 1	114	\N
@@ -954,7 +968,6 @@ COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
 1	15	6
 1	16	20
 1	17	3
-1	18	35
 1	19	24
 1	20	6
 1	21	20
@@ -1336,6 +1349,70 @@ COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
 2	273	67
 2	274	24
 2	279	24
+\.
+
+
+--
+-- Data for Name: diet_slots_counter; Type: TABLE DATA; Schema: public; Owner: kartezjusz
+--
+
+COPY public.diet_slots_counter (diet_id, day, meal, name, dish_id) FROM stdin;
+2	2025-12-23	Pre-Workout	M 3 Skyr + 2Banany&Jabłko	5
+2	2025-12-23	Post-Workout	12M Wołowina stek - z frytkami	34
+2	2025-12-25	Pre-Workout	M 7 Skyr - Wiśnie&Orzechy	72
+2	2025-12-25	Breakfast	12A Jaglanka- banan&orzechy laskowe	100
+2	2025-12-26	Breakfast	12A Jaglanka- banan&orzechy laskowe	100
+2	2025-12-24	Pre-Workout	M 3 Skyr + 2Banany&Jabłko	5
+2	2025-12-22	Lunch	11M Wieprzowina schab – pieczony z ziołami	22
+2	2025-12-22	Breakfast	12A Jaglanka- banan&orzechy laskowe	100
+2	2025-12-22	Post-Workout	12M Wołowina stek - z frytkami	34
+2	2025-12-24	Post-Workout	13M Wątróbka - klasyczek cebula	23
+2	2025-12-24	Supper	custom	\N
+2	2025-12-27	Lunch	33M Łosoś - Ziemniory	67
+2	2025-12-29	Breakfast	FF Kanapka z szarpaną wołowiną i bieluch + kiwi	81
+2	2025-12-29	Lunch	FF Sałatka Awokado Rybak Duża + Bułka z chia	125
+2	2025-12-29	Pre-Workout	M 0 Skyr - Miód + Banan&Jabłko	1
+2	2025-12-23	Supper	Masakra	25
+2	2025-12-29	Post-Workout	11M Wieprzowina schab – pieczony z ziołami	22
+2	2025-12-29	Supper	Twaróg klinek chudy	25
+2	2025-12-30	Breakfast	40M Kanapki - z Kimchi i tuńczykiem	104
+2	2025-12-30	Lunch	11M Wieprzowina schab – pieczony z ziołami	22
+2	2025-12-30	Pre-Workout	M 0 Skyr - Miód + Banan&Jabłko	1
+2	2025-12-30	Supper	Twaróg klinek chudy	25
+2	2025-12-31	Breakfast	40M Kanapki - z Kimchi i tuńczykiem	104
+2	2025-12-31	Pre-Workout	M 0 Skyr - Miód + Banan&Jabłko	1
+2	2025-12-31	Post-Workout	20M Kurczak filet - Asian Stri-Fry 	65
+2	2025-12-31	Supper	Twaróg klinek chudy	25
+2	2026-01-01	Breakfast	40M Kanapki - Masło orzechowe & Banan Marchew obok	106
+2	2026-01-01	Lunch	20M Kurczak filet - Asian Stri-Fry 	65
+2	2026-01-01	Pre-Workout	M 4 Skyr - 2banany&migdały	70
+2	2026-01-01	Post-Workout	20M Kurczak filet - Pad thai 	64
+2	2026-01-01	Supper	Kazeina	24
+2	2026-01-02	Breakfast	40M Kanapki  - Indyk&Awokado + jabłko	107
+2	2026-01-02	Lunch	20M Kurczak filet - Pad thai 	64
+2	2026-01-02	Pre-Workout	M 4 Skyr - 2banany&migdały	70
+2	2026-01-02	Post-Workout	FF Double Zinger (KFC)	30
+2	2026-01-02	Supper	Kazeina	24
+2	2025-12-22	Pre-Workout	M 6 Skyr - Peanut Butter + Banan	3
+2	2025-12-28	Breakfast	11M Owsianka - jagodowa	103
+2	2025-12-22	Supper	chuj	\N
+2	2025-12-23	Breakfast	12M Jaglanka- rnel	99
+2	2025-12-25	Post-Workout	20M Kurczak filet - Penne&Pesto 	38
+2	2025-12-25	Supper	Kazeina	24
+2	2025-12-24	Breakfast	12A Jaglanka- banan&orzechy laskowe	100
+2	2025-12-24	Lunch	12M Wołowina stek - z frytkami	34
+2	2025-12-30	Post-Workout	40M Krewetki - masło/czosnek	20
+2	2025-12-31	Lunch	40M Krewetki - masło/czosnek	20
+2	2025-12-23	Lunch	12M Wołowina stek - z frytlami	34
+2	2025-12-26	Lunch	20M Kurczak filet - Penne&Pesto 	38
+2	2025-12-26	Pre-Workout	M 7 Skyr - Wiśnie&Orzechy	72
+2	2025-12-26	Post-Workout	FF Kebab King mały lawasz kurczak bez sosu	32
+2	2025-12-26	Supper	Kazeina	24
+2	2025-12-27	Breakfast	11M Owsianka - jagodowa	103
+2	2025-12-27	Pre-Workout	M 7 Skyr - Wiśnie&Orzechy	72
+2	2025-12-27	Post-Workout	33M Łosoś - Ziemniaki w mundurkach z dipem	67
+2	2025-12-27	Supper	Kazeina	24
+2	2025-12-25	Lunch	12M Wołowina stek - z frytlami	34
 \.
 
 
@@ -2144,191 +2221,197 @@ COPY public.ingredient_labels (id, label, color) FROM stdin;
 -- Data for Name: ingredients; Type: TABLE DATA; Schema: public; Owner: kartezjusz
 --
 
-COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, proteins, fats, carbs, path) FROM stdin;
-55	Sok z cytryny (Citromle)	g	100	Lidl	13	0	0	3.2	2000
-60	Ketchu pikantny (Pudliszki)	g	100	Lidl	144	1.1	0.1	3.4	2000
-2	Płatki owsiane górskie (Crownfield)	g	100	Lidl	354	12.5	6.3	55.9	1200
-3	Mleko UHT 1.5% tłuszczu (Mleczna Dolina)	g	100	Lidl	46	3.3	1.5	4.8	790
-4	Jaja kurze (60g)	sztuka	1	Lidl	84	7.5	5.8	0.4	1100
-6	Regionalne szlaki Rolada Ustrzycka Wędzona (1 plaster 20g)	porcja	1	Lidl	58	5	4	0.4	680
-7	Krakus Kiełbasa Krakowska sucha z szynki 144g (2x72g)	g	100	Lidl	182	31	6.3	0.3	650
-8	Chleb Żytni z Ziarnami Żyta krojony (Piekarnia Lidla) (1 kromka 90g)	kromka	1	Lidl	180	4.8	1.3	33.3	100
-9	Szynka konserwowa wieprzowa (Pikok)	g	100	Lidl	99	19	1.6	2	610
-10	Orzechy włoskie (Alesto)	g	100	Zapasy	712	15.5	69.1	3.7	410
-11	Nasiona chia (Promienie słoneczne)	g	100	Zapasy	489	14.3	32.1	50	410
-12	Pestki dyni (Alesto)	g	100	Zapasy	579	24.4	45.6	15.2	410
-56	Czosnek	g	100	Świeże	152	6.4	0.5	32.6	200
-14	Maliny mrożone (Lidl)	g	100	Lidl	49	1.3	0.3	5.3	890
-15	Migdały	g	100	Zapasy	604	24.1	52	20.5	400
-17	Papryka czerwona	g	100	Świeże	32	1.3	0.5	6.6	200
-18	Rukola	g	100	Świeże	25	2.6	0.7	3.6	200
-19	Pomidor	g	100	Świeże	19	0.9	0.2	4.1	200
-20	Ogórek kiszony	g	100	Świeże	13	1.1	0.1	1.4	310
-21	Sałata lodowa (Asda)	g	100	Świeże	14	1.2	0.5	1.4	200
-22	Jogur grecki XXL (Pilos)	g	100	Lidl	123	3.6	10	4.7	730
-23	Kefir (Robico)	g	100	Lidl	47	3	2	4.2	740
-24	Pomarańcza	g	100	Świeże	47	0.9	0.2	11.3	200
-25	Miód lipowy (Bartnik)	g	100	Lidl	333	0.3	0	83	1210
-26	Banan	g	100	Świeże	97	1	0.3	21.8	200
-27	Kiwi	g	100	Świeże	60	0.9	0.5	13.9	200
-28	Pietruszka Natka	g	100	Świeże	49	4.4	0.4	9	200
-29	Truskawki mrożone	g	100	Lidl	33	0.7	0.4	7.6	890
-30	Szpinak baby (Vita Fresh)	g	100	Lidl	22	2.9	0	0.8	200
-31	Siemię lniane (Witpak)	g	100	Zapasy	507	25	31	39	400
-32	Mandarynka (1 sztuka 60g)	sztuka	1	Świeże	27	0.4	0.1	6.7	200
-33	Pistacje (Alesto)	g	100	Lidl	605	26.5	49.2	10.3	400
-34	Awokado	g	100	Świeże	169	2	15.3	7.4	200
-36	Borówka amerykańska	g	100	Świeże	57	0.8	0.4	11.5	200
-37	Mango	g	100	Świeże	69	0.5	0.3	15.3	200
-38	Ananas	g	100	Lidl	55	0.4	0.2	13.6	200
-40	Serek wiejski wysokobiałkowy (Pilos) (1 sztuka 200g)	sztuka	1	Lidl	184	28	6	4.6	720
-41	Musli crunchy z orzeszkami (Crownfield)	g	100	Lidl	467	11	18	62	1200
-42	Filet z piersi kurczaka (Kurczak z zielonych Ferm)	g	100	Lidl	112	24	1.6	0.2	500
-43	Irish beef	g	100	Lidl	243	17.3	18	0.1	500
-45	Ryż basmati (Plony Natury)	g	100	Lidl	358	8.7	0.8	79	900
-46	Pomidory bez skóry krojone (Baresa)	g	100	Lidl	27	1.3	0.2	4	900
-47	Dorsz atlantycki	g	100	Lidl	83	19.1	0.7	0.5	500
-48	Mięso mielone wołowe (Rzeźnik)	g	100	Lidl	256	18	20	0	500
-49	Tagliatelle (Tiradell)	g	100	Lidl	354	12.4	1.5	71.2	900
-50	Frytki z batatów (Harvest Basket)	g	100	Lidl	145	2	5	21.1	820
-51	Frytki karbowane do piekarnika (Aviko)	g	100	Lidl	152	2.4	4.5	24.3	820
-52	Oliwa z oliwek	g	100	Lidl	897	0	99.6	0.2	370
-53	Jogurt naturalny (Fruvita)	g	100	Lidl	71	4.4	3	6.5	730
-54	Skórka z cytryny	g	100	Świeże	47	1.5	0.3	16	200
-57	Czosnek granulowany	szczypta	1	Zapasy	0	0	0	0	350
-59	Musztarda sarepska (Kamis)	g	100	Lidl	101	3.7	5.1	8.3	2000
-61	Tortilla pszenna wraps 245g (PANO)	sztuka	1	Lidl	195	5.9	4.6	31.9	120
-62	Cebula	g	100	Świeże	33	1.4	0.4	6.9	200
-63	Cebula czerwona	g	100	Świeże	30	1.4	0.4	6.9	200
-64	Kukurydza złocista	g	100	Lidl	94	3.2	1	19	310
-65	Fasola	g	100	Lidl	288	21.4	1.6	61.6	310
-66	Oregano	szczypta	100	Zapasy	3	0.1	0	0.7	350
-67	Papryka słodka 22g (Kamis)	szczypta	1	Lidl	3	0.1	0.1	0.6	350
-68	Imbir świeży	g	100	Lidl	80	1.8	0.7	17.8	350
-69	Kolendra świeża	g	100	Lidl	23	2.1	0.3	3.7	350
-70	Garam masala (Kolpol)	g	100	Zapasy	462	11.2	13.2	59.6	350
-71	Sól biała	szczypta	1	Zapasy	0	0	0	0	350
-39	Masło orzechowe (GO ON)	g	100	Lidl	581	17	46	12	1210
-13	Cynamon	łyżeczka	1	Zapasy	7	0.1	0	0.8	350
-80	Pesto (Barilla)	g	100	Lidl	482	4.7	46	9.8	2000
-88	Masło Extra Osełka 82% Tłusczu	g	100	Lidl	744	0.7	82	0.7	2000
-96	Groch żółty łuskany połówki	g	100	Lidl	379	23.8	1.4	60.2	2000
-101	Kazeina micelarna (Biały Puch)	g	100	Lidl	355	80	1.6	5.2	2000
-107	Twaróg klinek chudy (Delikate)	g	100	Lidl	96	20	0.2	3.5	735
-113	Bowl Toskański Kurczak (Salad Story)	porcja	1	Świeże	583	32	27	53	2000
-116	Frytki Duże (KFC)	porcja	1	Świeże	268	4.1	12	35	2000
-102	Kazeina SFD 750g (Truskawkowa)	g	100	Zapasy	390	70	3.7	19.2	2000
-115	Zinger (KFC)	sztuka	1	Na żywo	438	26.7	23.3	37.6	2000
-117	Zinger Double (KFC)	sztuka	1	Na żywo	590	41	29	41	2000
-111	Sałatka Cobb Powiększona (Salad Story)	porcja	1	Na żywo	440	32	28	15	2000
-112	Sałatka Cezar (Salad Story)	porcja	1	Na żywo	426	36	25	13	2000
-118	Kebab - mały lawasz z kurczakiem bez sosu (Kebab King)	sztuka	1	Na żywo	618	37.1	23.2	68.4	2000
-114	Nachos Sandwich (Kebab King)	porcja	1056	Na żywo	1056	65	44	99	2000
-104	Protein pudding Chocolate Valio 180g	sztuka	1	Na żywo	148	19.8	2.7	10.8	2000
-103	Danone YoPro Jogurt smak straciatella 160g (Danone YoPro)	sztuka	1	Na żywo	91	15	0.8	5.8	2000
-130	Pastani pełne ziarno makaron penne (Pastani Pełne Ziarno)	g	100	Lidl	176	7.9	1.6	30	900
-1	Skyr Piątnica Jogurt typu Islandzkiego naturalny 450g	g	100	Lidl	64	12	0	4.1	700
-5	Chleb tostowy z mąką pełnoziarnistą (1 kromka 22g)	kromka	1	Lidl	53	1.8	0.6	9.5	180
-16	Belbake Kakao Ekstra Ciemne o Obniżonej zawartości Tłuszczu (belbake)	g	100	Zapasy	309	24	11	13	800
-35	Sardynka w sosie pomidorowym (LISNER)	g	100	Lidl	232	12	41	3	320
-44	Ryż biały długoziarnisty (Plony Natury)	g	100	Lidl	351	7.5	0.8	78	900
-74	Szczypiorek	g	100	Świeże	35	4.1	0.8	4.2	200
-75	Bazylia suszona 10g (Prymat)	szczypta	1	Zapasy	0	0	0	0	350
-110	Bajgiel Bekon & Kurczak (Putka)	sztuka	1	Na żywo	403	19.8	11.9	52.2	2000
-78	Koperek	g	100	Świeże	26	2.8	0.4	2.8	200
-79	Zioła prowansalskie	szczypta	1	Zapasy	0	0	0	0	350
-81	Fasola czerwona	g	100	Lidl	96	8	0.5	10	310
-83	Łosoś atlantycki świeży filet ze skórą	g	100	Lidl	220	19	16	0	500
-84	Kasza bulgur (Plony Natury)	g	100	Lidl	332	12	1.5	63	900
-85	Kasza Kuskus (Plony Natury)	g	100	Lidl	355	14	2	68	900
-86	Krewetki białe (Marinero)	g	100	Lidl	64	14.4	0.7	0	810
-58	Bułka wieloziarnista (Lidl) 1 sztuka 60g	sztuka	1	Świeże	173	4.2	4.2	19.2	100
-90	Tymianek	szczypta	1	Zapasy	0	0	0	0	350
-91	Jabłko	g	100	Świeże	50	0.4	0.4	12.1	200
-92	Rozmaryn szuszony	szczypta	1	Zapasy	3	0.1	0.1	0.6	350
-93	Cukinia	g	100	Świeże	17	1.2	0.1	3.2	200
-94	Wątróbka drobiowa (Muhlenhof)	g	100	Lidl	136	19.1	6.3	0	500
-95	Ser Halloumi EKTOS	g	100	Lidl	317	20	25	3	699
-97	Majeranek suszony	szczypta	1	Zapasy	3	0.1	0.1	0.6	350
-98	Mięta liście	g	100	Lidl	43	3.8	0.7	5.3	200
-100	Morele suszone	g	100	Lidl	301	5.4	1.2	72.2	400
-76	Ogórek zielony	g	100	Świeże	14	0.7	0.1	2.9	200
-106	Jagody mrożone	g	100	Lidl	65	0.8	1.1	10	890
-82	Pomidorki koktajlowe	g	100	Świeże	19	1	0.2	2.9	200
-108	Miruna Nowozelandzka filet (Marinero)	g	100	Lidl	78	16	1.5	0	500
-109	Skyr pitny naturalny (Piątnica) 330g	opakowanie	1	Świeże	211	25.1	5.9	14.2	700
-119	Skyr jogurt typu islandzkiego z jagodami 150g (Piątnica)	opakowanie	1	Lidl	123	14.4	0	16.5	700
-120	Skyr Jogurt typu islandzkiego z mango i marakują 150g (Piątnica)	opakowanie	1	Świeże	123	14.4	0	16.5	700
-122	Makaron conchiglie (Pastani)	g	100	Lidl	354	12	1.5	71	900
-123	Tosty pszenny (Z dobrej piekarni)	kromka	1	Lidl	61	1.9	0.3	12.3	190
-124	Kiełbasa krakowska sucha (Olewnik)	g	100	Lidl	130	32	8	1.2	650
-125	Krewetki białe Vannamei (225g)	g	100	Lidl	90	20	1	0.5	810
-127	Orzeszki ziemne prażone, niesolone (Alesto) 500g	g	100	Lidl	610	25.8	49.2	11.6	400
-128	Burger wołowy Lidl (1 sztuka 110g)	sztuka	1	Lidl	240	20.9	16.5	1.1	500
-105	Maliny świeże	g	100	Świeże	43	1.3	0.3	12	200
-131	Pstrąg Tęczowy Łososiowy (Targ rybny)	g	100	Lidl	197	18.8	13.5	0	500
-132	Ziemniaki	g	100	Lidl	87	1.9	0.1	20.5	200
-133	Brokuły	g	100	Świeże	31	3	0.4	5.2	200
-134	Serek Naturalny Bieluch (150g)	opakowanie	1	Na żywo	191	12.9	12.8	6	730
-87	Makaron ryżowy wstążki	g	100	Lidl	350	6.2	0.1	81.3	900
-129	Sos sojowy Tao Tao 150ml	g	100	Zapasy	27	3.8	0.1	2.7	360
-72	Pieprz czarny mielony	szczypta	1	Zapasy	0	0	0	0	350
-73	Marchew	g	100	Świeże	33	1	0.2	8.7	200
-77	Tzatziki przyprawa	szczypta	1	Zapasy	0	0	0	0	350
-89	Schab wieprzowy 9 plastrów (Rzeźnik)	g	100	Lidl	128	24	4	0	500
-126	Kapusta pekińska	g	100	Świeże	16	1	0	3	200
-169	Żurawina suszona 200g (Alesto)	g	100	Lidl	338	0.7	1.2	78	2000
-150	Bułka z chia (Galeria Wypieków Lubaszka)	sztuka	1	Na żywo	279	9.9	8.46	38.7	2000
-151	Kanapka z szarpaną wołowiną (Galeria Wypieków Lubaszka)	sztuka	1	Lidl	588	25	22.14	70.2	2000
-121	Łowicz Dżem 100% owoców czarna porzeczka 210g (Łowicz)	g	100	Lidl	132	1.1	0.5	28	1205
-136	Spaghetti pełnoziarniste (Combino)	g	100	Lidl	350	15.4	2.7	62	900
-138	Kurkuma	szczypta	1	Lidl	0	0	0	0	350
-139	Chińska mieszanka warzyw 450g (Proste Historie)	g	100	Lidl	28	1.6	0.3	3.4	815
-140	Ryż jaśminiowy	g	100	Lidl	349	6.8	0.8	78	900
-141	Chilli świeże lub suszone	g	100	Świeże	0	0	0	0	200
-142	Limonka	g	30	Świeże	0	0	0	0	200
-143	Wiśnie mrożone	g	100	Lidl	40	0.9	0.5	10	890
-144	Ryżowe płatki błyskawiczne 500g (Melvit)	g	100	Lidl	350	7	0.4	79	1200
-145	Płatki Jaglane (Crownfield)	g	100	Lidl	363	10	2.5	74	1200
-146	Żywiecka wieprzowa ekstra (Pikok)	g	100	Lidl	224	24	14	0.6	600
-147	Ricotta (Loviito)	g	100	Lidl	127	7.7	9	3.9	600
-152	Serel wiejski lekki 3% tłusczu 200g (Pilos)	sztuka	1	Lidl	162	22	6	4.8	720
-153	Szynka Filet wędzony z Piersi Indyka 100g (Pikok)	g	100	Lidl	138	20.7	5.4	1.7	600
-154	Chrzan tarty (Kania) 190g	g	100	Lidl	171	2.4	10	17.5	2000
-155	Budyń smak śmietankowy z cukerem 60g (Winiary)	porcja	1	Lidl	118	4.3	1.8	13.9	2000
-157	Mąka pszenna typ 480	g	100	Lidl	350	12	1.5	71	2000
-158	Koncentrat pomidorowy 90g (Pudliszki)	g	100	Lidl	442	4.9	0.8	18.2	2000
-159	Galaretka o smaku truskawkowym (Dr Oetker) 72g i z tego wychodzi 572g galaretki (1 porcja)	porcja	1	Lidl	280	9.6	0	60	2000
-160	Biszkopty z Pieczątką (Tastino)	g	100	Lidl	367	9.5	5.4	71	2000
-162	Burak ćwikłowy	g	100	Świeże	43	1.6	0.2	10	2000
-161	Pestki słonecznika 500g (Alesto)	g	100	Zapasy	616	21.4	53.9	5.1	2000
-163	Ketchup pikantny (Pudliszki) 500g	g	100	Lidl	144	1.1	0.1	34	2000
-164	Maliny świeże	g	100	Świeże	53	1.2	0.7	12	2000
-165	Rodzynki Jumbo (Alesto)	g	100	Lidl	331	3	2	72	2000
-166	Orzechy laskowe łuskane (Alesto)	g	100	Zapasy	658	15	61	6.7	2000
-167	Kimchi ostre (Freshona)	g	100	Lidl	46	1.8	0.4	8	2000
-148	Tuńczyk w puszce 170g (Nixe)	g	100	Lidl	109	25.4	0.8	0	2000
-168	Mozarella light (Pilos) 125g	g	100	Lidl	157	19	8.5	1	2000
-170	Białka jaj	g	100	Lidl	50	11	0.2	0.7	2000
-171	Proszek do pieczenia	g	100	Lidl	53	0	0	28	2000
-135	Curry przyprawa	szczypta	1	Zapasy	20	1	1	1	2000
-149	Bułka orkiszowa	sztuka	1	Świeże	200	6.4	1.6	40	100
-156	Erytrytol	g	100	Zapasy	0	0	0	0	2000
-137	Orzechy nerkowca	g	100	Zapasy	554	18.2	43.8	30.4	400
-99	Przyprawa meksykańska (Naturalny Koszyk)	g	100	Zapasy	218	9.3	5.8	19.6	350
-172	Mąka kukurydziana biała PAN 1kg (google: Mąka kukurydziana precooked (Harina PAN))	g	100	Lidl	357	78	2	75.5	2000
-173	Sałatka Awokado Rybak (Salad Story)	porcja	1	Na żywo	530	32.76	27.43	32.76	2000
-174	Wrap Wołowina BBQ (Salad Story)	porcja	1	Na żywo	727.2	31	36	69.8	2000
-175	Sałatka z kurczakiem 330g (Putka)	porcja	1	Na żywo	676.5	33	4	73	2000
-176	ChaiKola	sztuka	1	Na żywo	118.8	0	0	28.7	2000
-177	Clean białko (czyste, samo, pure)	g	100	Lidl	400	100	0	0	2000
-178	Clean tłuszcz (czyste, samo, pure)	g	100	Lidl	900	0	100	0	2000
-179	Clean węglowodany (czyste, samo, pure)	g	100	Lidl	400	0	0	100	2000
-183	Sznka z fileta indyka (Pikok)	g	100	Lidl	115	19	3	2.7	2000
-186	Majonez Lekki (Winiary)	g	100	Lidl	338	1.1	33.2	8.4	2000
-184	Orzechy laskowe prażone (Alesto)	g	100	Zapasy	722	14.3	70.5	3.5	2000
-185	Protein pillow o smaku karmelowym (Brownfield)	g	100	Lidl	437	20	18	52	2000
-187	Schab pieczony 	g	100	Lidl	291	30.4	18.7	0.3	2000
+COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, proteins, fats, carbs, path, is_present) FROM stdin;
+55	Sok z cytryny (Citromle)	g	100	Lidl	13	0	0	3.2	2000	f
+60	Ketchu pikantny (Pudliszki)	g	100	Lidl	144	1.1	0.1	3.4	2000	f
+2	Płatki owsiane górskie (Crownfield)	g	100	Lidl	354	12.5	6.3	55.9	1200	f
+3	Mleko UHT 1.5% tłuszczu (Mleczna Dolina)	g	100	Lidl	46	3.3	1.5	4.8	790	f
+4	Jaja kurze (60g)	sztuka	1	Lidl	84	7.5	5.8	0.4	1100	f
+6	Regionalne szlaki Rolada Ustrzycka Wędzona (1 plaster 20g)	porcja	1	Lidl	58	5	4	0.4	680	f
+7	Krakus Kiełbasa Krakowska sucha z szynki 144g (2x72g)	g	100	Lidl	182	31	6.3	0.3	650	f
+8	Chleb Żytni z Ziarnami Żyta krojony (Piekarnia Lidla) (1 kromka 90g)	kromka	1	Lidl	180	4.8	1.3	33.3	100	f
+9	Szynka konserwowa wieprzowa (Pikok)	g	100	Lidl	99	19	1.6	2	610	f
+12	Pestki dyni (Alesto)	g	100	Zapasy	579	24.4	45.6	15.2	410	t
+31	Siemię lniane (Witpak)	g	100	Zapasy	507	25	31	39	400	t
+56	Czosnek	g	100	Świeże	152	6.4	0.5	32.6	200	f
+14	Maliny mrożone (Lidl)	g	100	Lidl	49	1.3	0.3	5.3	890	f
+15	Migdały	g	100	Zapasy	604	24.1	52	20.5	400	f
+17	Papryka czerwona	g	100	Świeże	32	1.3	0.5	6.6	200	f
+18	Rukola	g	100	Świeże	25	2.6	0.7	3.6	200	f
+19	Pomidor	g	100	Świeże	19	0.9	0.2	4.1	200	f
+20	Ogórek kiszony	g	100	Świeże	13	1.1	0.1	1.4	310	f
+21	Sałata lodowa (Asda)	g	100	Świeże	14	1.2	0.5	1.4	200	f
+22	Jogur grecki XXL (Pilos)	g	100	Lidl	123	3.6	10	4.7	730	f
+23	Kefir (Robico)	g	100	Lidl	47	3	2	4.2	740	f
+24	Pomarańcza	g	100	Świeże	47	0.9	0.2	11.3	200	f
+25	Miód lipowy (Bartnik)	g	100	Lidl	333	0.3	0	83	1210	f
+26	Banan	g	100	Świeże	97	1	0.3	21.8	200	f
+27	Kiwi	g	100	Świeże	60	0.9	0.5	13.9	200	f
+28	Pietruszka Natka	g	100	Świeże	49	4.4	0.4	9	200	f
+29	Truskawki mrożone	g	100	Lidl	33	0.7	0.4	7.6	890	f
+30	Szpinak baby (Vita Fresh)	g	100	Lidl	22	2.9	0	0.8	200	f
+71	Sól biała	szczypta	1	Zapasy	0	0	0	0	350	t
+32	Mandarynka (1 sztuka 60g)	sztuka	1	Świeże	27	0.4	0.1	6.7	200	f
+33	Pistacje (Alesto)	g	100	Lidl	605	26.5	49.2	10.3	400	f
+34	Awokado	g	100	Świeże	169	2	15.3	7.4	200	f
+36	Borówka amerykańska	g	100	Świeże	57	0.8	0.4	11.5	200	f
+37	Mango	g	100	Świeże	69	0.5	0.3	15.3	200	f
+38	Ananas	g	100	Lidl	55	0.4	0.2	13.6	200	f
+40	Serek wiejski wysokobiałkowy (Pilos) (1 sztuka 200g)	sztuka	1	Lidl	184	28	6	4.6	720	f
+41	Musli crunchy z orzeszkami (Crownfield)	g	100	Lidl	467	11	18	62	1200	f
+42	Filet z piersi kurczaka (Kurczak z zielonych Ferm)	g	100	Lidl	112	24	1.6	0.2	500	f
+43	Irish beef	g	100	Lidl	243	17.3	18	0.1	500	f
+45	Ryż basmati (Plony Natury)	g	100	Lidl	358	8.7	0.8	79	900	f
+46	Pomidory bez skóry krojone (Baresa)	g	100	Lidl	27	1.3	0.2	4	900	f
+47	Dorsz atlantycki	g	100	Lidl	83	19.1	0.7	0.5	500	f
+48	Mięso mielone wołowe (Rzeźnik)	g	100	Lidl	256	18	20	0	500	f
+49	Tagliatelle (Tiradell)	g	100	Lidl	354	12.4	1.5	71.2	900	f
+50	Frytki z batatów (Harvest Basket)	g	100	Lidl	145	2	5	21.1	820	f
+51	Frytki karbowane do piekarnika (Aviko)	g	100	Lidl	152	2.4	4.5	24.3	820	f
+52	Oliwa z oliwek	g	100	Zapasy	897	0	99.6	0.2	370	t
+53	Jogurt naturalny (Fruvita)	g	100	Lidl	71	4.4	3	6.5	730	f
+54	Skórka z cytryny	g	100	Świeże	47	1.5	0.3	16	200	f
+13	Cynamon	łyżeczka	1	Zapasy	7	0.1	0	0.8	350	t
+70	Garam masala (Kolpol)	g	100	Zapasy	462	11.2	13.2	59.6	350	t
+59	Musztarda sarepska (Kamis)	g	100	Lidl	101	3.7	5.1	8.3	2000	f
+61	Tortilla pszenna wraps 245g (PANO)	sztuka	1	Lidl	195	5.9	4.6	31.9	120	f
+62	Cebula	g	100	Świeże	33	1.4	0.4	6.9	200	f
+63	Cebula czerwona	g	100	Świeże	30	1.4	0.4	6.9	200	f
+64	Kukurydza złocista	g	100	Lidl	94	3.2	1	19	310	f
+65	Fasola	g	100	Lidl	288	21.4	1.6	61.6	310	f
+66	Oregano	szczypta	100	Zapasy	3	0.1	0	0.7	350	f
+67	Papryka słodka 22g (Kamis)	szczypta	1	Lidl	3	0.1	0.1	0.6	350	f
+68	Imbir świeży	g	100	Lidl	80	1.8	0.7	17.8	350	f
+69	Kolendra świeża	g	100	Lidl	23	2.1	0.3	3.7	350	f
+11	Nasiona chia (Promienie słoneczne)	g	100	Zapasy	489	14.3	32.1	50	410	t
+10	Orzechy włoskie (Alesto)	g	100	Zapasy	712	15.5	69.1	3.7	410	t
+39	Masło orzechowe (GO ON)	g	100	Lidl	581	17	46	12	1210	f
+57	Czosnek granulowany	szczypta	1	Zapasy	0	0	0	0	350	t
+80	Pesto (Barilla)	g	100	Lidl	482	4.7	46	9.8	2000	f
+88	Masło Extra Osełka 82% Tłusczu	g	100	Lidl	744	0.7	82	0.7	2000	f
+96	Groch żółty łuskany połówki	g	100	Lidl	379	23.8	1.4	60.2	2000	f
+107	Twaróg klinek chudy (Delikate)	g	100	Lidl	96	20	0.2	3.5	735	f
+115	Zinger (KFC)	sztuka	1	Na żywo	438	26.7	23.3	37.6	5000	f
+117	Zinger Double (KFC)	sztuka	1	Na żywo	590	41	29	41	5000	f
+111	Sałatka Cobb Powiększona (Salad Story)	porcja	1	Na żywo	440	32	28	15	5000	f
+112	Sałatka Cezar (Salad Story)	porcja	1	Na żywo	426	36	25	13	5000	f
+118	Kebab - mały lawasz z kurczakiem bez sosu (Kebab King)	sztuka	1	Na żywo	618	37.1	23.2	68.4	5000	f
+114	Nachos Sandwich (Kebab King)	porcja	1056	Na żywo	1056	65	44	99	5000	f
+104	Protein pudding Chocolate Valio 180g	sztuka	1	Na żywo	148	19.8	2.7	10.8	5000	f
+110	Bajgiel Bekon & Kurczak (Putka)	sztuka	1	Na żywo	403	19.8	11.9	52.2	5000	f
+75	Bazylia suszona 10g (Prymat)	szczypta	1	Zapasy	0	0	0	0	350	t
+130	Pastani pełne ziarno makaron penne (Pastani Pełne Ziarno)	g	100	Lidl	176	7.9	1.6	30	900	f
+1	Skyr Piątnica Jogurt typu Islandzkiego naturalny 450g	g	100	Lidl	64	12	0	4.1	700	f
+5	Chleb tostowy z mąką pełnoziarnistą (1 kromka 22g)	kromka	1	Lidl	53	1.8	0.6	9.5	180	f
+35	Sardynka w sosie pomidorowym (LISNER)	g	100	Lidl	232	12	41	3	320	f
+44	Ryż biały długoziarnisty (Plony Natury)	g	100	Lidl	351	7.5	0.8	78	900	f
+74	Szczypiorek	g	100	Świeże	35	4.1	0.8	4.2	200	f
+16	Belbake Kakao Ekstra Ciemne o Obniżonej zawartości Tłuszczu (belbake)	g	100	Zapasy	309	24	11	13	800	t
+102	Kazeina SFD 750g (Truskawkowa)	g	100	Zapasy	390	70	3.7	19.2	5000	t
+78	Koperek	g	100	Świeże	26	2.8	0.4	2.8	200	f
+97	Majeranek suszony	szczypta	1	Zapasy	3	0.1	0.1	0.6	350	t
+81	Fasola czerwona	g	100	Lidl	96	8	0.5	10	310	f
+83	Łosoś atlantycki świeży filet ze skórą	g	100	Lidl	220	19	16	0	500	f
+84	Kasza bulgur (Plony Natury)	g	100	Lidl	332	12	1.5	63	900	f
+85	Kasza Kuskus (Plony Natury)	g	100	Lidl	355	14	2	68	900	f
+86	Krewetki białe (Marinero)	g	100	Lidl	64	14.4	0.7	0	810	f
+58	Bułka wieloziarnista (Lidl) 1 sztuka 60g	sztuka	1	Świeże	173	4.2	4.2	19.2	100	f
+79	Zioła prowansalskie	szczypta	1	Zapasy	0	0	0	0	350	t
+91	Jabłko	g	100	Świeże	50	0.4	0.4	12.1	200	f
+129	Sos sojowy Tao Tao 150ml	g	100	Zapasy	27	3.8	0.1	2.7	360	t
+93	Cukinia	g	100	Świeże	17	1.2	0.1	3.2	200	f
+94	Wątróbka drobiowa (Muhlenhof)	g	100	Lidl	136	19.1	6.3	0	500	f
+95	Ser Halloumi EKTOS	g	100	Lidl	317	20	25	3	699	f
+98	Mięta liście	g	100	Lidl	43	3.8	0.7	5.3	200	f
+100	Morele suszone	g	100	Lidl	301	5.4	1.2	72.2	400	f
+76	Ogórek zielony	g	100	Świeże	14	0.7	0.1	2.9	200	f
+106	Jagody mrożone	g	100	Lidl	65	0.8	1.1	10	890	f
+82	Pomidorki koktajlowe	g	100	Świeże	19	1	0.2	2.9	200	f
+108	Miruna Nowozelandzka filet (Marinero)	g	100	Lidl	78	16	1.5	0	500	f
+109	Skyr pitny naturalny (Piątnica) 330g	opakowanie	1	Świeże	211	25.1	5.9	14.2	700	f
+119	Skyr jogurt typu islandzkiego z jagodami 150g (Piątnica)	opakowanie	1	Lidl	123	14.4	0	16.5	700	f
+120	Skyr Jogurt typu islandzkiego z mango i marakują 150g (Piątnica)	opakowanie	1	Świeże	123	14.4	0	16.5	700	f
+122	Makaron conchiglie (Pastani)	g	100	Lidl	354	12	1.5	71	900	f
+123	Tosty pszenny (Z dobrej piekarni)	kromka	1	Lidl	61	1.9	0.3	12.3	190	f
+124	Kiełbasa krakowska sucha (Olewnik)	g	100	Lidl	130	32	8	1.2	650	f
+125	Krewetki białe Vannamei (225g)	g	100	Lidl	90	20	1	0.5	810	f
+127	Orzeszki ziemne prażone, niesolone (Alesto) 500g	g	100	Lidl	610	25.8	49.2	11.6	400	f
+128	Burger wołowy Lidl (1 sztuka 110g)	sztuka	1	Lidl	240	20.9	16.5	1.1	500	f
+105	Maliny świeże	g	100	Świeże	43	1.3	0.3	12	200	f
+131	Pstrąg Tęczowy Łososiowy (Targ rybny)	g	100	Lidl	197	18.8	13.5	0	500	f
+132	Ziemniaki	g	100	Lidl	87	1.9	0.1	20.5	200	f
+133	Brokuły	g	100	Świeże	31	3	0.4	5.2	200	f
+134	Serek Naturalny Bieluch (150g)	opakowanie	1	Na żywo	191	12.9	12.8	6	730	f
+87	Makaron ryżowy wstążki	g	100	Lidl	350	6.2	0.1	81.3	900	f
+90	Tymianek	szczypta	1	Zapasy	0	0	0	0	350	t
+101	Kazeina micelarna (Biały Puch)	g	100	Lidl	355	80	1.6	5.2	5000	f
+113	Bowl Toskański Kurczak (Salad Story)	porcja	1	Świeże	583	32	27	53	5000	f
+116	Frytki Duże (KFC)	porcja	1	Świeże	268	4.1	12	35	5000	f
+92	Rozmaryn szuszony	szczypta	1	Zapasy	3	0.1	0.1	0.6	350	t
+73	Marchew	g	100	Świeże	33	1	0.2	8.7	200	f
+77	Tzatziki przyprawa	szczypta	1	Zapasy	0	0	0	0	350	f
+89	Schab wieprzowy 9 plastrów (Rzeźnik)	g	100	Lidl	128	24	4	0	500	f
+126	Kapusta pekińska	g	100	Świeże	16	1	0	3	200	f
+121	Łowicz Dżem 100% owoców czarna porzeczka 210g (Łowicz)	g	100	Lidl	132	1.1	0.5	28	1205	f
+136	Spaghetti pełnoziarniste (Combino)	g	100	Lidl	350	15.4	2.7	62	900	f
+138	Kurkuma	szczypta	1	Lidl	0	0	0	0	350	f
+139	Chińska mieszanka warzyw 450g (Proste Historie)	g	100	Lidl	28	1.6	0.3	3.4	815	f
+140	Ryż jaśminiowy	g	100	Lidl	349	6.8	0.8	78	900	f
+141	Chilli świeże lub suszone	g	100	Świeże	0	0	0	0	200	f
+142	Limonka	g	30	Świeże	0	0	0	0	200	f
+143	Wiśnie mrożone	g	100	Lidl	40	0.9	0.5	10	890	f
+144	Ryżowe płatki błyskawiczne 500g (Melvit)	g	100	Lidl	350	7	0.4	79	1200	f
+145	Płatki Jaglane (Crownfield)	g	100	Lidl	363	10	2.5	74	1200	f
+146	Żywiecka wieprzowa ekstra (Pikok)	g	100	Lidl	224	24	14	0.6	600	f
+147	Ricotta (Loviito)	g	100	Lidl	127	7.7	9	3.9	600	f
+152	Serel wiejski lekki 3% tłusczu 200g (Pilos)	sztuka	1	Lidl	162	22	6	4.8	720	f
+153	Szynka Filet wędzony z Piersi Indyka 100g (Pikok)	g	100	Lidl	138	20.7	5.4	1.7	600	f
+154	Chrzan tarty (Kania) 190g	g	100	Lidl	171	2.4	10	17.5	2000	f
+155	Budyń smak śmietankowy z cukerem 60g (Winiary)	porcja	1	Lidl	118	4.3	1.8	13.9	2000	f
+157	Mąka pszenna typ 480	g	100	Lidl	350	12	1.5	71	2000	f
+158	Koncentrat pomidorowy 90g (Pudliszki)	g	100	Lidl	442	4.9	0.8	18.2	2000	f
+159	Galaretka o smaku truskawkowym (Dr Oetker) 72g i z tego wychodzi 572g galaretki (1 porcja)	porcja	1	Lidl	280	9.6	0	60	2000	f
+160	Biszkopty z Pieczątką (Tastino)	g	100	Lidl	367	9.5	5.4	71	2000	f
+162	Burak ćwikłowy	g	100	Świeże	43	1.6	0.2	10	2000	f
+164	Maliny świeże	g	100	Świeże	53	1.2	0.7	12	200	f
+163	Ketchup pikantny (Pudliszki) 500g	g	100	Lidl	144	1.1	0.1	34	2000	f
+168	Mozarella light (Pilos) 125g	g	100	Lidl	157	19	8.5	1	600	f
+171	Proszek do pieczenia	g	100	Lidl	53	0	0	28	2000	f
+166	Orzechy laskowe łuskane (Alesto)	g	100	Zapasy	658	15	61	6.7	400	t
+149	Bułka orkiszowa	sztuka	1	Świeże	200	6.4	1.6	40	100	f
+173	Sałatka Awokado Rybak (Salad Story)	porcja	1	Na żywo	530	32.76	27.43	32.76	5000	f
+72	Pieprz czarny mielony	szczypta	1	Zapasy	0	0	0	0	350	t
+172	Mąka kukurydziana biała PAN 1kg (google: Mąka kukurydziana precooked (Harina PAN))	g	100	Lidl	357	78	2	75.5	2000	f
+174	Wrap Wołowina BBQ (Salad Story)	porcja	1	Na żywo	727.2	31	36	69.8	5000	f
+178	Clean tłuszcz (czyste, samo, pure)	g	100	Lidl	900	0	100	0	5000	f
+179	Clean węglowodany (czyste, samo, pure)	g	100	Lidl	400	0	0	100	5000	f
+183	Sznka z fileta indyka (Pikok)	g	100	Lidl	115	19	3	2.7	600	f
+186	Majonez Lekki (Winiary)	g	100	Lidl	338	1.1	33.2	8.4	2000	f
+185	Protein pillow o smaku karmelowym (Brownfield)	g	100	Lidl	437	20	18	52	1200	f
+151	Kanapka z szarpaną wołowiną (Galeria Wypieków Lubaszka)	sztuka	1	Na żywo	588	25	22.14	70.2	5000	f
+187	Schab pieczony 	g	100	Lidl	291	30.4	18.7	0.3	2000	f
+190	mc crispy (Mac Donald's)	sztuka	1	Na żywo	550	27	23	56	2000	f
+103	Danone YoPro Jogurt smak straciatella 160g (Danone YoPro)	sztuka	1	Na żywo	91	15	0.8	5.8	5000	f
+169	Żurawina suszona 200g (Alesto)	g	100	Lidl	338	0.7	1.2	78	400	f
+150	Bułka z chia (Galeria Wypieków Lubaszka)	sztuka	1	Na żywo	279	9.9	8.46	38.7	5000	f
+161	Pestki słonecznika 500g (Alesto)	g	100	Zapasy	616	21.4	53.9	5.1	400	f
+165	Rodzynki Jumbo (Alesto)	g	100	Lidl	331	3	2	72	400	f
+184	Orzechy laskowe prażone (Alesto)	g	100	Zapasy	722	14.3	70.5	3.5	400	t
+167	Kimchi ostre (Freshona)	g	100	Lidl	46	1.8	0.4	8	310	f
+148	Tuńczyk w puszce 170g (Nixe)	g	100	Lidl	109	25.4	0.8	0	320	f
+170	Białka jaj	g	100	Lidl	50	11	0.2	0.7	1100	f
+156	Erytrytol	g	100	Zapasy	0	0	0	0	5000	t
+175	Sałatka z kurczakiem 330g (Putka)	porcja	1	Na żywo	676.5	33	4	73	5000	f
+176	ChaiKola	sztuka	1	Na żywo	118.8	0	0	28.7	5000	f
+177	Clean białko (czyste, samo, pure)	g	100	Lidl	400	100	0	0	5000	f
+137	Orzechy nerkowca	g	100	Zapasy	554	18.2	43.8	30.4	400	t
+191	frytki małe (Mc Donald's)	porcja	1	Na żywo	231	2.7	11.2	28.8	2000	f
+192	ketchup extra hot (kotlin)	g	100	Lidl	99	1.4	0.5	21	2000	f
+193	Prince Polo XXL 50g	sztuka	1	Na żywo	266	2.3	15	30	2000	f
+99	Przyprawa meksykańska (Naturalny Koszyk)	g	100	Zapasy	218	9.3	5.8	19.6	350	t
+194	Burrata (Pilos)	g	100	Lidl	254	10	23	1.8	2000	f
+195	Active protein blue ser w plastrach (Ryki)	porcja	1	Lidl	34	5.3	1.4	0	2000	f
+135	Curry przyprawa	szczypta	1	Zapasy	20	1	1	1	5000	t
 \.
 
 
@@ -2474,7 +2557,7 @@ SELECT pg_catalog.setval('public.dish_labels_id_seq', 6, true);
 -- Name: dishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kartezjusz
 --
 
-SELECT pg_catalog.setval('public.dishes_id_seq', 128, true);
+SELECT pg_catalog.setval('public.dishes_id_seq', 129, true);
 
 
 --
@@ -2488,7 +2571,7 @@ SELECT pg_catalog.setval('public.ingredient_labels_id_seq', 1, false);
 -- Name: ingredients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kartezjusz
 --
 
-SELECT pg_catalog.setval('public.ingredients_id_seq', 189, true);
+SELECT pg_catalog.setval('public.ingredients_id_seq', 195, true);
 
 
 --
@@ -2521,6 +2604,14 @@ ALTER TABLE ONLY public.diet_label_bridge
 
 ALTER TABLE ONLY public.diet_labels
     ADD CONSTRAINT diet_labels_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: diet_slots_counter diet_slots_counter_pkey; Type: CONSTRAINT; Schema: public; Owner: kartezjusz
+--
+
+ALTER TABLE ONLY public.diet_slots_counter
+    ADD CONSTRAINT diet_slots_counter_pkey PRIMARY KEY (diet_id, day, meal);
 
 
 --
@@ -2633,6 +2724,22 @@ ALTER TABLE ONLY public.diet_label_bridge
 
 ALTER TABLE ONLY public.diet_label_bridge
     ADD CONSTRAINT diet_label_bridge_label_id_fkey FOREIGN KEY (label_id) REFERENCES public.diet_labels(id) ON DELETE CASCADE;
+
+
+--
+-- Name: diet_slots_counter diet_slots_counter_diet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: kartezjusz
+--
+
+ALTER TABLE ONLY public.diet_slots_counter
+    ADD CONSTRAINT diet_slots_counter_diet_id_fkey FOREIGN KEY (diet_id) REFERENCES public.diets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: diet_slots_counter diet_slots_counter_dish_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: kartezjusz
+--
+
+ALTER TABLE ONLY public.diet_slots_counter
+    ADD CONSTRAINT diet_slots_counter_dish_id_fkey FOREIGN KEY (dish_id) REFERENCES public.dishes(id);
 
 
 --
