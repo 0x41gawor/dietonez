@@ -7,6 +7,7 @@ type IngredientInShoppingList struct {
 
 type StockIngredientInShoppingList struct {
 	Ingredient IngredientIdNameUnit `json:"ingredient"`
+	Amount     float64              `json:"amount"`
 	IsPresent  bool                 `json:"is_present"`
 }
 

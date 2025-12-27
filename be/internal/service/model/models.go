@@ -274,3 +274,7 @@ type DietContext struct {
 	StartDate     time.Time
 	CurrentWeight float64
 }
+
+type UpdateIngredientStockRequest struct {
+	IsPresent bool `json:"is_present"`
+}
