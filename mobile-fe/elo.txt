@@ -1,0 +1,109 @@
+.
+├── analysis_options.yaml
+├── android
+│   ├── app
+│   │   ├── build.gradle.kts
+│   │   └── src
+│   │       ├── debug
+│   │       │   └── AndroidManifest.xml
+│   │       ├── main
+│   │       │   ├── AndroidManifest.xml
+│   │       │   ├── kotlin
+│   │       │   │   └── com
+│   │       │   │       └── gawor
+│   │       │   │           └── dietonez
+│   │       │   │               └── dietonez
+│   │       │   │                   └── MainActivity.kt
+│   │       │   └── res
+│   │       │       ├── drawable
+│   │       │       │   └── launch_background.xml
+│   │       │       ├── drawable-v21
+│   │       │       │   └── launch_background.xml
+│   │       │       ├── mipmap-hdpi
+│   │       │       │   └── ic_launcher.png
+│   │       │       ├── mipmap-mdpi
+│   │       │       │   └── ic_launcher.png
+│   │       │       ├── mipmap-xhdpi
+│   │       │       │   └── ic_launcher.png
+│   │       │       ├── mipmap-xxhdpi
+│   │       │       │   └── ic_launcher.png
+│   │       │       ├── mipmap-xxxhdpi
+│   │       │       │   └── ic_launcher.png
+│   │       │       ├── values
+│   │       │       │   └── styles.xml
+│   │       │       └── values-night
+│   │       │           └── styles.xml
+│   │       └── profile
+│   │           └── AndroidManifest.xml
+│   ├── build.gradle.kts
+│   ├── gradle
+│   │   └── wrapper
+│   │       └── gradle-wrapper.properties
+│   ├── gradle.properties
+│   └── settings.gradle.kts
+├── assets
+│   └── icons
+│       ├── database-empty-filled.png
+│       ├── database-empty.png
+│       ├── database-full.png
+│       ├── home-empty-filled.png
+│       ├── home-empty.png
+│       ├── home-full.png
+│       ├── menu-empty-filled.png
+│       ├── menu-empty.png
+│       ├── menu-full.png
+│       ├── shop-list-empty-filled.png
+│       ├── shop-list-empty.png
+│       ├── shop-list-full.png
+│       ├── user-empty-filled.png
+│       ├── user-empty.png
+│       └── user-full.png
+├── elo.txt
+├── lib
+│   ├── app_shell.dart
+│   ├── core
+│   │   ├── date_fmt.dart
+│   │   ├── network.dart
+│   │   └── theme.dart
+│   ├── features
+│   │   ├── common
+│   │   │   └── date_header.dart
+│   │   ├── database
+│   │   │   ├── models.dart
+│   │   │   ├── screen.dart
+│   │   │   ├── service.dart
+│   │   │   └── widgets
+│   │   │       └── ingredient_form_dialog.dart
+│   │   ├── menu
+│   │   │   ├── controller.dart
+│   │   │   ├── models.dart
+│   │   │   ├── screen.dart
+│   │   │   ├── service.dart
+│   │   │   └── widgets
+│   │   │       ├── copy_dish_dialog.dart
+│   │   │       ├── ingredient_edit_dialog.dart
+│   │   │       ├── ingredient_row.dart
+│   │   │       ├── macro_chip.dart
+│   │   │       ├── meal_section.dart
+│   │   │       └── summary_bar.dart
+│   │   ├── placeholders
+│   │   │   ├── db_screen.dart
+│   │   │   ├── home_screen.dart
+│   │   │   └── profile_screen.dart
+│   │   └── shopping_list
+│   │       ├── controller.dart
+│   │       ├── models.dart
+│   │       ├── screen.dart
+│   │       ├── service.dart
+│   │       └── widgets
+│   │           ├── category_section.dart
+│   │           ├── count_badge.dart
+│   │           └── item_tile.dart
+│   └── main.dart
+├── pubspec.lock
+├── pubspec.yaml
+├── README.md
+└── test
+    └── widget_test.dart
+
+37 directories, 69 files

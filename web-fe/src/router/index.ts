@@ -7,6 +7,8 @@ import DishesListView from '@/features/dishes/views/PW2X_DishesListView.vue';
 import DishView from '@/features/dishes/views/PW2X1_DishView.vue';
 import DietsView from '@/features/diets/views/PW3_DietsView.vue';
 import DietView from '@/features/diets/views/PW31_DietView.vue';
+import ExecutionView from '@/features/execution/views/ExecutionView.vue';
+
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/home' },
@@ -17,6 +19,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/dishes/:meal/:id/edit', component: DishView, props: (route) => ({ id: Number(route.params.id), meal: route.params.meal as 'Breakfast' | 'MainMeal' | 'Pre-Workout' | 'Supper', }) },
   { path: '/diets', component: DietsView },
   { path: '/diets/:id', name: 'DietView', component: DietView, props: (route) => ({id: Number(route.params.id)}) },
+  { path: '/execution/', name: 'execution', component: ExecutionView },
 ];
 
 const router = createRouter({

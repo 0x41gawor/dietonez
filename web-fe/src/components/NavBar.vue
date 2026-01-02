@@ -31,6 +31,7 @@ const navItems = [
   { label: 'Ingredients', path: '/ingredients' },
   { label: 'Dishes', path: '/dishes' },
   { label: 'Diets', path: '/diets' },
+  { label: 'Execution', path: '/execution/' },
 ];
 
 const currentLabel = computed(() => {

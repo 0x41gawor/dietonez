@@ -1,13 +1,38 @@
-build: 
+# ─────────────────────────────────────────
+# Paths
+# ─────────────────────────────────────────
+ROOT_DIR := $(abspath ..)
+IMAGE    := dietonez-fe:latest
+CONTAINER:= dietonez-fe
+PORT     := 5713
+
+# ─────────────────────────────────────────
+# Local (Vue)
+# ─────────────────────────────────────────
+build:
 	npm install
 	npm run build
+
 run: build
 	npm run dev -- --host
-docker-build: 
-	docker build -t dietonez-fe:latest .
-docker-run: 
-	docker run -d -p 5713:80 --name dietonez-fe dietonez-fe:latest
-docker-stop: 
-	docker stop dietonez-fe && docker rm dietonez-fe
-docker-logs: 
-	docker logs -f dietonez-fe
+
+# ─────────────────────────────────────────
+# Docker
+# ─────────────────────────────────────────
+docker-build:
+	docker build \
+		-t $(IMAGE) \
+		-f Dockerfile \
+		$(ROOT_DIR)
+
+docker-run:
+	docker run -d \
+		-p $(PORT):80 \
+		--name $(CONTAINER) \
+		$(IMAGE)
+
+docker-stop:
+	docker stop $(CONTAINER) && docker rm $(CONTAINER)
+
+docker-logs:
+	docker logs -f $(CONTAINER)
