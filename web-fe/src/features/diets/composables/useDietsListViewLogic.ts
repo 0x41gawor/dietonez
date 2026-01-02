@@ -2,7 +2,7 @@ import { DietShort } from "@/types/types";
 import { onMounted, ref } from "vue";
 import { computed } from "vue";
 import { useToast } from "vue-toastification";
-import { updateDietShort } from '@/api/diets'
+import { updateDietShort, getAllDiets } from '@/api/diets'
 
 
 export function useDietsListViewLogic() {
@@ -16,14 +16,15 @@ export function useDietsListViewLogic() {
 
     // ==== M E T H O D S ====
     // ==== A P I   C A L L S ====
+
     const fetchDiets = async () => {
         try {
-            const response = await import('@/api/diets');
-            diets.value = await response.getAllDiets();
+            diets.value = await getAllDiets();
         } catch (error) {
             console.error('Failed to fetch diets:', error);
         }
     };
+
     
     // ==== L I F E C Y C L E ====
     onMounted(() => {
