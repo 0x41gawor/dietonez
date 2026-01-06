@@ -480,120 +480,79 @@ ALTER TABLE ONLY public.ingredients ALTER COLUMN id SET DEFAULT nextval('public.
 --
 
 COPY public.counter (day, ingredient_id, meal, amount) FROM stdin;
-2025-12-26	130	Lunch	150
-2025-12-26	42	Lunch	150
-2025-12-26	80	Lunch	40
-2025-12-26	30	Lunch	100
-2025-12-26	10	Lunch	10
-2025-12-26	56	Lunch	20
-2025-12-26	52	Lunch	8
-2025-12-26	71	Lunch	1
-2025-12-26	79	Lunch	2
-2025-12-26	72	Lunch	1
-2025-12-26	1	Pre-Workout	300
-2025-12-26	143	Pre-Workout	150
-2025-12-26	25	Pre-Workout	30
-2025-12-26	10	Pre-Workout	10
-2025-12-26	118	Post-Workout	1
-2025-12-26	102	Supper	40
-2025-12-27	2	Breakfast	100
-2025-12-27	3	Breakfast	200
-2025-12-23	145	Breakfast	100
-2025-12-23	4	Breakfast	1
-2025-12-23	165	Breakfast	40
-2025-12-23	3	Breakfast	100
-2025-12-23	11	Breakfast	10
-2025-12-23	25	Breakfast	10
-2025-12-27	39	Breakfast	40
-2025-12-27	4	Breakfast	1
-2025-12-27	106	Breakfast	100
-2025-12-27	132	Lunch	350
-2025-12-27	83	Lunch	150
-2025-12-27	53	Lunch	50
-2025-12-27	154	Lunch	30
-2025-12-27	56	Lunch	5
-2025-12-27	78	Lunch	10
-2025-12-27	55	Lunch	5
-2025-12-27	1	Pre-Workout	300
-2025-12-27	143	Pre-Workout	150
-2025-12-27	25	Pre-Workout	30
-2025-12-23	1	Pre-Workout	300
-2025-12-23	26	Pre-Workout	160
-2025-12-23	91	Pre-Workout	150
-2025-12-23	43	Post-Workout	200
-2025-12-23	51	Post-Workout	200
-2025-12-23	18	Post-Workout	100
-2025-12-23	73	Post-Workout	50
-2025-12-23	19	Post-Workout	50
-2025-12-23	126	Post-Workout	50
-2025-12-23	52	Post-Workout	5
-2025-12-23	55	Post-Workout	20
-2025-12-23	71	Post-Workout	1
-2025-12-23	72	Post-Workout	1
-2025-12-23	107	Supper	150
-2025-12-27	10	Pre-Workout	10
-2025-12-27	132	Post-Workout	350
-2025-12-27	53	Post-Workout	50
-2025-12-22	84	Lunch	100
-2025-12-22	89	Lunch	150
-2025-12-22	52	Lunch	20
-2025-12-22	73	Lunch	100
-2025-12-22	30	Lunch	50
-2025-12-22	67	Lunch	1
-2025-12-22	92	Lunch	1
-2025-12-22	17	Lunch	30
-2025-12-22	56	Lunch	10
-2025-12-22	93	Lunch	20
-2025-12-22	71	Lunch	1
-2025-12-22	72	Lunch	1
-2025-12-22	145	Breakfast	100
-2025-12-22	4	Breakfast	1
-2025-12-22	26	Breakfast	90
-2025-12-22	3	Breakfast	100
-2025-12-22	166	Breakfast	20
-2025-12-22	43	Post-Workout	200
-2025-12-22	51	Post-Workout	200
-2025-12-22	18	Post-Workout	100
-2025-12-22	73	Post-Workout	50
-2025-12-22	19	Post-Workout	50
-2025-12-22	126	Post-Workout	50
-2025-12-22	52	Post-Workout	5
-2025-12-22	55	Post-Workout	20
-2025-12-22	71	Post-Workout	1
-2025-12-22	72	Post-Workout	1
-2025-12-27	154	Post-Workout	30
-2025-12-27	56	Post-Workout	5
-2025-12-27	78	Post-Workout	10
-2025-12-27	55	Post-Workout	5
-2025-12-27	102	Supper	40
-2025-12-25	43	Lunch	200
-2025-12-25	51	Lunch	200
-2025-12-25	18	Lunch	100
-2025-12-25	73	Lunch	50
-2025-12-25	19	Lunch	50
-2025-12-25	126	Lunch	50
-2025-12-25	52	Lunch	5
-2025-12-25	55	Lunch	20
-2025-12-25	71	Lunch	1
-2025-12-25	72	Lunch	1
-2025-12-24	96	Post-Workout	100
-2025-12-24	94	Post-Workout	150
-2025-12-24	91	Post-Workout	150
-2025-12-24	162	Post-Workout	50
-2025-12-24	88	Post-Workout	10
-2025-12-24	30	Post-Workout	50
-2025-12-24	97	Post-Workout	1
-2025-12-22	1	Pre-Workout	300
-2025-12-22	26	Pre-Workout	110
-2025-12-22	39	Pre-Workout	40
-2025-12-22	172	Supper	100
-2025-12-25	130	Post-Workout	150
-2025-12-25	42	Post-Workout	150
-2025-12-25	80	Post-Workout	40
-2025-12-24	62	Post-Workout	30
-2025-12-24	71	Post-Workout	1
-2025-12-24	72	Post-Workout	1
-2025-12-27	83	Post-Workout	200
+2026-01-02	197	Pre-Workout	30
+2026-01-04	177	Breakfast	44
+2026-01-04	178	Breakfast	44
+2026-01-04	179	Breakfast	74
+2026-01-04	177	Lunch	9
+2026-01-04	178	Lunch	14
+2026-01-04	179	Lunch	71
+2026-01-04	177	Pre-Workout	34
+2026-01-04	178	Pre-Workout	22
+2026-01-04	179	Pre-Workout	44
+2026-01-04	177	Post-Workout	1.4
+2026-01-04	178	Post-Workout	0
+2026-01-04	179	Post-Workout	17
+2026-01-05	102	Supper	40
+2026-01-05	199	Lunch	1
+2026-01-05	120	Lunch	1
+2026-01-05	25	Pre-Workout	50
+2026-01-05	197	Pre-Workout	50
+2026-01-05	178	Post-Workout	13.8
+2026-01-05	177	Post-Workout	49.6
+2026-01-05	179	Post-Workout	40.2
+2026-01-05	24	Post-Workout	160
+2026-01-05	177	Breakfast	3.8
+2026-01-05	178	Breakfast	13.2
+2026-01-05	179	Breakfast	19.6
+2026-01-11	24	Breakfast	150
+2026-01-11	172	Lunch	120
+2026-01-11	42	Lunch	150
+2026-01-11	170	Lunch	100
+2026-01-11	147	Lunch	50
+2026-01-11	17	Lunch	20
+2026-01-11	55	Lunch	10
+2026-01-11	71	Lunch	1
+2026-01-11	72	Lunch	1
+2026-01-11	159	Pre-Workout	1
+2026-01-11	107	Pre-Workout	125
+2026-01-11	1	Pre-Workout	150
+2026-01-11	160	Pre-Workout	30
+2026-01-11	29	Pre-Workout	100
+2026-01-11	36	Pre-Workout	50
+2026-01-11	210	Post-Workout	1
+2026-01-11	207	Post-Workout	1
+2026-01-11	215	Post-Workout	2
+2026-01-11	214	Post-Workout	2
+2026-01-11	102	Supper	40
+2026-01-12	27	Breakfast	200
+2026-01-12	112	Lunch	1
+2026-01-12	150	Lunch	1
+2026-01-12	1	Pre-Workout	300
+2026-01-12	91	Pre-Workout	150
+2026-01-12	26	Pre-Workout	100
+2026-01-12	143	Pre-Workout	150
+2026-01-12	25	Pre-Workout	50
+2026-01-12	10	Pre-Workout	10
+2026-01-12	96	Post-Workout	100
+2026-01-02	116	Post-Workout	1
+2026-01-02	177	Breakfast	25
+2026-01-02	178	Breakfast	35
+2026-01-12	94	Post-Workout	150
+2026-01-03	177	Lunch	48
+2026-01-03	178	Lunch	36
+2026-01-12	91	Post-Workout	150
+2026-01-12	162	Post-Workout	50
+2026-01-12	88	Post-Workout	10
+2026-01-12	30	Post-Workout	50
+2026-01-12	97	Post-Workout	1
+2026-01-03	198	Post-Workout	1
+2026-01-12	62	Post-Workout	30
+2026-01-12	71	Post-Workout	1
+2026-01-12	72	Post-Workout	1
+2026-01-12	102	Supper	40
+2026-01-06	1	Pre-Workout	300
+2026-01-06	26	Pre-Workout	110
 2026-01-01	8	Breakfast	2
 2026-01-01	26	Breakfast	90
 2026-01-01	27	Breakfast	100
@@ -613,118 +572,73 @@ COPY public.counter (day, ingredient_id, meal, amount) FROM stdin;
 2026-01-01	71	Lunch	1
 2026-01-01	72	Lunch	1
 2026-01-01	1	Pre-Workout	300
-2025-12-25	30	Post-Workout	100
-2025-12-25	10	Post-Workout	10
-2025-12-25	56	Post-Workout	20
-2025-12-25	52	Post-Workout	8
-2025-12-25	71	Post-Workout	1
-2025-12-25	79	Post-Workout	2
-2025-12-25	72	Post-Workout	1
-2025-12-25	102	Supper	40
-2025-12-24	145	Breakfast	100
-2025-12-24	4	Breakfast	1
-2025-12-24	26	Breakfast	90
-2025-12-24	3	Breakfast	100
-2025-12-24	166	Breakfast	20
-2025-12-24	43	Lunch	200
-2025-12-24	51	Lunch	200
-2025-12-24	18	Lunch	100
-2025-12-24	73	Lunch	50
-2025-12-24	19	Lunch	50
-2025-12-24	126	Lunch	50
-2025-12-24	52	Lunch	5
-2025-12-24	55	Lunch	20
-2025-12-24	71	Lunch	1
-2025-12-24	72	Lunch	1
-2025-12-24	107	Supper	150
-2025-12-23	43	Lunch	200
-2025-12-23	51	Lunch	200
-2025-12-23	18	Lunch	100
-2025-12-23	73	Lunch	50
-2025-12-23	19	Lunch	50
-2025-12-23	126	Lunch	50
-2025-12-23	52	Lunch	5
-2025-12-23	55	Lunch	20
-2025-12-23	71	Lunch	1
-2025-12-23	72	Lunch	1
-2025-12-25	145	Breakfast	100
-2025-12-25	4	Breakfast	1
-2025-12-25	26	Breakfast	90
-2025-12-25	3	Breakfast	100
-2025-12-25	166	Breakfast	20
-2025-12-26	4	Breakfast	1
-2025-12-26	26	Breakfast	90
-2025-12-26	3	Breakfast	100
-2025-12-26	166	Breakfast	20
-2025-12-24	1	Pre-Workout	300
-2025-12-24	26	Pre-Workout	160
-2025-12-24	91	Pre-Workout	150
-2025-12-29	151	Breakfast	1
-2025-12-29	134	Breakfast	1
-2025-12-29	27	Breakfast	100
-2025-12-29	173	Lunch	1
-2025-12-29	150	Lunch	1
-2025-12-29	1	Pre-Workout	300
-2025-12-29	26	Pre-Workout	160
-2025-12-29	91	Pre-Workout	150
-2025-12-29	25	Pre-Workout	20
-2025-12-29	84	Post-Workout	100
-2025-12-29	89	Post-Workout	150
-2025-12-29	52	Post-Workout	20
-2025-12-29	73	Post-Workout	100
-2025-12-29	30	Post-Workout	50
-2025-12-29	67	Post-Workout	1
-2025-12-29	92	Post-Workout	1
-2025-12-29	17	Post-Workout	30
-2025-12-29	56	Post-Workout	10
-2025-12-29	93	Post-Workout	20
-2025-12-29	71	Post-Workout	1
-2025-12-29	72	Post-Workout	1
-2025-12-29	107	Supper	150
-2025-12-30	8	Breakfast	2
-2025-12-30	167	Breakfast	200
-2025-12-30	24	Breakfast	100
-2025-12-30	148	Breakfast	60
-2025-12-30	166	Breakfast	20
-2025-12-30	84	Lunch	100
-2025-12-30	89	Lunch	150
-2025-12-30	52	Lunch	20
-2025-12-30	73	Lunch	100
-2025-12-30	30	Lunch	50
-2025-12-30	67	Lunch	1
-2025-12-30	92	Lunch	1
-2025-12-30	17	Lunch	30
-2025-12-30	56	Lunch	10
-2025-12-30	93	Lunch	20
-2025-12-30	71	Lunch	1
-2025-12-30	72	Lunch	1
+2026-01-06	39	Pre-Workout	30
+2026-01-06	73	Pre-Workout	120
+2026-01-06	102	Supper	40
+2026-01-02	179	Breakfast	36
+2026-01-10	24	Breakfast	150
+2026-01-10	83	Lunch	150
+2026-01-10	140	Lunch	100
+2026-01-10	52	Lunch	8
+2026-01-10	30	Lunch	50
+2026-01-10	19	Lunch	30
+2026-01-10	56	Lunch	10
+2026-01-10	129	Lunch	10
+2026-01-10	141	Lunch	10
+2026-01-10	142	Lunch	30
+2026-01-10	1	Pre-Workout	300
+2026-01-10	26	Pre-Workout	110
+2026-01-10	41	Pre-Workout	50
+2026-01-10	14	Pre-Workout	150
+2026-01-10	11	Pre-Workout	10
+2026-01-10	83	Post-Workout	150
+2026-01-10	140	Post-Workout	100
+2026-01-10	52	Post-Workout	8
+2026-01-10	30	Post-Workout	50
+2026-01-10	19	Post-Workout	30
+2026-01-10	56	Post-Workout	10
+2026-01-10	129	Post-Workout	10
+2026-01-10	141	Post-Workout	10
+2026-01-10	142	Post-Workout	30
+2026-01-10	102	Supper	40
+2026-01-06	177	Breakfast	34
+2026-01-06	178	Breakfast	39.2
+2026-01-06	179	Breakfast	73.8
+2025-12-31	25	Pre-Workout	50
+2025-12-30	25	Pre-Workout	50
+2025-12-31	177	Breakfast	5.3
+2025-12-31	179	Breakfast	59.7
+2025-12-31	178	Breakfast	12.5
+2025-12-31	85	Lunch	100
+2025-12-31	161	Lunch	15
+2025-12-31	17	Lunch	50
+2025-12-31	52	Lunch	6
+2025-12-31	28	Lunch	10
+2025-12-31	55	Lunch	10
+2025-12-31	95	Lunch	225
+2026-01-05	201	Lunch	131
+2026-01-05	200	Lunch	170
+2026-01-05	178	Lunch	10
+2026-01-08	24	Breakfast	150
+2026-01-08	44	Lunch	100
+2026-01-08	42	Lunch	150
+2026-01-08	22	Lunch	75
+2026-01-08	46	Lunch	100
+2026-01-08	70	Lunch	20
 2025-12-30	1	Pre-Workout	300
-2025-12-30	26	Pre-Workout	160
-2025-12-30	91	Pre-Workout	150
-2025-12-30	25	Pre-Workout	20
-2025-12-30	107	Supper	150
-2025-12-31	8	Breakfast	2
-2025-12-31	167	Breakfast	200
-2025-12-31	24	Breakfast	100
-2025-12-31	148	Breakfast	60
-2025-12-31	166	Breakfast	20
+2026-01-08	52	Lunch	8
+2026-01-08	67	Lunch	1
+2026-01-08	68	Lunch	10
+2026-01-08	69	Lunch	10
+2026-01-08	1	Pre-Workout	300
+2026-01-08	26	Pre-Workout	110
+2026-01-08	41	Pre-Workout	50
+2026-01-08	14	Pre-Workout	150
+2026-01-08	11	Pre-Workout	10
+2026-01-08	117	Post-Workout	1
+2026-01-08	116	Post-Workout	1
+2026-01-08	102	Supper	40
 2025-12-31	1	Pre-Workout	300
-2025-12-31	26	Pre-Workout	160
-2025-12-31	91	Pre-Workout	150
-2025-12-31	25	Pre-Workout	20
-2025-12-31	87	Post-Workout	100
-2025-12-31	42	Post-Workout	150
-2025-12-31	139	Post-Workout	150
-2025-12-31	137	Post-Workout	15
-2025-12-31	52	Post-Workout	8
-2025-12-31	25	Post-Workout	10
-2025-12-31	74	Post-Workout	30
-2025-12-31	56	Post-Workout	10
-2025-12-31	129	Post-Workout	15
-2025-12-31	68	Post-Workout	3
-2025-12-31	71	Post-Workout	1
-2025-12-31	72	Post-Workout	1
-2025-12-31	107	Supper	150
 2026-01-01	26	Pre-Workout	160
 2026-01-01	15	Pre-Workout	10
 2026-01-01	87	Post-Workout	100
@@ -741,50 +655,95 @@ COPY public.counter (day, ingredient_id, meal, amount) FROM stdin;
 2026-01-01	69	Post-Workout	10
 2026-01-01	55	Post-Workout	10
 2026-01-01	102	Supper	40
-2026-01-02	8	Breakfast	2
-2026-01-02	34	Breakfast	100
-2026-01-02	153	Breakfast	100
-2026-01-02	91	Breakfast	100
-2026-01-02	19	Breakfast	80
-2026-01-02	18	Breakfast	30
-2026-01-02	52	Breakfast	5
-2026-01-02	55	Breakfast	30
-2026-01-02	87	Lunch	100
-2026-01-02	42	Lunch	150
-2026-01-02	4	Lunch	1
-2026-01-02	127	Lunch	10
-2026-01-02	52	Lunch	8
-2026-01-02	73	Lunch	40
-2026-01-02	62	Lunch	40
-2026-01-02	25	Lunch	10
-2026-01-02	56	Lunch	10
-2026-01-02	74	Lunch	20
-2026-01-02	129	Lunch	15
-2026-01-02	69	Lunch	10
-2026-01-02	55	Lunch	10
-2026-01-02	1	Pre-Workout	300
-2026-01-02	26	Pre-Workout	160
-2026-01-02	15	Pre-Workout	10
+2026-01-02	25	Pre-Workout	30
+2026-01-03	179	Lunch	50
+2026-01-07	27	Breakfast	200
+2026-01-03	25	Pre-Workout	50
+2026-01-03	197	Pre-Workout	50
+2026-01-07	173	Lunch	1
+2026-01-07	150	Lunch	1
+2026-01-07	1	Pre-Workout	300
+2026-01-07	197	Pre-Workout	50
+2026-01-07	25	Pre-Workout	50
+2026-01-07	26	Pre-Workout	90
+2026-01-05	1	Pre-Workout	300
+2026-01-07	91	Pre-Workout	120
+2026-01-07	44	Post-Workout	100
+2026-01-07	42	Post-Workout	150
+2026-01-07	22	Post-Workout	75
+2026-01-07	46	Post-Workout	100
+2026-01-07	70	Post-Workout	20
+2026-01-07	52	Post-Workout	8
+2026-01-07	67	Post-Workout	1
+2026-01-07	68	Post-Workout	10
+2026-01-07	69	Post-Workout	10
+2026-01-07	102	Supper	40
+2026-01-09	24	Breakfast	150
 2026-01-02	117	Post-Workout	1
-2026-01-02	102	Supper	40
-2025-12-28	2	Breakfast	100
-2025-12-28	39	Breakfast	40
-2025-12-28	4	Breakfast	1
-2025-12-28	106	Breakfast	100
-2025-12-30	87	Post-Workout	100
-2025-12-30	86	Post-Workout	200
-2025-12-30	127	Post-Workout	20
-2025-12-30	88	Post-Workout	15
-2025-12-30	56	Post-Workout	20
-2025-12-30	28	Post-Workout	20
+2026-01-09	87	Lunch	100
+2026-01-09	42	Lunch	150
+2025-12-30	62	Breakfast	1
+2025-12-31	62	Breakfast	1
+2026-01-02	1	Pre-Workout	300
+2026-01-09	4	Lunch	1
+2026-01-09	127	Lunch	10
+2026-01-09	52	Lunch	8
+2026-01-09	73	Lunch	40
+2026-01-09	62	Lunch	40
+2026-01-09	25	Lunch	10
+2026-01-09	56	Lunch	10
+2026-01-09	74	Lunch	20
+2026-01-09	129	Lunch	15
+2026-01-09	69	Lunch	10
+2026-01-09	55	Lunch	10
+2026-01-09	1	Pre-Workout	300
+2026-01-09	26	Pre-Workout	110
+2026-01-09	41	Pre-Workout	50
+2026-01-09	14	Pre-Workout	150
+2026-01-09	11	Pre-Workout	10
+2026-01-09	118	Post-Workout	1
+2026-01-09	102	Supper	40
+2026-01-13	27	Breakfast	200
+2026-01-13	96	Lunch	100
+2026-01-13	94	Lunch	150
+2026-01-13	91	Lunch	150
+2026-01-13	162	Lunch	50
+2026-01-13	88	Lunch	10
+2025-12-30	47	Lunch	200
+2026-01-13	30	Lunch	50
+2026-01-13	97	Lunch	1
+2025-12-30	85	Post-Workout	100
+2025-12-30	161	Post-Workout	15
+2025-12-30	17	Post-Workout	50
+2025-12-30	52	Post-Workout	6
+2025-12-30	28	Post-Workout	10
 2025-12-30	55	Post-Workout	10
-2025-12-31	87	Lunch	100
-2025-12-31	86	Lunch	200
-2025-12-31	127	Lunch	20
-2025-12-31	88	Lunch	15
-2025-12-31	56	Lunch	20
-2025-12-31	28	Lunch	20
-2025-12-31	55	Lunch	10
+2026-01-13	62	Lunch	30
+2025-12-30	196	Lunch	150
+2025-12-30	121	Lunch	100
+2025-12-30	197	Pre-Workout	50
+2025-12-30	95	Post-Workout	225
+2026-01-13	71	Lunch	1
+2026-01-13	72	Lunch	1
+2026-01-13	1	Pre-Workout	300
+2026-01-13	91	Pre-Workout	150
+2026-01-13	26	Pre-Workout	100
+2026-01-03	1	Pre-Workout	300
+2026-01-13	143	Pre-Workout	150
+2026-01-13	25	Pre-Workout	50
+2026-01-13	10	Pre-Workout	10
+2026-01-13	58	Post-Workout	2
+2026-01-13	128	Post-Workout	1
+2026-01-13	51	Post-Workout	100
+2026-01-13	126	Post-Workout	50
+2026-01-13	20	Post-Workout	50
+2026-01-13	22	Post-Workout	10
+2026-01-13	59	Post-Workout	10
+2026-01-13	19	Post-Workout	20
+2026-01-13	21	Post-Workout	20
+2026-01-13	60	Post-Workout	5
+2026-01-13	62	Post-Workout	10
+2026-01-13	102	Supper	40
 \.
 
 
@@ -864,6 +823,8 @@ COPY public.day_kcals (diet_id, day_num, kcal) FROM stdin;
 1	25	0
 1	26	0
 1	27	0
+3	0	2600
+3	1	2600
 2	24	2900
 2	25	2900
 2	26	2900
@@ -873,6 +834,7 @@ COPY public.day_kcals (diet_id, day_num, kcal) FROM stdin;
 2	30	2900
 2	31	2900
 2	32	2900
+3	2	2600
 2	33	2900
 2	34	2900
 2	35	2900
@@ -890,12 +852,37 @@ COPY public.day_kcals (diet_id, day_num, kcal) FROM stdin;
 2	47	2900
 2	48	2900
 2	49	2900
+3	3	2600
 2	50	2900
 2	51	2900
 2	52	2900
 2	53	2900
 2	54	2900
 2	55	2900
+3	4	2600
+3	5	2600
+3	6	2600
+3	7	2600
+3	8	2600
+3	9	2600
+3	10	2600
+3	11	2600
+3	12	2600
+3	13	2600
+3	14	2600
+3	15	2600
+3	16	2600
+3	17	2600
+3	18	2600
+3	19	2600
+3	20	2600
+3	21	2600
+3	22	2600
+3	23	2600
+3	24	2600
+3	25	2600
+3	26	2600
+3	27	2600
 \.
 
 
@@ -904,7 +891,7 @@ COPY public.day_kcals (diet_id, day_num, kcal) FROM stdin;
 --
 
 COPY public.diet_context (active_diet, start_date, current_weight) FROM stdin;
-2	2025-10-06	82.5
+3	2026-01-05	84.4
 \.
 
 
@@ -929,6 +916,24 @@ COPY public.diet_labels (id, label, color) FROM stdin;
 --
 
 COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
+3	65	\N
+3	66	\N
+3	67	\N
+3	68	\N
+3	135	\N
+3	136	\N
+3	137	\N
+3	138	\N
+3	0	131
+3	1	130
+3	2	132
+3	3	34
+3	4	24
+3	5	131
+3	6	34
+3	7	132
+3	9	24
+3	10	131
 1	105	\N
 1	106	\N
 1	107	\N
@@ -938,6 +943,7 @@ COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
 1	112	\N
 1	18	63
 1	2	5
+3	8	\N
 1	113	\N
 1	114	\N
 1	120	\N
@@ -1069,6 +1075,127 @@ COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
 1	128	14
 1	129	24
 1	130	6
+3	11	125
+3	12	132
+3	13	15
+3	14	24
+3	15	137
+3	16	15
+3	17	133
+3	18	30
+3	19	24
+3	20	137
+3	21	64
+3	22	133
+3	23	32
+3	24	24
+3	25	137
+3	26	68
+3	27	133
+3	28	68
+3	29	24
+3	30	137
+3	31	124
+3	32	88
+3	33	135
+3	34	24
+3	35	131
+3	36	29
+3	37	72
+3	38	23
+3	39	24
+3	40	131
+3	41	23
+3	42	72
+3	43	35
+3	44	24
+3	45	131
+3	46	35
+3	47	72
+3	48	14
+3	49	24
+3	50	137
+3	51	14
+3	52	3
+3	53	30
+3	54	24
+3	55	137
+3	56	63
+3	57	3
+3	58	138
+3	59	24
+3	60	137
+3	61	18
+3	62	3
+3	63	18
+3	64	24
+3	69	24
+3	70	131
+3	71	130
+3	72	132
+3	73	37
+3	74	24
+3	75	131
+3	76	37
+3	77	132
+3	78	19
+3	79	24
+3	80	131
+3	81	19
+3	82	132
+3	83	17
+3	84	24
+3	85	137
+3	86	17
+3	87	133
+3	88	30
+3	89	24
+3	90	137
+3	91	38
+3	92	133
+3	93	32
+3	94	24
+3	95	137
+3	96	67
+3	97	133
+3	98	67
+3	99	24
+3	100	137
+3	101	124
+3	102	88
+3	103	134
+3	104	24
+3	105	131
+3	106	28
+3	107	72
+3	108	62
+3	109	24
+3	110	131
+3	111	62
+3	112	72
+3	113	21
+3	114	24
+3	115	131
+3	116	21
+3	117	72
+3	118	39
+3	119	24
+3	120	137
+3	121	39
+3	122	136
+3	123	30
+3	124	24
+3	125	137
+3	126	65
+3	127	136
+3	128	32
+3	129	24
+3	130	137
+3	131	66
+3	132	136
+3	133	66
+3	134	24
+3	139	24
 2	30	\N
 2	31	\N
 2	32	\N
@@ -1359,7 +1486,9 @@ COPY public.diet_slots (diet_id, slot_num, dish_id) FROM stdin;
 COPY public.diet_slots_counter (diet_id, day, meal, name, dish_id) FROM stdin;
 2	2025-12-23	Pre-Workout	M 3 Skyr + 2Banany&Jabłko	5
 2	2025-12-23	Post-Workout	12M Wołowina stek - z frytkami	34
+2	2025-12-31	Lunch	40M Hallouumi - quinoa + grillowana papryka	41
 2	2025-12-25	Pre-Workout	M 7 Skyr - Wiśnie&Orzechy	72
+2	2025-12-31	Post-Workout	\N	\N
 2	2025-12-25	Breakfast	12A Jaglanka- banan&orzechy laskowe	100
 2	2025-12-26	Breakfast	12A Jaglanka- banan&orzechy laskowe	100
 2	2025-12-24	Pre-Workout	M 3 Skyr + 2Banany&Jabłko	5
@@ -1369,40 +1498,28 @@ COPY public.diet_slots_counter (diet_id, day, meal, name, dish_id) FROM stdin;
 2	2025-12-24	Post-Workout	13M Wątróbka - klasyczek cebula	23
 2	2025-12-24	Supper	custom	\N
 2	2025-12-27	Lunch	33M Łosoś - Ziemniory	67
-2	2025-12-29	Breakfast	FF Kanapka z szarpaną wołowiną i bieluch + kiwi	81
-2	2025-12-29	Lunch	FF Sałatka Awokado Rybak Duża + Bułka z chia	125
 2	2025-12-29	Pre-Workout	M 0 Skyr - Miód + Banan&Jabłko	1
 2	2025-12-23	Supper	Masakra	25
-2	2025-12-29	Post-Workout	11M Wieprzowina schab – pieczony z ziołami	22
-2	2025-12-29	Supper	Twaróg klinek chudy	25
-2	2025-12-30	Breakfast	40M Kanapki - z Kimchi i tuńczykiem	104
-2	2025-12-30	Lunch	11M Wieprzowina schab – pieczony z ziołami	22
 2	2025-12-30	Pre-Workout	M 0 Skyr - Miód + Banan&Jabłko	1
-2	2025-12-30	Supper	Twaróg klinek chudy	25
-2	2025-12-31	Breakfast	40M Kanapki - z Kimchi i tuńczykiem	104
 2	2025-12-31	Pre-Workout	M 0 Skyr - Miód + Banan&Jabłko	1
-2	2025-12-31	Post-Workout	20M Kurczak filet - Asian Stri-Fry 	65
-2	2025-12-31	Supper	Twaróg klinek chudy	25
 2	2026-01-01	Breakfast	40M Kanapki - Masło orzechowe & Banan Marchew obok	106
 2	2026-01-01	Lunch	20M Kurczak filet - Asian Stri-Fry 	65
 2	2026-01-01	Pre-Workout	M 4 Skyr - 2banany&migdały	70
 2	2026-01-01	Post-Workout	20M Kurczak filet - Pad thai 	64
 2	2026-01-01	Supper	Kazeina	24
-2	2026-01-02	Breakfast	40M Kanapki  - Indyk&Awokado + jabłko	107
-2	2026-01-02	Lunch	20M Kurczak filet - Pad thai 	64
-2	2026-01-02	Pre-Workout	M 4 Skyr - 2banany&migdały	70
 2	2026-01-02	Post-Workout	FF Double Zinger (KFC)	30
-2	2026-01-02	Supper	Kazeina	24
 2	2025-12-22	Pre-Workout	M 6 Skyr - Peanut Butter + Banan	3
-2	2025-12-28	Breakfast	11M Owsianka - jagodowa	103
+2	2026-01-02	Lunch	\N	\N
 2	2025-12-22	Supper	chuj	\N
 2	2025-12-23	Breakfast	12M Jaglanka- rnel	99
 2	2025-12-25	Post-Workout	20M Kurczak filet - Penne&Pesto 	38
 2	2025-12-25	Supper	Kazeina	24
 2	2025-12-24	Breakfast	12A Jaglanka- banan&orzechy laskowe	100
 2	2025-12-24	Lunch	12M Wołowina stek - z frytkami	34
-2	2025-12-30	Post-Workout	40M Krewetki - masło/czosnek	20
-2	2025-12-31	Lunch	40M Krewetki - masło/czosnek	20
+2	2026-01-02	Pre-Workout	M 0 Skyr - Miód + Banan&Jabłko	1
+2	2026-01-02	Supper	\N	\N
+2	2026-01-02	Breakfast	Sałatka łososiowa mamy z chlebem i szynką	\N
+2	2026-01-03	Breakfast	\N	\N
 2	2025-12-23	Lunch	12M Wołowina stek - z frytlami	34
 2	2025-12-26	Lunch	20M Kurczak filet - Penne&Pesto 	38
 2	2025-12-26	Pre-Workout	M 7 Skyr - Wiśnie&Orzechy	72
@@ -1412,7 +1529,98 @@ COPY public.diet_slots_counter (diet_id, day, meal, name, dish_id) FROM stdin;
 2	2025-12-27	Pre-Workout	M 7 Skyr - Wiśnie&Orzechy	72
 2	2025-12-27	Post-Workout	33M Łosoś - Ziemniaki w mundurkach z dipem	67
 2	2025-12-27	Supper	Kazeina	24
+2	2026-01-03	Lunch	Obiad u mamy kurczak, ziemniaki	\N
 2	2025-12-25	Lunch	12M Wołowina stek - z frytlami	34
+3	2026-01-12	Breakfast	Weź suple po obiedzie (kiwi)	131
+2	2026-01-04	Supper	\N	\N
+2	2025-12-29	Lunch	31M Miruna - kluski&dżem	31
+2	2026-01-03	Pre-Workout	Skyr musli i miodek	70
+2	2026-01-05	Pre-Workout	M 1 Skyr - Miód kakao banan	69
+2	2025-12-30	Post-Workout	40M Hallouumi - quinoa + grillowana papryka	41
+2	2026-01-03	Supper	\N	\N
+2	2025-12-31	Supper	Kazeina	24
+2	2025-12-28	Breakfast	\N	\N
+2	2025-12-29	Breakfast	Empty	\N
+2	2025-12-30	Breakfast	Empty	\N
+2	2025-12-31	Breakfast	Empty	\N
+2	2025-12-29	Post-Workout	FF Double Zinger (KFC)	30
+2	2025-12-29	Supper	\N	\N
+2	2025-12-30	Lunch	31M Miruna - kluski&dżem	31
+2	2025-12-30	Supper	\N	\N
+2	2026-01-03	Post-Workout	Nachos	\N
+2	2026-01-05	Supper	Kazeina	24
+2	2026-01-05	Lunch	FF - Lawasz z kurczakiem 160g (W Bułce)	130
+3	2026-01-12	Lunch	FF Sałatka Cezar Duża + Bułka z chia	29
+2	2026-01-04	Breakfast	zapiekanka orlen	\N
+2	2026-01-04	Lunch	Kołacz	\N
+3	2026-01-12	Pre-Workout	M 7 Skyr - Wiśnie&Orzechy	72
+2	2026-01-04	Pre-Workout	sushi rainbow	\N
+2	2026-01-04	Post-Workout	Cappy pomarańcza	\N
+3	2026-01-12	Post-Workout	13M Wątróbka - klasyczek cebula	23
+3	2026-01-12	Supper	Kazeina	24
+2	2026-01-05	Post-Workout	Szynka smażona	\N
+2	2026-01-05	Breakfast	pierrot	\N
+3	2026-01-11	Breakfast	Weź suple po obiedzie (pomarańcza)	137
+3	2026-01-11	Lunch	XJ2 - Arepas de Victor	124
+3	2026-01-11	Pre-Workout	XJ2 - Jebaniec na zimno (sernik)	88
+3	2026-01-11	Post-Workout	FF Subway nowe smaki	135
+3	2026-01-11	Supper	Kazeina	24
+2	2026-01-06	Breakfast	\N	\N
+2	2026-01-06	Post-Workout	\N	\N
+2	2026-01-08	Breakfast	\N	\N
+2	2026-01-06	Lunch	\N	\N
+3	2026-01-06	Pre-Workout	M 6 Skyr - Peanut Butter + Banan	3
+3	2026-01-06	Supper	Kazeina	24
+2	2026-01-06	Pre-Workout	\N	\N
+3	2026-01-06	Breakfast	Kiełbasa z cebulą	\N
+2	2026-01-07	Breakfast	\N	\N
+2	2026-01-07	Lunch	\N	\N
+2	2026-01-08	Lunch	\N	\N
+2	2026-01-07	Pre-Workout	\N	\N
+2	2026-01-06	Supper	\N	\N
+2	2026-01-07	Post-Workout	\N	\N
+2	2026-01-08	Pre-Workout	\N	\N
+2	2026-01-07	Supper	\N	\N
+2	2026-01-08	Post-Workout	\N	\N
+3	2026-01-07	Lunch	FF Sałatka Awokado Rybak Duża + Bułka z chia	125
+3	2026-01-07	Pre-Workout	M 8 Skyr + miód + musli	132
+3	2026-01-07	Post-Workout	20M Kurczak filet - Tikka Masala 	15
+2	2026-01-08	Supper	\N	\N
+2	2026-01-10	Breakfast	\N	\N
+2	2026-01-10	Lunch	\N	\N
+2	2026-01-10	Pre-Workout	\N	\N
+2	2026-01-10	Post-Workout	\N	\N
+2	2026-01-10	Supper	\N	\N
+2	2026-01-09	Breakfast	\N	\N
+2	2026-01-09	Lunch	\N	\N
+2	2026-01-09	Pre-Workout	\N	\N
+2	2026-01-09	Post-Workout	\N	\N
+2	2026-01-09	Supper	\N	\N
+3	2026-01-06	Post-Workout	\N	\N
+3	2026-01-06	Lunch	\N	\N
+3	2026-01-07	Breakfast	Weź suple po obiedzie (kiwi)	131
+3	2026-01-07	Supper	Kazeina	24
+3	2026-01-08	Breakfast	Weź suple po obiedzie (pomarańcza)	137
+3	2026-01-08	Lunch	20M Kurczak filet - Tikka Masala 	15
+3	2026-01-08	Pre-Workout	M 5 Skyr Pro - Maliny&Chia + Banan	133
+3	2026-01-08	Post-Workout	FF Double Zinger (KFC)	30
+3	2026-01-08	Supper	Kazeina	24
+3	2026-01-10	Breakfast	Weź suple po obiedzie (pomarańcza)	137
+3	2026-01-10	Lunch	33M Łosoś - Chilli-limonka z ryżem	68
+3	2026-01-10	Pre-Workout	M 5 Skyr Pro - Maliny&Chia + Banan	133
+3	2026-01-10	Post-Workout	33M Łosoś - Chilli-limonka z ryżem	68
+3	2026-01-10	Supper	Kazeina	24
+3	2026-01-09	Breakfast	Weź suple po obiedzie (pomarańcza)	137
+3	2026-01-09	Lunch	20M Kurczak filet - Pad thai 	64
+3	2026-01-09	Pre-Workout	M 5 Skyr Pro - Maliny&Chia + Banan	133
+3	2026-01-09	Post-Workout	FF Kebab King mały lawasz kurczak bez sosu	32
+3	2026-01-09	Supper	Kazeina	24
+3	2026-01-13	Breakfast	Weź suple po obiedzie (kiwi)	131
+3	2026-01-13	Lunch	13M Wątróbka - klasyczek cebula	23
+3	2026-01-13	Pre-Workout	M 7 Skyr - Wiśnie&Orzechy	72
+3	2026-01-13	Post-Workout	12M Wołowina kotlet - dwa burger + frytki	35
+3	2026-01-13	Supper	Kazeina	24
+3	2026-01-05	Supper	Kazeina	24
 \.
 
 
@@ -1421,6 +1629,7 @@ COPY public.diet_slots_counter (diet_id, day, meal, name, dish_id) FROM stdin;
 --
 
 COPY public.diets (id, name, descr) FROM stdin;
+3	Janmadan2026	Rekomp 2600 post przerywany
 2	Lean Bulk Zeta	Baza 2900, adjust w trakcie
 1	Reverse Diet 	Reverse diet przed Sri-Lanka
 \.
@@ -1480,8 +1689,8 @@ COPY public.dishes (id, meal, name, descr) FROM stdin;
 54	MainMeal	11A Red Meat - Pork - (schab, polędwiczka)	
 1	Pre-Workout	M 0 Skyr - Miód + Banan&Jabłko	
 20	MainMeal	40M Krewetki - masło/czosnek	
-88	Pre-Workout	XJ2 - Jebaniec na zimno (sernik)	
 30	MainMeal	FF Double Zinger (KFC)	
+88	Pre-Workout	XJ2 - Jebaniec na zimno (sernik)	
 32	MainMeal	FF Kebab King mały lawasz kurczak bez sosu	
 55	MainMeal	12A Red Meat - Beef - (Stek, Kotlet)	
 79	Breakfast	24A Tosty - Ricotta (na słodko)	
@@ -1580,8 +1789,17 @@ COPY public.dishes (id, meal, name, descr) FROM stdin;
 124	MainMeal	XJ2 - Arepas de Victor	
 28	MainMeal	FF Sałatka Cobb Duża + Bułka z chia	
 125	MainMeal	FF Sałatka Awokado Rybak Duża + Bułka z chia	
-126	MainMeal	FF - Wrap Wołowina BBQ 	
 127	MainMeal	FF Sałatka z kurczakiem (Putka)	
+130	MainMeal	FF Lawasz z kurczakiem 160g (W Bułce)	
+133	Pre-Workout	M 5 Skyr Pro - Maliny&Chia + Banan	
+134	MainMeal	FF Subway klasyczek	
+135	MainMeal	FF Subway nowe smaki	
+131	Breakfast	Weź suple po obiedzie (kiwi)	
+137	Breakfast	Weź suple po obiedzie (pomarańcza)	
+132	Pre-Workout	M 8 Skyr + miód + musli	
+136	Pre-Workout	M 8 Skyr + Truskawki mrożone + miód	
+126	MainMeal	FF Wrap Wołowina BBQ 	
+138	MainMeal	FF Nachos Sanwich bez sosu (Kebab King)	
 \.
 
 
@@ -1745,6 +1963,23 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 106	13	1
 24	102	40
 25	107	150
+72	1	300
+72	26	100
+72	143	150
+72	25	50
+72	10	10
+72	91	150
+3	1	300
+3	26	110
+3	39	30
+3	73	120
+136	1	300
+136	25	50
+136	26	90
+136	29	100
+136	91	120
+136	197	50
+138	198	1
 21	89	150
 21	85	80
 21	91	150
@@ -1760,7 +1995,6 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 21	25	30
 69	1	300
 32	118	1
-30	117	1
 69	25	40
 69	16	20
 69	26	80
@@ -1969,13 +2203,6 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 1	26	160
 1	91	150
 1	25	20
-3	1	300
-3	26	110
-3	39	30
-72	1	300
-72	143	150
-72	10	10
-72	25	30
 20	87	100
 20	86	200
 20	127	20
@@ -2124,6 +2351,24 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 34	72	1
 34	52	5
 127	175	1
+130	201	131
+130	200	160
+130	178	10
+134	208	1
+134	204	1
+134	213	2
+134	212	2
+135	210	1
+135	207	1
+135	214	2
+135	215	2
+131	27	200
+137	24	150
+132	1	300
+132	197	50
+132	25	50
+132	26	90
+132	91	120
 112	27	100
 112	105	100
 112	31	10
@@ -2176,6 +2421,8 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 124	55	10
 124	72	1
 124	17	20
+30	117	1
+30	116	1
 98	6	3
 98	147	100
 98	26	100
@@ -2185,6 +2432,10 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 79	123	6
 79	6	2
 79	147	100
+133	1	300
+133	26	110
+133	41	50
+133	14	150
 117	123	6
 117	6	2
 117	147	100
@@ -2192,6 +2443,7 @@ COPY public.ingredient_amounts (dish_id, ingredient_id, amount) FROM stdin;
 117	23	100
 117	166	15
 117	30	50
+133	11	10
 97	6	2
 97	147	100
 97	164	120
@@ -2296,7 +2548,6 @@ COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, prote
 111	Sałatka Cobb Powiększona (Salad Story)	porcja	1	Na żywo	440	32	28	15	5000	f
 112	Sałatka Cezar (Salad Story)	porcja	1	Na żywo	426	36	25	13	5000	f
 118	Kebab - mały lawasz z kurczakiem bez sosu (Kebab King)	sztuka	1	Na żywo	618	37.1	23.2	68.4	5000	f
-114	Nachos Sandwich (Kebab King)	porcja	1056	Na żywo	1056	65	44	99	5000	f
 104	Protein pudding Chocolate Valio 180g	sztuka	1	Na żywo	148	19.8	2.7	10.8	5000	f
 110	Bajgiel Bekon & Kurczak (Putka)	sztuka	1	Na żywo	403	19.8	11.9	52.2	5000	f
 75	Bazylia suszona 10g (Prymat)	szczypta	1	Zapasy	0	0	0	0	350	t
@@ -2322,6 +2573,7 @@ COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, prote
 93	Cukinia	g	100	Świeże	17	1.2	0.1	3.2	200	f
 94	Wątróbka drobiowa (Muhlenhof)	g	100	Lidl	136	19.1	6.3	0	500	f
 95	Ser Halloumi EKTOS	g	100	Lidl	317	20	25	3	699	f
+114	Nachos Sandwich (Kebab King)	porcja	1	Na żywo	1056	65	44	99	5000	f
 98	Mięta liście	g	100	Lidl	43	3.8	0.7	5.3	200	f
 100	Morele suszone	g	100	Lidl	301	5.4	1.2	72.2	400	f
 76	Ogórek zielony	g	100	Świeże	14	0.7	0.1	2.9	200	f
@@ -2349,7 +2601,6 @@ COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, prote
 116	Frytki Duże (KFC)	porcja	1	Świeże	268	4.1	12	35	5000	f
 92	Rozmaryn szuszony	szczypta	1	Zapasy	3	0.1	0.1	0.6	350	t
 73	Marchew	g	100	Świeże	33	1	0.2	8.7	200	f
-77	Tzatziki przyprawa	szczypta	1	Zapasy	0	0	0	0	350	f
 89	Schab wieprzowy 9 plastrów (Rzeźnik)	g	100	Lidl	128	24	4	0	500	f
 126	Kapusta pekińska	g	100	Świeże	16	1	0	3	200	f
 121	Łowicz Dżem 100% owoców czarna porzeczka 210g (Łowicz)	g	100	Lidl	132	1.1	0.5	28	1205	f
@@ -2381,6 +2632,7 @@ COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, prote
 149	Bułka orkiszowa	sztuka	1	Świeże	200	6.4	1.6	40	100	f
 173	Sałatka Awokado Rybak (Salad Story)	porcja	1	Na żywo	530	32.76	27.43	32.76	5000	f
 72	Pieprz czarny mielony	szczypta	1	Zapasy	0	0	0	0	350	t
+77	Tzatziki przyprawa	szczypta	1	Zapasy	0	0	0	0	350	t
 172	Mąka kukurydziana biała PAN 1kg (google: Mąka kukurydziana precooked (Harina PAN))	g	100	Lidl	357	78	2	75.5	2000	f
 174	Wrap Wołowina BBQ (Salad Story)	porcja	1	Na żywo	727.2	31	36	69.8	5000	f
 178	Clean tłuszcz (czyste, samo, pure)	g	100	Lidl	900	0	100	0	5000	f
@@ -2393,7 +2645,6 @@ COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, prote
 190	mc crispy (Mac Donald's)	sztuka	1	Na żywo	550	27	23	56	2000	f
 103	Danone YoPro Jogurt smak straciatella 160g (Danone YoPro)	sztuka	1	Na żywo	91	15	0.8	5.8	5000	f
 169	Żurawina suszona 200g (Alesto)	g	100	Lidl	338	0.7	1.2	78	400	f
-150	Bułka z chia (Galeria Wypieków Lubaszka)	sztuka	1	Na żywo	279	9.9	8.46	38.7	5000	f
 161	Pestki słonecznika 500g (Alesto)	g	100	Zapasy	616	21.4	53.9	5.1	400	f
 165	Rodzynki Jumbo (Alesto)	g	100	Lidl	331	3	2	72	400	f
 184	Orzechy laskowe prażone (Alesto)	g	100	Zapasy	722	14.3	70.5	3.5	400	t
@@ -2409,9 +2660,31 @@ COPY public.ingredients (id, name, unit, default_amount, shop_style, kcal, prote
 192	ketchup extra hot (kotlin)	g	100	Lidl	99	1.4	0.5	21	2000	f
 193	Prince Polo XXL 50g	sztuka	1	Na żywo	266	2.3	15	30	2000	f
 99	Przyprawa meksykańska (Naturalny Koszyk)	g	100	Zapasy	218	9.3	5.8	19.6	350	t
+150	Bułka z chia (Galeria Wypieków Lubaszka)	sztuka	1	Na żywo	279	9.9	8.46	38.7	5000	f
 194	Burrata (Pilos)	g	100	Lidl	254	10	23	1.8	2000	f
 195	Active protein blue ser w plastrach (Ryki)	porcja	1	Lidl	34	5.3	1.4	0	2000	f
 135	Curry przyprawa	szczypta	1	Zapasy	20	1	1	1	5000	t
+196	Farfalle z pszenicy durum (Combino)	g	100	Lidl	350	12.5	1.2	70.5	2000	f
+198	Nachos Sandwich bez sosu (Kebab King)	porcja	1	Na żywo	1020	64	44	90	2000	f
+199	Bułka owsiano-orkiszowa (Galeria Wypieków Lubaszka) 100g	sztuka	1	Na żywo	277	8.7	3	52	2000	f
+200	Kebab z kurczaka (Morliny) 400g	g	100	Na żywo	171	15	11	2.6	2000	f
+201	Lawasz Ormiański – LA-VA – 5 x 65 g	g	100	Na żywo	308	9.9	4.2	57	2000	f
+202	Sos czosnkowy (Fanex)	g	100	Na żywo	445	0.7	46	6.6	2000	f
+203	Woda	g	100	Lidl	0	0	0	0	2000	f
+197	Musli tropikalne (Vitanella)	g	100	Lidl	364	9.4	7.3	60.2	2000	f
+204	Kurczak BBQ (Subway) 15cm 241g	porcja	1	Na żywo	312	20	3	49	2000	f
+205	Chipotle Szynka i Pepperoni (Subway) 15cm 207g	porcja	1	Na żywo	374	19	17	37	2000	f
+206	Włosky B.M.T (Subway) 15cm 231g	porcja	1	Na żywo	400	20	16	42	2000	f
+207	Paski z kurczaka (Subway) 15cm 223g	porcja	1	Na żywo	282	20	3	42	2000	f
+208	Kurczak Teriyaki (Subway) 15cm 241g	porcja	1	Na żywo	296	20	3	45	2000	f
+209	Stek z serem (Subway) 15cm 235g	porcja	1	Na żywo	336	21	7	47	2000	f
+210	Tuńczyk (Subway) 15cm 241g	porcja	1	Na żywo	365	19	13	43	2000	f
+211	T.L.C Teriyaki (Subway) 15cm 226g	porcja	1	Na żywo	271	21	3	39	2000	f
+213	Sos Sweet onion (Subway) porcja na sub 15cm 18g	porcja	1	Na żywo	30	0	0	7	2000	f
+215	Sos Musztarda pełnoziarnista miodowa (Subway) porcja na sub 15cm 14g	porcja	1	Na żywo	29	0	2	3	2000	f
+212	Sos Cezar (Subway) porcja na sub 15cm 14g	porcja	1	Na żywo	54	0	5	1	2000	f
+216	Sos Majonez (Subway) porcja na sub 15cm 14	porcja	1	Na żywo	48	0	5	1	2000	f
+214	Sos Wegański czosnkowy (Subway) porcja na sub 15cm 14g	porcja	100	Na żywo	53	0	5	2	2000	f
 \.
 
 
@@ -2428,7 +2701,6 @@ COPY public.recipes (dish_id, time_total, what_before, preparation, when_start) 
 25				
 34			Frytki i steka soczyście solisz.\n\nZ jogurtu, kapusty, soku z cytryny i pieprzu robisz sałatkę jak mama kiedyś :'(\n\n	
 13			Ten przepis był dla mnie ciężki w przygotowaniu oraz ma słabe makro, gdyż mięso mielone wołowe jest mocno tłuste, kotlety trzeba lepić jakoś mi to nie wychodziło (mimo, że dobre w sumie, może kiedyś do niego wrócę)	
-30				
 16			Marchew zetrzyj, ser roladę ustrzycką zetrzyj	
 26			Mirunę pieprzem przed. Cyk do piekarnika frytki też. Potem sos miliona jezior z jogurtu greckiego, musztardy i ketchupu.	
 32				
@@ -2509,6 +2781,7 @@ COPY public.recipes (dish_id, time_total, what_before, preparation, when_start) 
 114				
 115				
 97				
+30				
 87			Składniki na ciasto {serek wiejski 200g, jajko jedno, mąka 50g, przyprawy}.\n\nPiekarnik 220 grzej. Potem mieszasz ciasto i cyk na blaszke cieniutko uformowane koło i pieczemy 15 minut aż się przypiecze fajnie. Teraz smarowanie koncentratem i serem znowu do piekarnika na 5 minut, i cyk dodatki już na zimno\n\nhttps://www.tiktok.com/@orzechowskam/video/7494611420756053270	
 88			https://www.tiktok.com/@orzechowskam/video/7490104352544247062\n\nZrób galaretke według przepisu (ale mniej ilości wody niż zakłada producent), ale nie ścinaj jeszcze. Z twarogu i skyra robisz masę blendowaniem. Połowę galaretki wlewasz do masy. Znowu miksujesz. Do foremki na dół układasz biszkopty i przelewasz na to masę w całości i odstawiasz do lodówki. Reszta galaretki też do lodowki. Oba na 30minut (ale sprawdzaj w trakcie, może być nawet 45 min. Potem dokładasz owoce, zalewasz galaretką i znowu do lodówki aż zastygnie max.	
 65			1. Kurczaka pokrój w kostkę. W misce wymieszaj z sosem sojowym, miodem, imbirem, kurkumą, czosnkiem i szczyptą soli.\n2. Odstaw na 10–15 min, żeby się zamarynował.\n3. W tym czasie ugotuj makaron ryżowy (zalewając wrzątkiem na 8–10 min), następnie odcedź i przepłucz.\n4. Na dużej patelni lub woku rozgrzej 10 g oliwy, usmaż kurczaka na złoto z każdej strony.\n5. Dorzuć chińską mieszankę warzyw, smaż razem 5–6 min, aż warzywa będą gorące i lekko chrupiące.\n6. Dodaj makaron, pozostałe 5 g oliwy, nerkowce i ewentualnie kilka kropel sosu sojowego do smaku.\n7. Wymieszaj całość, smaż jeszcze 1–2 min, żeby wszystko się połączyło i miód lekko skarmelizował.	
@@ -2529,6 +2802,15 @@ COPY public.recipes (dish_id, time_total, what_before, preparation, when_start) 
 125				
 126				
 127				
+130				
+133				
+134				
+135				
+131				
+137				
+132				
+136				
+138				
 \.
 
 
@@ -2543,7 +2825,7 @@ SELECT pg_catalog.setval('public.diet_labels_id_seq', 1, false);
 -- Name: diets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kartezjusz
 --
 
-SELECT pg_catalog.setval('public.diets_id_seq', 2, true);
+SELECT pg_catalog.setval('public.diets_id_seq', 3, true);
 
 
 --
@@ -2557,7 +2839,7 @@ SELECT pg_catalog.setval('public.dish_labels_id_seq', 6, true);
 -- Name: dishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kartezjusz
 --
 
-SELECT pg_catalog.setval('public.dishes_id_seq', 129, true);
+SELECT pg_catalog.setval('public.dishes_id_seq', 138, true);
 
 
 --
@@ -2571,7 +2853,7 @@ SELECT pg_catalog.setval('public.ingredient_labels_id_seq', 1, false);
 -- Name: ingredients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: kartezjusz
 --
 
-SELECT pg_catalog.setval('public.ingredients_id_seq', 195, true);
+SELECT pg_catalog.setval('public.ingredients_id_seq', 216, true);
 
 
 --
