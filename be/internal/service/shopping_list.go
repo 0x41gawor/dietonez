@@ -82,10 +82,17 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 	if err != nil {
 		return nil, fmt.Errorf("getFreshIngredients: %w", err)
 	}
-	stockIngredients, err := s.getStockIngredients(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("getStockIngredients: %w", err)
+	var stockIngredients []model.StockIngredientInShoppingList
+
+	if currentDietDay%7 == 2 || currentDietDay%7 == 5 { // środa lub sobota
+		stockIngredients, err = s.getStockIngredients(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("getStockIngredients: %w", err)
+		}
+	} else {
+		stockIngredients = nil
 	}
+
 	lidlIngredients, err := s.getLidlIngredients(ctx, activeDietID, lidlAndStockSlotsRange, currentCycleStartDate)
 	if err != nil {
 		return nil, fmt.Errorf("getLidlIngredients: %w", err)
@@ -111,17 +118,28 @@ func (s *ServiceShoppingList) Get(ctx context.Context, date time.Time) (*model.S
 
 func getFreshSlotsRange(currentDietDay, maxDietDay int) []int {
 
-	// Specjalny przypadek: dzień przed ostatnim
-	if currentDietDay == maxDietDay {
-		print("Fresh slot-range: [0..4]\n")
-		return []int{0, 1, 2, 3, 4}
+	if currentDietDay%7 == 6 { // niedziela → brak slotów
+		print("Fresh slot-range: [] (empty)\n")
+		return []int{}
 	}
 
-	start := (currentDietDay + 1) * 5
+	if currentDietDay%7 == 5 { // sobota → normal + zakupy na niedzielę
+		start := currentDietDay*5 + 3
+		end := start + 7
+		result := make([]int, 0, end-start)
+		for i := start; i < end; i++ {
+			result = append(result, i)
+		}
+		fmt.Println("Fresh slot-range:", result)
+		return result
+	}
 
-	result := make([]int, 5)
-	for i := range 5 {
-		result[i] = start + i
+	start := currentDietDay*5 + 3
+	end := start + 5
+
+	result := make([]int, 0, end-start)
+	for i := start; i < end; i++ {
+		result = append(result, i)
 	}
 	fmt.Println("Fresh slot-range:", result)
 
